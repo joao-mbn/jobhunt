@@ -1,7 +1,9 @@
-import { analyzeJobsBatch } from "./gemini";
-import { uploadToGoogleSheet } from "./gsheet";
-import { loadResumeData } from "./resume";
-import { fetchRSSFeed, saveJobsWithRelevance } from "./rss";
+import "jsr:@std/dotenv/load";
+import process from "node:process";
+import { analyzeJobsBatch } from "./gemini.ts";
+import { uploadToGoogleSheet } from "./gsheet.ts";
+import { loadResumeData } from "./resume.ts";
+import { fetchRSSFeed, saveJobsWithRelevance } from "./rss.ts";
 
 async function main() {
   try {
@@ -27,7 +29,7 @@ async function main() {
 
     // Step 4: Save jobs with relevance scores
     const today = new Date().toISOString().split("T")[0];
-    const filename = `linkedinJobs-${today}-analyzedon`;
+    const filename = `linkedinJobs-${today}-analyzed.json`;
     saveJobsWithRelevance(jobsData, filename);
     console.log("✅ Jobs saved with relevance scores\n");
 
@@ -42,36 +44,31 @@ async function main() {
     });
 
     // Step 6: Upload to Google Sheets (if configured)
-    const shouldUploadToSheets =
-      process.env.GOOGLE_SPREADSHEET_ID &&
-      process.env.GOOGLE_CLIENT_EMAIL &&
-      process.env.GOOGLE_PRIVATE_KEY;
+    const shouldUploadToSheets = Deno.env.get("GOOGLE_SPREADSHEET_ID") &&
+      Deno.env.get("GOOGLE_CLIENT_EMAIL") &&
+      Deno.env.get("GOOGLE_PRIVATE_KEY");
 
     if (shouldUploadToSheets) {
       console.log("📊 Uploading to Google Sheets...");
       await uploadToGoogleSheet(jobsData, {
-        spreadsheetId: process.env.GOOGLE_SPREADSHEET_ID!,
-        sheetName: process.env.GOOGLE_SHEET_NAME || "Job Data",
+        spreadsheetId: Deno.env.get("GOOGLE_SPREADSHEET_ID")!,
+        sheetName: Deno.env.get("GOOGLE_SHEET_NAME") || "Job Data",
         credentials: {
-          client_email: process.env.GOOGLE_CLIENT_EMAIL!,
-          private_key: process.env.GOOGLE_PRIVATE_KEY!.replace(/\\n/g, "\n"),
+          client_email: Deno.env.get("GOOGLE_CLIENT_EMAIL")!,
+          private_key: Deno.env.get("GOOGLE_PRIVATE_KEY")!.replace(/\\n/g, "\n"),
         },
       });
       console.log("✅ Uploaded to Google Sheets\n");
     } else {
-      console.log(
-        "⚠️  Google Sheets upload skipped (missing environment variables)\n"
-      );
+      console.log("⚠️  Google Sheets upload skipped (missing environment variables)\n");
     }
 
     console.log("🎉 Job hunt automation completed successfully!");
 
     // Summary statistics
-    const highRelevanceJobs = analyzedJobs.filter(
-      (job) => (job.relevanceScore || 0) >= 80
-    );
-    const mediumRelevanceJobs = analyzedJobs.filter(
-      (job) => (job.relevanceScore || 0) >= 60 && (job.relevanceScore || 0) < 80
+    const highRelevanceJobs = analyzedJobs.filter((job) => (job.relevanceScore || 0) >= 80);
+    const mediumRelevanceJobs = analyzedJobs.filter((job) =>
+      (job.relevanceScore || 0) >= 60 && (job.relevanceScore || 0) < 80
     );
 
     console.log(`\n📈 Summary:`);
@@ -79,7 +76,10 @@ async function main() {
     console.log(`   High relevance (80+): ${highRelevanceJobs.length}`);
     console.log(`   Medium relevance (60-79): ${mediumRelevanceJobs.length}`);
     console.log(
-      `   Average relevance score: ${(analyzedJobs.reduce((sum, job) => sum + (job.relevanceScore || 0), 0) / analyzedJobs.length).toFixed(1)}`
+      `   Average relevance score: ${
+        (analyzedJobs.reduce((sum, job) => sum + (job.relevanceScore || 0), 0) /
+          analyzedJobs.length).toFixed(1)
+      }`,
     );
   } catch (error) {
     console.error("❌ Error in job hunt automation:", error);
@@ -87,9 +87,4 @@ async function main() {
   }
 }
 
-// Run if this file is executed directly
-if (import.meta.main) {
-  main();
-}
-
-export { main };
+main();

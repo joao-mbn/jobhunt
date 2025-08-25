@@ -1,12 +1,31 @@
 {
   "version": "https://jsonfeed.org/version/1.1",
-  "title": "45,000+ Software Engineer jobs in United States",
+  "title": "44,000+ Software Engineer jobs in United States",
   "home_page_url": "https://www.linkedin.com/jobs/search/?currentJobId=4262882449&f_WT=2%2C3&keywords=software%20engineer&origin=JOB_SEARCH_PAGE_JOB_FILTER",
   "feed_url": "https://rss.app/feeds/v1.1/sUOBma3URjECoaqq.json",
   "favicon": "https://static.licdn.com/aero-v1/sc/h/al2o9zrvru7aqj8e1x2rzsrca",
   "language": "en",
-  "description": "Today's top 45,000+ Software Engineer jobs in United States. Leverage your professional network, and get hired. New Software Engineer jobs added daily.",
+  "description": "Today's top 44,000+ Software Engineer jobs in United States. Leverage your professional network, and get hired. New Software Engineer jobs added daily.",
   "items": [
+    {
+      "id": "8e911b332b1132e7b96d3b73b32cb8e7",
+      "url": "https://www.linkedin.com/jobs/view/software-engineer-api-at-headspace-4203023309",
+      "title": "Headspace hiring Software Engineer, API in United States ",
+      "content_text": "Posted 9:50:56 AM. About the Software Engineer, API at Headspace:\nHeadspace is seeking a talented Software Engineer to…See this and similar jobs on LinkedIn.",
+      "content_html": "<div><img src=\"https://static.licdn.com/aero-v1/sc/h/xlk678jv0tjp79pv10kglzkf\" style=\"width: 100%;\" /><div>Posted 9:50:56 AM. About the Software Engineer, API at Headspace:\nHeadspace is seeking a talented Software Engineer to…See this and similar jobs on LinkedIn.</div></div>",
+      "image": "https://static.licdn.com/aero-v1/sc/h/xlk678jv0tjp79pv10kglzkf",
+      "date_published": "2025-08-24T00:00:00.000Z",
+      "authors": [
+        {
+          "name": "LinkedIn"
+        }
+      ],
+      "attachments": [
+        {
+          "url": "https://static.licdn.com/aero-v1/sc/h/xlk678jv0tjp79pv10kglzkf"
+        }
+      ]
+    },
     {
       "id": "c94ff0131b6a5eb2df91bd515e229b3d",
       "url": "https://www.linkedin.com/jobs/view/software-engineer-frontend-all-levels-at-zip-4098166100",
@@ -53,25 +72,6 @@
       "content_html": "<div><img src=\"https://static.licdn.com/aero-v1/sc/h/xlk678jv0tjp79pv10kglzkf\" style=\"width: 100%;\" /><div><strong>Company Description<br><br></strong>LinkedIn is the world’s largest professional network, built to create economic opportunity for every member of the global workforce. Our products help people make powerful connections, discover exciting opportunities, build necessary skills, and gain valuable insights every day. We’re also committed to providing transformational opportunities for our own employees by investing in their growth. We aspire to create a culture that’s built on trust, care, inclusion, and fun – where everyone can succeed.<br><br>Join us to transform the way the world works.<br><br><strong>Job Description<br><br></strong>This role will be based in Sunnyvale, San Francisco, Chicago or New York depending upon which location the applicant chosen for the role is currently residing.<br><br>At LinkedIn, our approach to flexible work is centered on trust and optimized for culture, connection, clarity, and the evolving needs of our business. The work location of this role is hybrid, meaning it will be performed both from home and from a LinkedIn office on select days, as determined by the business needs of the team.<br><br>The ideal candidate will require advanced visualization skills (PowerBI / Tableau) and SQL skills to create impactful data visualizations and insights. This will span all phases of the data asset development lifecycle (e.g., requirements elicitation through development and eventual sunset). The candidate should also have strong analytical skills and be adept at deriving, distilling and articulating actionable business insights from large amounts of data. Using strong communication skills, the role will effectively collaborate with a variety of people and job functions, accomplishing tasks of high complexity and scope, and can perform professionally in a challenging and extremely fast-paced environment.<br><br>What You’ll Do:<br><br><ul><li>Accountable for publishing and maintaining analytics dashboards and other data assets via Tableau, PowerBI or other Analytics applications (e.g., Retina, Darwin, etc.) </li><li>Write SQL/Python queries to extract necessary data, analyze the results to generate actionable insights and present the findings either in Tableau, PowerBI, Excel or PowerPoint </li><li>Collaborate closely with the sales, marketing, engineering and data teams to provide analysis, reporting and tools that inform key stakeholders. </li><li>Leverage LinkedIn’s unique data to create innovative analyses & dashboards. </li><li>Work with upstream technology partners to develop and deliver technical solutions. </li><li>Build cross-functional relationships and partner effectively with other teams to drive project success. </li><li>Make business recommendations, conveying findings at multiple levels including managers and peers through visual displays of quantitative information. <br><br><br></li></ul><strong>Qualifications<br><br></strong>Basic Qualifications:<br><br><ul><li>5+ years SQL experience </li><li>5+ years of experience with a BI or visualization tool </li><li>Bachelor’s Degree in Computer Science, Information Systems, Engineering, Data Science, Mathematics, Statistics, Physics, Economics, Cognitive Science, Business Information Technology, or a related technical or quantitative field — or equivalent practical experience <br><br><br></li></ul>Preferred Qualifications:<br><br><ul><li>Experience with PowerBI </li><li>Strong problem-solving and project management skills </li><li>Experience presenting data or other technical concepts to senior stakeholders </li><li>Proven experience managing a large group of stakeholders and independently driving global projects </li><li>Experience with Sales Operations processes and CRM systems (e.g., SFDC and Dynamics) <br><br><br></li></ul>Suggested Skills:<br><br><ul><li>SQL </li><li>Power BI </li><li>Stakeholder Management </li><li>Problem solving <br><br><br></li></ul>LinkedIn is committed to fair and equitable compensation practices.<br><br>The pay range for this role is $112,000 to $185,000. Actual compensation packages are based on a wide array of factors unique to each candidate, including but not limited to skill set, years & depth of experience, certifications and specific office location. This may differ in other locations due to cost of labor considerations.<br><br>The total compensation package for this position may also include annual performance bonus, stock, benefits and/or other applicable incentive compensation plans. For additional information, visit: https://careers.linkedin.com/benefits.<br><br><strong>Additional Information<br><br></strong><strong>Equal Opportunity Statement <br><br></strong>We seek candidates with a wide range of perspectives and backgrounds and we are proud to be an equal opportunity employer. LinkedIn considers qualified applicants without regard to race, color, religion, creed, gender, national origin, age, disability, veteran status, marital status, pregnancy, sex, gender expression or identity, sexual orientation, citizenship, or any other legally protected class.<br><br>LinkedIn is committed to offering an inclusive and accessible experience for all job seekers, including individuals with disabilities. Our goal is to foster an inclusive and accessible workplace where everyone has the opportunity to be successful.<br><br>If you need a reasonable accommodation to search for a job opening, apply for a position, or participate in the interview process, connect with us at accommodations@linkedin.com and describe the specific accommodation requested for a disability-related limitation.<br><br>Reasonable accommodations are modifications or adjustments to the application or hiring process that would enable you to fully participate in that process. Examples of reasonable accommodations include but are not limited to:<br><br><ul><li>Documents in alternate formats or read aloud to you</li><li>Having interviews in an accessible location</li><li>Being accompanied by a service dog</li><li>Having a sign language interpreter present for the interview<br><br><br></li></ul>A request for an accommodation will be responded to within three business days. However, non-disability related requests, such as following up on an application, will not receive a response.<br><br>LinkedIn will not discharge or in any other manner discriminate against employees or applicants because they have inquired about, discussed, or disclosed their own pay or the pay of another employee or applicant. However, employees who have access to the compensation information of other employees or applicants as a part of their essential job functions cannot disclose the pay of other employees or applicants to individuals who do not otherwise have access to compensation information, unless the disclosure is (a) in response to a formal complaint or charge, (b) in furtherance of an investigation, proceeding, hearing, or action, including an investigation conducted by LinkedIn, or (c) consistent with LinkedIn's legal duty to furnish information.<br><br><strong>San Francisco Fair Chance Ordinance <br><br></strong>Pursuant to the San Francisco Fair Chance Ordinance, LinkedIn will consider for employment qualified applicants with arrest and conviction records.<br><br><strong>Pay Transparency Policy Statement <br><br></strong>As a federal contractor, LinkedIn follows the Pay Transparency and non-discrimination provisions described at this link: https://lnkd.in/paytransparency.<br><br><strong>Global Data Privacy Notice for Job Candidates <br><br></strong>Please follow this link to access the document that provides transparency around the way in which LinkedIn handles personal data of employees and job applicants: https://legal.linkedin.com/candidate-portal.<br><br></div></div>",
       "image": "https://static.licdn.com/aero-v1/sc/h/xlk678jv0tjp79pv10kglzkf",
       "date_published": "2025-08-23T01:49:41.000Z",
-      "authors": [
-        {
-          "name": "LinkedIn"
-        }
-      ],
-      "attachments": [
-        {
-          "url": "https://static.licdn.com/aero-v1/sc/h/xlk678jv0tjp79pv10kglzkf"
-        }
-      ]
-    },
-    {
-      "id": "8e911b332b1132e7b96d3b73b32cb8e7",
-      "url": "https://www.linkedin.com/jobs/view/software-engineer-api-at-headspace-4203023309",
-      "title": "Headspace hiring Software Engineer, API in United States ",
-      "content_text": "Posted 9:50:56 AM. About the Software Engineer, API at Headspace:\nHeadspace is seeking a talented Software Engineer to…See this and similar jobs on LinkedIn.",
-      "content_html": "<div><img src=\"https://static.licdn.com/aero-v1/sc/h/xlk678jv0tjp79pv10kglzkf\" style=\"width: 100%;\" /><div>Posted 9:50:56 AM. About the Software Engineer, API at Headspace:\nHeadspace is seeking a talented Software Engineer to…See this and similar jobs on LinkedIn.</div></div>",
-      "image": "https://static.licdn.com/aero-v1/sc/h/xlk678jv0tjp79pv10kglzkf",
-      "date_published": "2025-08-23T00:00:00.000Z",
       "authors": [
         {
           "name": "LinkedIn"

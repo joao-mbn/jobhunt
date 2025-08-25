@@ -1,0 +1,30 @@
+{
+  "tasks": {
+    "dev": "deno run --watch src/index.ts",
+    "lint": "deno lint src/",
+    "fmt": "deno fmt src/"
+  },
+  "imports": {
+    "@google/genai": "npm:@google/genai@^1.15.0",
+    "@std/assert": "jsr:@std/assert@1",
+    "@std/dotenv": "jsr:@std/dotenv@^0.225.5",
+    "@types/node": "npm:@types/node@^24.3.0",
+    "googleapis": "npm:googleapis@^157.0.0"
+  },
+  "compilerOptions": {
+    "lib": ["dom", "deno.ns"]
+  },
+  "fmt": {
+    "lineWidth": 100,
+    "exclude": [
+      "node_modules/",
+      "dist/",
+      "build/",
+      "*.min.js",
+      "*.min.css",
+      "package-lock.json",
+      "bun.lockb",
+      ".git/"
+    ]
+  }
+}

@@ -1,7 +1,8 @@
-import fs from "fs";
 import { google } from "googleapis";
-import path from "path";
-import type { GoogleSheetConfig, RSSData } from "./types";
+import fs from "node:fs";
+import path from "node:path";
+import process from "node:process";
+import type { GoogleSheetConfig, RSSData } from "./types.ts";
 
 function readDataFiles(): RSSData[] {
   const dataDir = path.join(process.cwd(), "data", "linkedinJobs");
@@ -10,9 +11,7 @@ function readDataFiles(): RSSData[] {
     throw new Error("Data directory does not exist");
   }
 
-  const files = fs
-    .readdirSync(dataDir)
-    .filter((file) => file.endsWith(".json"));
+  const files = fs.readdirSync(dataDir).filter((file) => file.endsWith(".json"));
 
   if (files.length === 0) {
     throw new Error("No JSON files found in the data directory");
@@ -55,12 +54,11 @@ function flattenJobData(dataFiles: RSSData[]): string[][] {
       const location = locationMatch?.[1] ?? "Unknown";
 
       // Clean content text (remove HTML tags and limit length)
-      const contentPreview =
-        item.content_text
-          .replace(/<[^>]*>/g, "")
-          .replace(/\s+/g, " ")
-          .trim()
-          .substring(0, 200) + "...";
+      const contentPreview = item.content_text
+        .replace(/<[^>]*>/g, "")
+        .replace(/\s+/g, " ")
+        .trim()
+        .substring(0, 200) + "...";
 
       // Format date
       const publishedDate = new Date(item.date_published).toLocaleDateString();
@@ -85,10 +83,7 @@ function flattenJobData(dataFiles: RSSData[]): string[][] {
   return rows;
 }
 
-export async function uploadToGoogleSheet(
-  data: RSSData,
-  config: GoogleSheetConfig
-): Promise<void> {
+export async function uploadToGoogleSheet(data: RSSData, config: GoogleSheetConfig): Promise<void> {
   const auth = new google.auth.GoogleAuth({
     credentials: config.credentials,
     scopes: ["https://www.googleapis.com/auth/spreadsheets"],
@@ -118,12 +113,10 @@ export async function uploadToGoogleSheet(
       },
     });
 
-    console.log(
-      `Successfully uploaded ${flattenedData.length - 1} job records to Google Sheet`
-    );
+    console.log(`Successfully uploaded ${flattenedData.length - 1} job records to Google Sheet`);
     console.log(`Updated ${response.data.updatedCells} cells`);
     console.log(
-      `Sheet URL: https://docs.google.com/spreadsheets/d/${config.spreadsheetId}/edit#gid=0`
+      `Sheet URL: https://docs.google.com/spreadsheets/d/${config.spreadsheetId}/edit#gid=0`,
     );
   } catch (error) {
     console.error("Error uploading to Google Sheet:", error);
@@ -134,14 +127,11 @@ export async function uploadToGoogleSheet(
 export async function updateSheet(): Promise<void> {
   try {
     const config: GoogleSheetConfig = {
-      spreadsheetId: process.env.GOOGLE_SPREADSHEET_ID || "",
-      sheetName: process.env.GOOGLE_SHEET_NAME || "Job Data",
+      spreadsheetId: Deno.env.get("GOOGLE_SPREADSHEET_ID") || "",
+      sheetName: Deno.env.get("GOOGLE_SHEET_NAME") || "Job Data",
       credentials: {
-        client_email: process.env.GOOGLE_CLIENT_EMAIL || "",
-        private_key: (process.env.GOOGLE_PRIVATE_KEY || "").replace(
-          /\\n/g,
-          "\n"
-        ),
+        client_email: Deno.env.get("GOOGLE_CLIENT_EMAIL") || "",
+        private_key: (Deno.env.get("GOOGLE_PRIVATE_KEY") || "").replace(/\\n/g, "\n"),
       },
     };
 
@@ -151,7 +141,7 @@ export async function updateSheet(): Promise<void> {
     }
     if (!config.credentials.client_email || !config.credentials.private_key) {
       throw new Error(
-        "GOOGLE_CLIENT_EMAIL and GOOGLE_PRIVATE_KEY environment variables are required"
+        "GOOGLE_CLIENT_EMAIL and GOOGLE_PRIVATE_KEY environment variables are required",
       );
     }
 
@@ -170,9 +160,7 @@ export async function updateSheet(): Promise<void> {
       throw new Error("No data files to upload");
     }
 
-    console.log(
-      "✅ Successfully processed and uploaded job data to Google Sheet!"
-    );
+    console.log("✅ Successfully processed and uploaded job data to Google Sheet!");
   } catch (error) {
     console.error("❌ Error:", error);
     process.exit(1);

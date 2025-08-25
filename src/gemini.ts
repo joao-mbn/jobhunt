@@ -1,5 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
-import type { JobAnalysisResult, JobItem, ResumeData } from "./types";
+import { setTimeout } from "node:timers";
+import type { JobAnalysisResult, JobItem, ResumeData } from "./types.ts";
 
 const RELEVANCE_PROMPT = `
 You are an expert job matching AI assistant. Your task is to analyze job postings and rate their relevance to a specific candidate based on their resume.
@@ -58,7 +59,7 @@ Focus on the candidate's 4+ years of full-stack development experience, TypeScri
 
 // Initialize the Google GenAI client
 function createGenAIClient(): GoogleGenAI {
-  const geminiApiKey = process.env.GEMINI_API_KEY;
+  const geminiApiKey = Deno.env.get("GEMINI_API_KEY");
   if (!geminiApiKey) {
     throw new Error("GEMINI_API_KEY environment variable is required");
   }
@@ -70,12 +71,12 @@ function createGenAIClient(): GoogleGenAI {
 async function analyzeJobRelevance(
   job: JobItem,
   resume: ResumeData,
-  ai: GoogleGenAI
+  ai: GoogleGenAI,
 ): Promise<JobAnalysisResult> {
   try {
     const prompt = RELEVANCE_PROMPT.replace(
       "{resume}",
-      JSON.stringify(resume, null, 2)
+      JSON.stringify(resume, null, 2),
     )
       .replace("{jobTitle}", job.title)
       .replace("{jobDescription}", job.content_text.substring(0, 2000)); // Limit description length
@@ -143,10 +144,10 @@ async function processJob(
   resume: ResumeData,
   ai: GoogleGenAI,
   index: number,
-  total: number
+  total: number,
 ): Promise<JobItem> {
   console.log(
-    `Analyzing job ${index + 1}/${total}: ${job.title.substring(0, 50)}...`
+    `Analyzing job ${index + 1}/${total}: ${job.title.substring(0, 50)}...`,
   );
 
   try {
@@ -171,10 +172,7 @@ function delay(ms: number): Promise<void> {
 }
 
 // Analyze multiple jobs in batch
-export async function analyzeJobsBatch(
-  jobs: JobItem[],
-  resume: ResumeData
-): Promise<JobItem[]> {
+export async function analyzeJobsBatch(jobs: JobItem[], resume: ResumeData): Promise<JobItem[]> {
   console.log(`Starting analysis of ${jobs.length} jobs...`);
 
   const ai = createGenAIClient();
@@ -193,7 +191,7 @@ export async function analyzeJobsBatch(
 
   // Sort jobs by relevance score (highest first)
   analyzedJobs.sort(
-    (a, b) => (b.relevanceScore || 0) - (a.relevanceScore || 0)
+    (a, b) => (b.relevanceScore || 0) - (a.relevanceScore || 0),
   );
 
   console.log(`Completed analysis of ${analyzedJobs.length} jobs`);

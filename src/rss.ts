@@ -1,5 +1,5 @@
-import fs from "fs";
-import type { RSSData } from "./types";
+import fs from "node:fs";
+import type { RSSData } from "./types.ts";
 
 export async function fetchRSSFeed(): Promise<RSSData> {
   const url = new URL("https://rss.app/feeds/v1.1/sUOBma3URjECoaqq.json");
@@ -25,10 +25,10 @@ export async function fetchRSSFeed(): Promise<RSSData> {
 
     fs.writeFileSync(
       `${dir}/linkedinJobs-${today}.json`,
-      JSON.stringify(data, null, 2)
+      JSON.stringify(data, null, 2),
     );
     console.log(
-      `Fetched ${data.items.length} items and saved to ${dir}/linkedinJobs-${today}.json`
+      `Fetched ${data.items.length} items and saved to ${dir}/linkedinJobs-${today}.json`,
     );
 
     return data;
@@ -46,6 +46,6 @@ export function saveJobsWithRelevance(jobs: RSSData, filename: string): void {
 
   fs.writeFileSync(`${dir}/${filename}`, JSON.stringify(jobs, null, 2));
   console.log(
-    `Saved ${jobs.items.length} jobs with relevance scores to ${dir}/${filename}`
+    `Saved ${jobs.items.length} jobs with relevance scores to ${dir}/${filename}`,
   );
 }

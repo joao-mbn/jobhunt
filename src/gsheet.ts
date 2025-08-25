@@ -1,41 +1,15 @@
 import fs from "fs";
 import { google } from "googleapis";
 import path from "path";
-
-interface JobItem {
-  id: string;
-  url: string;
-  title: string;
-  content_text: string;
-  content_html: string;
-  image?: string;
-  date_published: string;
-  authors: Array<{ name: string }>;
-  attachments?: Array<{ url: string }>;
-}
-
-interface RSSData {
-  version: string;
-  title: string;
-  home_page_url: string;
-  feed_url: string;
-  favicon: string;
-  language: string;
-  description: string;
-  items: JobItem[];
-}
-
-interface GoogleSheetConfig {
-  spreadsheetId: string;
-  sheetName: string;
-  credentials: {
-    client_email: string;
-    private_key: string;
-  };
-}
+import type { GoogleSheetConfig, RSSData } from "./types";
 
 function readDataFiles(): RSSData[] {
   const dataDir = path.join(process.cwd(), "data", "linkedinJobs");
+
+  if (!fs.existsSync(dataDir)) {
+    throw new Error("Data directory does not exist");
+  }
+
   const files = fs
     .readdirSync(dataDir)
     .filter((file) => file.endsWith(".json"));
@@ -66,6 +40,8 @@ function flattenJobData(dataFiles: RSSData[]): string[][] {
     "URL",
     "Published Date",
     "Content Preview",
+    "Relevance Score",
+    "Relevance Reason",
   ];
 
   const rows: string[][] = [headers];
@@ -98,6 +74,8 @@ function flattenJobData(dataFiles: RSSData[]): string[][] {
         item.url,
         publishedDate,
         contentPreview,
+        item.relevanceScore?.toString() || "N/A",
+        item.relevanceReason || "N/A",
       ];
 
       rows.push(row);
@@ -107,8 +85,8 @@ function flattenJobData(dataFiles: RSSData[]): string[][] {
   return rows;
 }
 
-async function uploadToGoogleSheet(
-  data: string[][],
+export async function uploadToGoogleSheet(
+  data: RSSData,
   config: GoogleSheetConfig
 ): Promise<void> {
   const auth = new google.auth.GoogleAuth({
@@ -119,6 +97,9 @@ async function uploadToGoogleSheet(
   const sheets = google.sheets({ version: "v4", auth });
 
   try {
+    // Flatten the data for Google Sheets
+    const flattenedData = flattenJobData([data]);
+
     // Clear existing data in the sheet
     await sheets.spreadsheets.values.clear({
       spreadsheetId: config.spreadsheetId,
@@ -133,12 +114,12 @@ async function uploadToGoogleSheet(
       range: `${config.sheetName}!A1`,
       valueInputOption: "RAW",
       requestBody: {
-        values: data,
+        values: flattenedData,
       },
     });
 
     console.log(
-      `Successfully uploaded ${data.length - 1} job records to Google Sheet`
+      `Successfully uploaded ${flattenedData.length - 1} job records to Google Sheet`
     );
     console.log(`Updated ${response.data.updatedCells} cells`);
     console.log(
@@ -183,7 +164,11 @@ export async function updateSheet(): Promise<void> {
     console.log(`Processed ${flattenedData.length - 1} job records`);
 
     console.log("Uploading to Google Sheet...");
-    await uploadToGoogleSheet(flattenedData, config);
+    if (dataFiles.length > 0) {
+      await uploadToGoogleSheet(dataFiles[0]!, config);
+    } else {
+      throw new Error("No data files to upload");
+    }
 
     console.log(
       "✅ Successfully processed and uploaded job data to Google Sheet!"

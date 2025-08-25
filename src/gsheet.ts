@@ -35,7 +35,7 @@ interface GoogleSheetConfig {
 }
 
 function readDataFiles(): RSSData[] {
-  const dataDir = path.join(process.cwd(), "data");
+  const dataDir = path.join(process.cwd(), "data", "linkedinJobs");
   const files = fs
     .readdirSync(dataDir)
     .filter((file) => file.endsWith(".json"));

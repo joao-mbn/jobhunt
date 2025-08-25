@@ -1,0 +1,237 @@
+{
+  "personalInfo": {
+    "name": "João Nascimento",
+    "title": "Software Engineer",
+    "summary": "Software Engineer with over 4 years of experience across the full stack of application's development.",
+    "email": "joaombn97@gmail.com",
+    "links": {
+      "github": "https://github.com/joao-mbn",
+      "linkedin": "https://www.linkedin.com/in/joaomarcosbatistanascimento/",
+      "website": "https://joao-mbn.github.io/"
+    }
+  },
+  "workExperience": [
+    {
+      "company": "Suger",
+      "location": "San Francisco, United States - Remote",
+      "website": "https://www.suger.io/",
+      "position": "Software Engineer",
+      "duration": "Oct. 2024–Jul. 2025",
+      "achievements": [
+        "Planned and delivered features end-to-end: task planning, APIs and UIs, database changes, cloud connections, tests and documentation.",
+        "Built and incremented reusable API integrations for Salesforce, HubSpot, NetSuite, Quickbooks, among others, so integrations were easier to build and customize.",
+        "Ran ten technical interviews: made and reviewed interview projects, interviewed candidates, wrote evaluations and participated in the hiring decision.",
+        "Onboarded and mentored three engineers: discussed and clarified tasks and bugs, paired on code and reviewed pull requests to help them start contributing faster. Worked leading these engineers on the development of larger features from design to deployment."
+      ],
+      "technologies": [
+        "Typescript",
+        "Vue",
+        "Javascript",
+        "HTML",
+        "Tailwind CSS",
+        "CSS",
+        "Jest",
+        "Playwright",
+        "Golang",
+        "Postgres",
+        "AWS"
+      ]
+    },
+    {
+      "company": "Radix Engineering and Software",
+      "location": "Rio de Janeiro, Brazil - Remote",
+      "website": "https://www.radixeng.com/",
+      "positions": [
+        {
+          "title": "Full Stack Developer - Level IV",
+          "duration": "Sep. 2024–Oct. 2024",
+          "achievements": [
+            "Optimized performance and usability of a Dashboard displaying industrial data with multiple charts containing hundreds of thousands of points each and a Web GL 3D view, using strategies like caching and lazy loading to bring memory consumption to a third of its value; request splitting and geometry filters to reduce request duration up to 95%; and pre-fetching to reduce feature loading from more than 10s to a fraction of a second."
+          ],
+          "technologies": [
+            "Typescript",
+            "Next JS",
+            "React",
+            "Javascript",
+            "Tailwind CSS",
+            "CSS",
+            "HTML",
+            "GraphQL",
+            "ThreeJS"
+          ]
+        },
+        {
+          "title": "Full Stack Developer - Level III",
+          "duration": "Aug. 2023–Sep. 2024",
+          "achievements": [
+            "Led the implementation of a new interactive 3D visualization of an oil refinery plant for increased data contextualization, having left stakeholders impressed by the MVP and wanting to expand its features.",
+            "Led a team of four developers, providing tailored feedback to enhance performance, aiding in comprehension of requirements and their implications, workflow organization, and continuous testing. Helped team members to achieve an estimated 50% to 100% increase in productivity, measured by reduced time for delivering user stories."
+          ],
+          "technologies": [
+            "Typescript",
+            "React",
+            "Javascript",
+            "Tailwind CSS",
+            "CSS",
+            "HTML",
+            "ThreeJS",
+            "C#",
+            ".NET",
+            "MS SQL"
+          ]
+        },
+        {
+          "title": "Full Stack Developer - Level II",
+          "duration": "Aug. 2022–Aug. 2023",
+          "achievements": [
+            "Reduced deployment time by 80% by creating deployment pipelines, reducing it from 20 minutes to 4 minutes on average on multiple on-premises virtual machines, thus enabling faster testing cycles and eliminating deployment errors.",
+            "Saved an estimated amount of 200 hours in development time by reimplementing an Excel-like spreadsheet solution with a more feature-rich and compatible library.",
+            "Consistently delivered user stories within 40% to 70% of allocated timeframes."
+          ],
+          "technologies": [
+            "Typescript",
+            "React",
+            "Javascript",
+            "CSS",
+            "HTML",
+            "Redux",
+            "C#",
+            ".NET",
+            "MS SQL",
+            "Azure DevOps"
+          ]
+        },
+        {
+          "title": "Software Development Intern",
+          "duration": "May 2021–Aug. 2022",
+          "achievements": [
+            "Learned an entire stack of web development technologies from scratch, earning recognition for fixing bugs swiftly."
+          ],
+          "technologies": [
+            "Typescript",
+            "Angular",
+            "Javascript",
+            "CSS",
+            "SCSS",
+            "HTML",
+            "RxJS",
+            "C#",
+            ".NET",
+            "MS SQL",
+            "Postgres"
+          ]
+        }
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "React Extract",
+      "description": "A VS Code extension for refactoring React components, with over 25 Github Stars on the repo, 2800 downloads and a 5/5 review grade on the VS Code Marketplace, praised by the community for fixing a problem that larger and more popular extensions could not.",
+      "link": "https://marketplace.visualstudio.com/items?itemName=joao-mbn.react-extract",
+      "technologies": [
+        "Javascript",
+        "Typescript",
+        "React",
+        "VS Code API",
+        "Typescript API",
+        "Mocha"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "institution": "Federal University of Rio de Janeiro",
+      "degree": "B.Sc. of Chemical Engineering",
+      "duration": "Mar. 2017–Sep. 2022",
+      "achievements": [
+        "Created an algorithm for rare-earth elements separation process optimization which more than halved experimental time effort, found optimal conditions one-fifth of the cost of previous ones, and reduced project complexity through variables' importance ranking and elimination. Received two awards for best undergraduate research."
+      ],
+      "sourceCode": "https://github.com/joao-mbn/etr-optimization",
+      "technologies": [
+        "Python",
+        "Numpy",
+        "Pandas",
+        "Scipy",
+        "Scikit Learn",
+        "Statsmodels",
+        "Matplotlib"
+      ]
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Microsoft Certified Azure Associate Developer",
+      "credential": "https://learn.microsoft.com/api/credentials/share/en-us/JooNascimento-3680/2B7A12D96DCBCFD2?sharingId"
+    }
+  ],
+  "languages": [
+    {
+      "language": "Portuguese",
+      "proficiency": "Native"
+    },
+    {
+      "language": "English",
+      "proficiency": "Proficient",
+      "certification": "IELTS Band 8.5 | CEFR C2 equivalent",
+      "credential": "23BR000122BATJ705G",
+      "link": "https://ielts.ucles.org.uk/"
+    },
+    {
+      "language": "French",
+      "proficiency": "Limited Proficiency",
+      "certification": "TCF Canada | approximately CEFR C1",
+      "credential": "8D2CAB511C9D",
+      "link": "https://drive.google.com/file/d/1zWGTWGfhNSW0aOM4IA0WPXtVCgR3hK70/view"
+    }
+  ],
+  "skills": {
+    "programmingLanguages": [
+      "Typescript",
+      "Javascript",
+      "Python",
+      "C#",
+      "Golang",
+      "SQL"
+    ],
+    "frontend": [
+      "React",
+      "Vue",
+      "Angular",
+      "HTML",
+      "CSS",
+      "SCSS",
+      "Tailwind CSS",
+      "Redux",
+      "RxJS",
+      "Vite",
+      "ThreeJS"
+    ],
+    "backend": [
+      "GraphQL",
+      ".NET",
+      "Dapper",
+      "Entity Framework",
+      "Automapper",
+      "REST APIs",
+      "Go Fiber",
+      "Ent.go",
+      "Express",
+      "NodeJS",
+      "Bun",
+      "NextJS"
+    ],
+    "databases": ["Postgres", "MS SQL"],
+    "cloud": ["AWS", "Azure"],
+    "devOps": ["Azure DevOps", "Github", "Git"],
+    "testing": ["Jest", "Playwright", "Mocha"],
+    "dataScience": [
+      "Numpy",
+      "Pandas",
+      "Scipy",
+      "Scikit Learn",
+      "Statsmodels",
+      "Matplotlib"
+    ]
+  }
+}

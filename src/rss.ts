@@ -24,11 +24,11 @@ export async function fetchRSSFeed(): Promise<void> {
     const today = new Date().toISOString().split("T")[0];
 
     fs.writeFileSync(
-      `data/linkedinJobs-${today}.json`,
+      `data/linkedinJobs/linkedinJobs-${today}.json`,
       JSON.stringify(data, null, 2)
     );
     console.log(
-      `Fetched ${data.items.length} items and saved to data/linkedinJobs-${today}.json`
+      `Fetched ${data.items.length} items and saved to data/linkedinJobs/linkedinJobs-${today}.json`
     );
   } catch (error) {
     console.error("Error:", error);

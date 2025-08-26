@@ -1,9 +1,11 @@
-import { google } from "googleapis";
+import { google, sheets_v4 } from "googleapis";
 import type { JobItem, RSSData } from "../types.ts";
 import { MIN_RELEVANCE_SCORE } from "../utils/constants.ts";
 import { breakdownTitle, formatContentPreview, formatDate } from "../utils/format.ts";
 
-const headers = [
+const COLUMN_WIDTH = 100;
+const ROW_HEIGHT = 21;
+const HEADERS = [
   "Date",
   "Job ID",
   "URL",
@@ -45,6 +47,18 @@ function connectToGoogleSheets() {
   });
   const sheets = google.sheets({ version: "v4", auth });
   return { sheets, spreadsheetId, sheetName };
+}
+
+async function getSheetId(
+  sheets: sheets_v4.Sheets,
+  spreadsheetId: string,
+  sheetName: string,
+): Promise<number> {
+  const response = await sheets.spreadsheets.get({ spreadsheetId });
+  const sheet = response.data.sheets?.find((s: sheets_v4.Schema$Sheet) =>
+    s.properties?.title === sheetName
+  );
+  return sheet?.properties?.sheetId ?? 0;
 }
 
 async function getExistingUrls(): Promise<Set<string>> {
@@ -147,7 +161,7 @@ export async function uploadToGoogleSheet(jobs: JobItem[]): Promise<void> {
     // If sheet is empty, add headers first
     if (existingRows.length === 0) {
       console.log("Sheet is empty, adding headers and new data...");
-      const allData = [headers, ...newRows];
+      const allData = [HEADERS, ...newRows];
 
       await sheets.spreadsheets.values.update({
         spreadsheetId,
@@ -157,24 +171,97 @@ export async function uploadToGoogleSheet(jobs: JobItem[]): Promise<void> {
           values: allData,
         },
       });
-
       console.log(`Successfully uploaded ${newRows.length} job records to Google Sheet`);
-      return;
+    } else {
+      await sheets.spreadsheets.values.append({
+        spreadsheetId,
+        range: sheetName,
+        valueInputOption: "RAW",
+        requestBody: {
+          values: newRows,
+        },
+      });
+      console.log(`Successfully appended ${newRows.length} job records to Google Sheet`);
     }
 
-    const response = await sheets.spreadsheets.values.append({
+    await setSheetFormatting(
+      sheets,
       spreadsheetId,
-      range: sheetName,
-      valueInputOption: "RAW",
-      requestBody: {
-        values: newRows,
-      },
-    });
-
-    console.log(`Successfully appended ${newRows.length} job records to Google Sheet`);
-    console.log(`Updated ${response.data.updates?.updatedCells} cells`);
+      sheetName,
+      existingRows.length,
+      newRows.length + existingRows.length,
+    );
   } catch (error) {
     console.error("Error uploading to Google Sheet:", error);
     throw error;
+  }
+}
+
+async function setSheetFormatting(
+  sheets: sheets_v4.Sheets,
+  spreadsheetId: string,
+  sheetName: string,
+  startRow: number,
+  endRow: number,
+): Promise<void> {
+  try {
+    const sheetId = await getSheetId(sheets, spreadsheetId, sheetName);
+    const requests: sheets_v4.Schema$Request[] = [];
+
+    // Set fixed row heights
+    requests.push({
+      updateDimensionProperties: {
+        range: {
+          sheetId,
+          dimension: "ROWS",
+          startIndex: startRow,
+          endIndex: endRow,
+        },
+        properties: {
+          pixelSize: ROW_HEIGHT,
+        },
+        fields: "pixelSize",
+      },
+    }, {
+      updateDimensionProperties: {
+        range: {
+          sheetId,
+          dimension: "COLUMNS",
+          startIndex: 0,
+          endIndex: HEADERS.length,
+        },
+        properties: {
+          pixelSize: COLUMN_WIDTH,
+        },
+        fields: "pixelSize",
+      },
+    }, {
+      repeatCell: {
+        range: {
+          sheetId,
+          startRowIndex: startRow,
+          endRowIndex: endRow,
+          startColumnIndex: 0,
+          endColumnIndex: HEADERS.length,
+        },
+        cell: {
+          userEnteredFormat: {
+            wrapStrategy: "CLIP", // Prevents text wrapping and auto-expansion
+          },
+        },
+        fields: "userEnteredFormat.wrapStrategy",
+      },
+    });
+
+    await sheets.spreadsheets.batchUpdate({
+      spreadsheetId,
+      requestBody: {
+        requests,
+      },
+    });
+
+    console.log(`✅ Applied formatting to rows ${startRow}-${endRow}`);
+  } catch (error) {
+    console.error("⚠️ Error applying formatting (continuing without it):", error);
   }
 }

@@ -9,8 +9,9 @@ export interface JobItem {
   date_published: string;
   authors: Array<{ name: string }>;
   attachments?: Array<{ url: string }>;
-  relevanceScore?: number;
-  relevanceReason?: string;
+  relevanceScore?: JobAnalysisResult["score"];
+  relevanceReason?: JobAnalysisResult["reason"];
+  recommendation?: JobAnalysisResult["recommendation"];
 }
 
 export interface RSSData {
@@ -74,5 +75,5 @@ export interface JobAnalysisResult {
   reason: string;
   keyMatches: string[];
   gaps: string[];
-  recommendation: string;
+  recommendation: "Apply" | "Consider" | "Skip";
 }

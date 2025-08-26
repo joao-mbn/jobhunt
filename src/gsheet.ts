@@ -1,57 +1,81 @@
 import { google } from "googleapis";
-import fs from "node:fs";
-import path from "node:path";
-import process from "node:process";
-import type { GoogleSheetConfig, RSSData } from "./types.ts";
+import type { RSSData } from "./types.ts";
 
-function readDataFiles(): RSSData[] {
-  const dataDir = path.join(process.cwd(), "data", "linkedinJobs");
+// Create data for new jobs only
+const headers = [
+  "Date",
+  "Job ID",
+  "Title",
+  "Company",
+  "Location",
+  "URL",
+  "Role",
+  "Published Date",
+  "Content Preview",
+  "Relevance Score",
+  "Relevance Reason",
+  "Recommendation",
+];
 
-  if (!fs.existsSync(dataDir)) {
-    throw new Error("Data directory does not exist");
+export async function uploadToGoogleSheet(data: RSSData): Promise<void> {
+  const spreadsheetId = Deno.env.get("GOOGLE_SPREADSHEET_ID")!;
+  const sheetName = Deno.env.get("GOOGLE_SHEET_NAME") || "Job Data";
+  const credentials = {
+    client_email: Deno.env.get("GOOGLE_CLIENT_EMAIL")!,
+    private_key: Deno.env.get("GOOGLE_PRIVATE_KEY")!.replace(/\\n/g, "\n"),
+  };
+
+  const isSheetsOnEnv = Deno.env.get("GOOGLE_SPREADSHEET_ID") &&
+    Deno.env.get("GOOGLE_CLIENT_EMAIL") &&
+    Deno.env.get("GOOGLE_PRIVATE_KEY");
+
+  if (!isSheetsOnEnv) {
+    throw new Error("Google Sheets environment variables are not set");
   }
 
-  const files = fs.readdirSync(dataDir).filter((file) => file.endsWith(".json"));
+  const auth = new google.auth.GoogleAuth({
+    credentials,
+    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+  });
+  const sheets = google.sheets({ version: "v4", auth });
 
-  if (files.length === 0) {
-    throw new Error("No JSON files found in the data directory");
-  }
+  try {
+    // First, read existing data to get existing URLs
+    console.log("Reading existing data from sheet...");
+    const existingDataResponse = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: sheetName,
+    });
 
-  const dataFiles: RSSData[] = [];
+    const existingRows = existingDataResponse.data.values || [];
+    const existingUrls = new Set<string>();
+    existingRows.forEach((row) => {
+      if (row?.[5] && typeof row[5] === "string" && row[5].startsWith("https://")) {
+        existingUrls.add(row[5]);
+      }
+    });
 
-  for (const file of files) {
-    const filePath = path.join(dataDir, file);
-    const content = fs.readFileSync(filePath, "utf-8");
-    const data = JSON.parse(content) as RSSData;
-    dataFiles.push(data);
-  }
+    console.log(`Found ${existingUrls.size} existing job URLs in sheet`);
 
-  return dataFiles;
-}
+    // Filter out jobs that already exist
+    const newJobs = data.items.filter((item) => !existingUrls.has(item.url));
 
-function flattenJobData(dataFiles: RSSData[]): string[][] {
-  const headers = [
-    "Date",
-    "Job ID",
-    "Title",
-    "Company",
-    "Location",
-    "URL",
-    "Published Date",
-    "Content Preview",
-    "Relevance Score",
-    "Relevance Reason",
-  ];
+    if (newJobs.length === 0) {
+      console.log("No new jobs to add - all jobs already exist in the sheet");
+      return;
+    }
 
-  const rows: string[][] = [headers];
+    console.log(`Found ${newJobs.length} new jobs to add`);
 
-  for (const dataFile of dataFiles) {
-    for (const item of dataFile.items) {
+    const newRows: string[][] = [];
+
+    for (const item of newJobs) {
       // Extract company and location from title
       const titleParts = item.title.split(" hiring ");
       const company = titleParts[0] || "Unknown";
-      const locationMatch = item.title.match(/in ([^,]+(?:, [^,]+)*)/);
-      const location = locationMatch?.[1] ?? "Unknown";
+      const roleAndLocation = titleParts[1]?.split(" in ") || ["Unknown", "Unknown"];
+      const role = roleAndLocation[0];
+      const location = roleAndLocation[1];
 
       // Clean content text (remove HTML tags and limit length)
       const contentPreview = item.content_text
@@ -70,99 +94,48 @@ function flattenJobData(dataFiles: RSSData[]): string[][] {
         company,
         location,
         item.url,
+        role,
         publishedDate,
         contentPreview,
         item.relevanceScore?.toString() || "N/A",
         item.relevanceReason || "N/A",
+        item.recommendation || "N/A",
       ];
 
-      rows.push(row);
+      newRows.push(row);
     }
-  }
 
-  return rows;
-}
+    // If sheet is empty (only has headers or is completely empty), add headers first
+    if (existingRows.length === 0) {
+      console.log("Sheet is empty, adding headers and new data...");
+      const allData = [headers, ...newRows];
 
-export async function uploadToGoogleSheet(data: RSSData, config: GoogleSheetConfig): Promise<void> {
-  const auth = new google.auth.GoogleAuth({
-    credentials: config.credentials,
-    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
-  });
+      await sheets.spreadsheets.values.update({
+        spreadsheetId,
+        range: `${sheetName}!A1`,
+        valueInputOption: "RAW",
+        requestBody: {
+          values: allData,
+        },
+      });
 
-  const sheets = google.sheets({ version: "v4", auth });
+      console.log(`Successfully uploaded ${newRows.length} job records to Google Sheet`);
+      return;
+    }
 
-  try {
-    // Flatten the data for Google Sheets
-    const flattenedData = flattenJobData([data]);
-
-    // Clear existing data in the sheet
-    await sheets.spreadsheets.values.clear({
-      spreadsheetId: config.spreadsheetId,
-      range: config.sheetName,
-    });
-
-    console.log(`Cleared existing data in sheet: ${config.sheetName}`);
-
-    // Upload new data
-    const response = await sheets.spreadsheets.values.update({
-      spreadsheetId: config.spreadsheetId,
-      range: `${config.sheetName}!A1`,
+    const response = await sheets.spreadsheets.values.append({
+      spreadsheetId,
+      range: sheetName,
       valueInputOption: "RAW",
       requestBody: {
-        values: flattenedData,
+        values: newRows,
       },
     });
 
-    console.log(`Successfully uploaded ${flattenedData.length - 1} job records to Google Sheet`);
-    console.log(`Updated ${response.data.updatedCells} cells`);
-    console.log(
-      `Sheet URL: https://docs.google.com/spreadsheets/d/${config.spreadsheetId}/edit#gid=0`,
-    );
+    console.log(`Successfully appended ${newRows.length} job records to Google Sheet`);
+    console.log(`Updated ${response.data.updates?.updatedCells} cells`);
   } catch (error) {
     console.error("Error uploading to Google Sheet:", error);
     throw error;
-  }
-}
-
-export async function updateSheet(): Promise<void> {
-  try {
-    const config: GoogleSheetConfig = {
-      spreadsheetId: Deno.env.get("GOOGLE_SPREADSHEET_ID") || "",
-      sheetName: Deno.env.get("GOOGLE_SHEET_NAME") || "Job Data",
-      credentials: {
-        client_email: Deno.env.get("GOOGLE_CLIENT_EMAIL") || "",
-        private_key: (Deno.env.get("GOOGLE_PRIVATE_KEY") || "").replace(/\\n/g, "\n"),
-      },
-    };
-
-    // Validate configuration
-    if (!config.spreadsheetId) {
-      throw new Error("GOOGLE_SPREADSHEET_ID environment variable is required");
-    }
-    if (!config.credentials.client_email || !config.credentials.private_key) {
-      throw new Error(
-        "GOOGLE_CLIENT_EMAIL and GOOGLE_PRIVATE_KEY environment variables are required",
-      );
-    }
-
-    console.log("Reading data files...");
-    const dataFiles = readDataFiles();
-    console.log(`Found ${dataFiles.length} data files`);
-
-    console.log("Processing job data...");
-    const flattenedData = flattenJobData(dataFiles);
-    console.log(`Processed ${flattenedData.length - 1} job records`);
-
-    console.log("Uploading to Google Sheet...");
-    if (dataFiles.length > 0) {
-      await uploadToGoogleSheet(dataFiles[0]!, config);
-    } else {
-      throw new Error("No data files to upload");
-    }
-
-    console.log("✅ Successfully processed and uploaded job data to Google Sheet!");
-  } catch (error) {
-    console.error("❌ Error:", error);
-    process.exit(1);
   }
 }

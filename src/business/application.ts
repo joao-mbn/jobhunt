@@ -6,6 +6,7 @@ import {
   processWithRateLimit,
 } from "../integration/gemini.ts";
 import { JobItem, ResumeData, TailoredResume } from "../types.ts";
+import { MIN_RELEVANCE_SCORE } from "../utils/constants.ts";
 import { formatTailoredResume } from "../utils/format.ts";
 
 const RESUME_PROMPT = `
@@ -160,7 +161,7 @@ async function processApplication(
   job: JobItem,
   { ai, resume }: { ai: GoogleGenAI; resume: ResumeData },
 ): Promise<JobItem> {
-  if (job.relevanceScore && job.relevanceScore < 60) {
+  if (job.relevanceScore && job.relevanceScore < MIN_RELEVANCE_SCORE) {
     return { ...job, tailoredResume: "", coverLetter: "" };
   }
 

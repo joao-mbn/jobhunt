@@ -10,7 +10,7 @@ const models = {
   },
 } as const;
 
-const model = models["gemini-2.0-flash-lite"];
+const MODEL = models["gemini-2.0-flash-lite"];
 
 export function createGenAIClient(): GoogleGenAI {
   const geminiApiKey = Deno.env.get("GEMINI_API_KEY");
@@ -23,7 +23,7 @@ export function createGenAIClient(): GoogleGenAI {
 
 export async function generateContent(ai: GoogleGenAI, prompt: string): Promise<string> {
   const response = await ai.models.generateContent({
-    model: model.name,
+    model: MODEL.name,
     contents: prompt,
   });
   return response.text ?? "";
@@ -45,8 +45,8 @@ export async function processWithRateLimit<T, A, R>(
   const results: R[] = [];
 
   const batches = [];
-  for (let i = 0; i < items.length; i += model.requestsPerMinute) {
-    batches.push(items.slice(i, i + model.requestsPerMinute));
+  for (let i = 0; i < items.length; i += MODEL.requestsPerMinute) {
+    batches.push(items.slice(i, i + MODEL.requestsPerMinute));
   }
 
   for (let i = 0; i < batches.length; i++) {

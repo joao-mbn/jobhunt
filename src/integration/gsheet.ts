@@ -1,17 +1,21 @@
 import { google } from "googleapis";
 import type { JobItem, RSSData } from "../types.ts";
+import { MIN_RELEVANCE_SCORE } from "../utils/constants.ts";
 import { breakdownTitle, formatContentPreview, formatDate } from "../utils/format.ts";
 
 const headers = [
   "Date",
   "Job ID",
+  "URL",
   "Title",
   "Company",
   "Location",
-  "URL",
   "Role",
+  "Estimated Compensation",
   "Published Date",
   "Content Preview",
+  "Years of Experience Required",
+  "Hard Skills Required",
   "Relevance Score",
   "Relevance Reason",
   "Recommendation",
@@ -92,10 +96,15 @@ export async function filterNewJobs(jobsData: RSSData): Promise<JobItem[]> {
 
 export async function uploadToGoogleSheet(jobs: JobItem[]): Promise<void> {
   const { sheets, spreadsheetId, sheetName } = connectToGoogleSheets();
+  const jobsToUpload = jobs.filter((job) =>
+    job.relevanceScore && job.relevanceScore >= MIN_RELEVANCE_SCORE
+  );
+
+  console.log(`🔍 Uploading ${jobsToUpload.length} out of ${jobs.length} jobs to Google Sheets`);
 
   // Check if we have any jobs to upload
-  if (jobs.length === 0) {
-    console.log("📝 No new jobs to upload to Google Sheets");
+  if (jobsToUpload.length === 0) {
+    console.log("📝 No jobs to upload to Google Sheets");
     return;
   }
 
@@ -111,17 +120,20 @@ export async function uploadToGoogleSheet(jobs: JobItem[]): Promise<void> {
 
     const newRows: string[][] = [];
 
-    for (const job of jobs) {
+    for (const job of jobsToUpload) {
       const row = [
         new Date().toLocaleDateString(), // Processing date
         job.id ?? "",
         job.title ?? "",
+        job.url ?? "",
         job.company ?? "",
         job.location ?? "",
-        job.url ?? "",
         job.role ?? "",
+        job.estimatedCompensation ?? "",
         job.publishedDate ?? "",
         job.contentPreview ?? "",
+        job.yearsOfExperienceRequired?.toString() ?? "",
+        job.hardSkillsRequired?.toString() ?? "",
         job.relevanceScore?.toString() ?? "",
         job.relevanceReason ?? "",
         job.recommendation ?? "",

@@ -45,9 +45,12 @@ Return ONLY a JSON object with this exact structure:
 {
   "score": <number between 0-100>,
   "reason": "<2-3 sentence explanation of the rating>",
+  "hardSkillsRequired": ["<skill1>", "<skill2>", "<skill3>"],
+  "yearsOfExperienceRequired": "<number of years>",
   "keyMatches": ["<skill1>", "<skill2>", "<skill3>"],
   "gaps": ["<missing skill1>", "<missing skill2>"],
-  "recommendation": "<brief recommendation: 'Apply', 'Consider', or 'Skip'>"
+  "recommendation": "<brief recommendation: 'Apply', 'Consider', or 'Skip'>",
+  "estimatedCompensation": "<estimated compensation: value range, with currency/time unit e.g. '100k-120k CAD/year'>"
 }
 
 ## SCORING GUIDELINES:
@@ -59,7 +62,7 @@ Return ONLY a JSON object with this exact structure:
 - 40-49: Limited match, not recommended
 - 0-39: Poor match, skip
 
-Focus on the candidate's 4+ years of full-stack development experience, TypeScript/React expertise, and proven track record of performance optimization and team leadership.
+Focus on the candidate's 4+ years of full-stack development experience, TypeScript/React expertise, Golang/SQL expertise and leadership experience. If the role does not accept candidates from Vancouver Metro Area, skip it and add this to the reason, if that's the case. the work arrengement can be hybrid or remote. If the role does not require a specific number of years of experience, set the yearsOfExperienceRequired to 0.
 `;
 
 // Analyze a single job's relevance
@@ -73,18 +76,19 @@ async function analyzeJobRelevance(
       JSON.stringify(resume, null, 2),
     )
       .replace("{jobTitle}", job.title)
-      .replace("{jobDescription}", job.content_text.substring(0, 2000)); // Limit description length
+      .replace("{jobDescription}", job.content_text.substring(0, 10000)); // Limit description length
 
     const text = await generateContent(ai, prompt);
     const analysis = getJsonFromResponse(text) as JobAnalysisResult;
 
     // Validate the response structure
     if (
-      typeof analysis.score !== "number" ||
+      isNaN(analysis.score) ||
+      !analysis.yearsOfExperienceRequired ||
       typeof analysis.reason !== "string" ||
-      !Array.isArray(analysis.keyMatches) ||
-      !Array.isArray(analysis.gaps) ||
-      typeof analysis.recommendation !== "string"
+      typeof analysis.recommendation !== "string" ||
+      typeof analysis.estimatedCompensation !== "string" ||
+      !Array.isArray(analysis.hardSkillsRequired)
     ) {
       throw new Error("Invalid response structure from Gemini");
     }
@@ -94,6 +98,9 @@ async function analyzeJobRelevance(
       relevanceScore: analysis.score || 0,
       relevanceReason: analysis.reason || "Reason missing",
       recommendation: analysis.recommendation || "Skip",
+      estimatedCompensation: analysis.estimatedCompensation || "Unknown",
+      yearsOfExperienceRequired: analysis.yearsOfExperienceRequired || "0",
+      hardSkillsRequired: analysis.hardSkillsRequired.join(", "),
     };
   } catch (error) {
     console.error(`Error analyzing job ${job.id}:`, error);
@@ -102,6 +109,9 @@ async function analyzeJobRelevance(
       relevanceScore: 0,
       relevanceReason: "Analysis failed",
       recommendation: "Skip",
+      estimatedCompensation: "Unknown",
+      yearsOfExperienceRequired: "0",
+      hardSkillsRequired: "",
     };
   }
 }

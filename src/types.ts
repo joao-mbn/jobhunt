@@ -17,6 +17,9 @@ export interface JobItem {
   relevanceScore?: JobAnalysisResult["score"];
   relevanceReason?: JobAnalysisResult["reason"];
   recommendation?: JobAnalysisResult["recommendation"];
+  estimatedCompensation?: JobAnalysisResult["estimatedCompensation"];
+  yearsOfExperienceRequired?: JobAnalysisResult["yearsOfExperienceRequired"];
+  hardSkillsRequired?: string;
   tailoredResume?: string;
   coverLetter?: string;
 }
@@ -83,6 +86,9 @@ export interface JobAnalysisResult {
   keyMatches: string[];
   gaps: string[];
   recommendation: "Apply" | "Consider" | "Skip";
+  estimatedCompensation: string;
+  yearsOfExperienceRequired: string;
+  hardSkillsRequired: string[];
 }
 
 // Application materials types

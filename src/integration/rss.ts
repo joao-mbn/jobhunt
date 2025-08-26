@@ -1,7 +1,10 @@
 import type { RSSData } from "../types.ts";
 
 export async function fetchRSSFeed(): Promise<RSSData> {
-  const url = new URL("https://rss.app/feeds/v1.1/sUOBma3URjECoaqq.json");
+  const url = Deno.env.get("RSS_ENDPOINT");
+  if (!url) {
+    throw new Error("RSS_ENDPOINT is not set");
+  }
 
   try {
     const response = await fetch(url.toString(), {

@@ -1,6 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
-import { setTimeout } from "node:timers";
 import type { JobAnalysisResult, JobItem, ResumeData } from "./types.ts";
+import { delay } from "./utils.ts";
 
 const RELEVANCE_PROMPT = `
 You are an expert job matching AI assistant. Your task is to analyze job postings and rate their relevance to a specific candidate based on their resume.
@@ -57,6 +57,17 @@ Return ONLY a JSON object with this exact structure:
 Focus on the candidate's 4+ years of full-stack development experience, TypeScript/React expertise, and proven track record of performance optimization and team leadership.
 `;
 
+const models = {
+  "gemini-2.0-flash-lite": {
+    name: "gemini-2.0-flash-lite",
+    requestsPerMinute: 30,
+    requestsPerDay: 200,
+    tokensPerMinute: 1e6,
+  },
+} as const;
+
+const model = models["gemini-2.0-flash-lite"];
+
 // Initialize the Google GenAI client
 function createGenAIClient(): GoogleGenAI {
   const geminiApiKey = Deno.env.get("GEMINI_API_KEY");
@@ -82,7 +93,7 @@ async function analyzeJobRelevance(
       .replace("{jobDescription}", job.content_text.substring(0, 2000)); // Limit description length
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: model.name,
       contents: prompt,
     });
 
@@ -110,32 +121,14 @@ async function analyzeJobRelevance(
     return analysis;
   } catch (error) {
     console.error(`Error analyzing job ${job.id}:`, error);
-    // Return a default low score if analysis fails
     return {
-      score: 20,
+      score: 0,
       reason: "Analysis failed - default low score assigned",
       keyMatches: [],
       gaps: ["Analysis error"],
       recommendation: "Skip",
     };
   }
-}
-
-// Add relevance data to a job
-function addRelevanceToJob(job: JobItem, analysis: JobAnalysisResult): JobItem {
-  return {
-    id: job.id,
-    url: job.url,
-    title: job.title,
-    content_text: job.content_text,
-    content_html: job.content_html,
-    image: job.image,
-    date_published: job.date_published,
-    authors: job.authors,
-    attachments: job.attachments,
-    relevanceScore: analysis.score,
-    relevanceReason: analysis.reason,
-  };
 }
 
 // Process a single job with error handling
@@ -147,28 +140,26 @@ async function processJob(
   total: number,
 ): Promise<JobItem> {
   console.log(
-    `Analyzing job ${index + 1}/${total}: ${job.title.substring(0, 50)}...`,
+    `Processing job ${index + 1}/${total}: ${job.title.substring(0, 50)}...`,
   );
 
   try {
     const analysis = await analyzeJobRelevance(job, resume, ai);
-    return addRelevanceToJob(job, analysis);
+    return {
+      ...job,
+      relevanceScore: analysis.score,
+      relevanceReason: analysis.reason,
+      recommendation: analysis.recommendation,
+    };
   } catch (error) {
     console.error(`Failed to analyze job ${job.id}:`, error);
-    // Return job with default low score
-    return addRelevanceToJob(job, {
-      score: 20,
-      reason: "Analysis failed",
-      keyMatches: [],
-      gaps: ["Analysis error"],
+    return {
+      ...job,
+      relevanceScore: 0,
+      relevanceReason: "Analysis failed",
       recommendation: "Skip",
-    });
+    };
   }
-}
-
-// Add delay between requests to avoid rate limiting
-function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 // Analyze multiple jobs in batch
@@ -178,15 +169,22 @@ export async function analyzeJobsBatch(jobs: JobItem[], resume: ResumeData): Pro
   const ai = createGenAIClient();
   const analyzedJobs: JobItem[] = [];
 
-  for (let i = 0; i < jobs.length; i++) {
-    const job = jobs[i]!;
-    const analyzedJob = await processJob(job, resume, ai, i, jobs.length);
-    analyzedJobs.push(analyzedJob);
+  // split into batches of the size of the model's requestsPerMinute
+  const batches = [];
+  for (let i = 0; i < jobs.length; i += model.requestsPerMinute) {
+    batches.push(jobs.slice(i, i + model.requestsPerMinute));
+  }
 
-    // Add a small delay to avoid rate limiting (1 second)
-    if (i < jobs.length - 1) {
-      await delay(1000);
+  for (let i = 0; i < batches.length; i++) {
+    if (i > 0) {
+      await delay(1e3 * 60); // 1 minute
     }
+
+    const batch = batches[i]!;
+    const analyzedBatch = await Promise.all(
+      batch.map((job) => processJob(job, resume, ai, batch.indexOf(job), batch.length)),
+    );
+    analyzedJobs.push(...analyzedBatch);
   }
 
   // Sort jobs by relevance score (highest first)

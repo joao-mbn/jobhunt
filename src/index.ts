@@ -44,11 +44,11 @@ async function main() {
     });
 
     // Step 6: Upload to Google Sheets (if configured)
-    const shouldUploadToSheets = Deno.env.get("GOOGLE_SPREADSHEET_ID") &&
+    const isSheetsOnEnv = Deno.env.get("GOOGLE_SPREADSHEET_ID") &&
       Deno.env.get("GOOGLE_CLIENT_EMAIL") &&
       Deno.env.get("GOOGLE_PRIVATE_KEY");
 
-    if (shouldUploadToSheets) {
+    if (isSheetsOnEnv) {
       console.log("📊 Uploading to Google Sheets...");
       await uploadToGoogleSheet(jobsData, {
         spreadsheetId: Deno.env.get("GOOGLE_SPREADSHEET_ID")!,
@@ -64,23 +64,6 @@ async function main() {
     }
 
     console.log("🎉 Job hunt automation completed successfully!");
-
-    // Summary statistics
-    const highRelevanceJobs = analyzedJobs.filter((job) => (job.relevanceScore || 0) >= 80);
-    const mediumRelevanceJobs = analyzedJobs.filter((job) =>
-      (job.relevanceScore || 0) >= 60 && (job.relevanceScore || 0) < 80
-    );
-
-    console.log(`\n📈 Summary:`);
-    console.log(`   Total jobs analyzed: ${analyzedJobs.length}`);
-    console.log(`   High relevance (80+): ${highRelevanceJobs.length}`);
-    console.log(`   Medium relevance (60-79): ${mediumRelevanceJobs.length}`);
-    console.log(
-      `   Average relevance score: ${
-        (analyzedJobs.reduce((sum, job) => sum + (job.relevanceScore || 0), 0) /
-          analyzedJobs.length).toFixed(1)
-      }`,
-    );
   } catch (error) {
     console.error("❌ Error in job hunt automation:", error);
     process.exit(1);

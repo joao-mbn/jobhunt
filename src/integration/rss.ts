@@ -1,4 +1,4 @@
-import type { RSSData } from "./types.ts";
+import type { RSSData } from "../types.ts";
 
 export async function fetchRSSFeed(): Promise<RSSData> {
   const url = new URL("https://rss.app/feeds/v1.1/sUOBma3URjECoaqq.json");

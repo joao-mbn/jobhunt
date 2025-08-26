@@ -1,6 +1,11 @@
 import { GoogleGenAI } from "@google/genai";
-import type { JobAnalysisResult, JobItem, ResumeData } from "./types.ts";
-import { delay } from "./utils.ts";
+import {
+  createGenAIClient,
+  generateContent,
+  getJsonFromResponse,
+  processWithRateLimit,
+} from "../integration/gemini.ts";
+import { JobAnalysisResult, JobItem, ResumeData } from "../types.ts";
 
 const RELEVANCE_PROMPT = `
 You are an expert job matching AI assistant. Your task is to analyze job postings and rate their relevance to a specific candidate based on their resume.
@@ -57,33 +62,11 @@ Return ONLY a JSON object with this exact structure:
 Focus on the candidate's 4+ years of full-stack development experience, TypeScript/React expertise, and proven track record of performance optimization and team leadership.
 `;
 
-const models = {
-  "gemini-2.0-flash-lite": {
-    name: "gemini-2.0-flash-lite",
-    requestsPerMinute: 30,
-    requestsPerDay: 200,
-    tokensPerMinute: 1e6,
-  },
-} as const;
-
-const model = models["gemini-2.0-flash-lite"];
-
-// Initialize the Google GenAI client
-function createGenAIClient(): GoogleGenAI {
-  const geminiApiKey = Deno.env.get("GEMINI_API_KEY");
-  if (!geminiApiKey) {
-    throw new Error("GEMINI_API_KEY environment variable is required");
-  }
-
-  return new GoogleGenAI({ apiKey: geminiApiKey });
-}
-
 // Analyze a single job's relevance
 async function analyzeJobRelevance(
   job: JobItem,
-  resume: ResumeData,
-  ai: GoogleGenAI,
-): Promise<JobAnalysisResult> {
+  { resume, ai }: { resume: ResumeData; ai: GoogleGenAI },
+): Promise<JobItem> {
   try {
     const prompt = RELEVANCE_PROMPT.replace(
       "{resume}",
@@ -92,20 +75,8 @@ async function analyzeJobRelevance(
       .replace("{jobTitle}", job.title)
       .replace("{jobDescription}", job.content_text.substring(0, 2000)); // Limit description length
 
-    const response = await ai.models.generateContent({
-      model: model.name,
-      contents: prompt,
-    });
-
-    const text = response.text;
-
-    // Extract JSON from response
-    const jsonMatch = text?.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      throw new Error("Failed to parse JSON response from Gemini");
-    }
-
-    const analysis = JSON.parse(jsonMatch[0]) as JobAnalysisResult;
+    const text = await generateContent(ai, prompt);
+    const analysis = getJsonFromResponse(text) as JobAnalysisResult;
 
     // Validate the response structure
     if (
@@ -118,41 +89,14 @@ async function analyzeJobRelevance(
       throw new Error("Invalid response structure from Gemini");
     }
 
-    return analysis;
-  } catch (error) {
-    console.error(`Error analyzing job ${job.id}:`, error);
-    return {
-      score: 0,
-      reason: "Analysis failed - default low score assigned",
-      keyMatches: [],
-      gaps: ["Analysis error"],
-      recommendation: "Skip",
-    };
-  }
-}
-
-// Process a single job with error handling
-async function processJob(
-  job: JobItem,
-  resume: ResumeData,
-  ai: GoogleGenAI,
-  index: number,
-  total: number,
-): Promise<JobItem> {
-  console.log(
-    `Processing job ${index + 1}/${total}: ${job.title.substring(0, 50)}...`,
-  );
-
-  try {
-    const analysis = await analyzeJobRelevance(job, resume, ai);
     return {
       ...job,
-      relevanceScore: analysis.score,
-      relevanceReason: analysis.reason,
-      recommendation: analysis.recommendation,
+      relevanceScore: analysis.score || 0,
+      relevanceReason: analysis.reason || "Reason missing",
+      recommendation: analysis.recommendation || "Skip",
     };
   } catch (error) {
-    console.error(`Failed to analyze job ${job.id}:`, error);
+    console.error(`Error analyzing job ${job.id}:`, error);
     return {
       ...job,
       relevanceScore: 0,
@@ -162,35 +106,12 @@ async function processJob(
   }
 }
 
-// Analyze multiple jobs in batch
 export async function analyzeJobsBatch(jobs: JobItem[], resume: ResumeData): Promise<JobItem[]> {
   console.log(`Starting analysis of ${jobs.length} jobs...`);
 
   const ai = createGenAIClient();
-  const analyzedJobs: JobItem[] = [];
-
-  // split into batches of the size of the model's requestsPerMinute
-  const batches = [];
-  for (let i = 0; i < jobs.length; i += model.requestsPerMinute) {
-    batches.push(jobs.slice(i, i + model.requestsPerMinute));
-  }
-
-  for (let i = 0; i < batches.length; i++) {
-    if (i > 0) {
-      await delay(1e3 * 60); // 1 minute
-    }
-
-    const batch = batches[i]!;
-    const analyzedBatch = await Promise.all(
-      batch.map((job) => processJob(job, resume, ai, batch.indexOf(job), batch.length)),
-    );
-    analyzedJobs.push(...analyzedBatch);
-  }
-
-  // Sort jobs by relevance score (highest first)
-  analyzedJobs.sort(
-    (a, b) => (b.relevanceScore || 0) - (a.relevanceScore || 0),
-  );
+  const analyzedJobs = await processWithRateLimit(jobs, analyzeJobRelevance, { resume, ai });
+  analyzedJobs.sort((a, b) => (b.relevanceScore || 0) - (a.relevanceScore || 0));
 
   console.log(`Completed analysis of ${analyzedJobs.length} jobs`);
   return analyzedJobs;

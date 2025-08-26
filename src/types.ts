@@ -9,9 +9,16 @@ export interface JobItem {
   date_published: string;
   authors: Array<{ name: string }>;
   attachments?: Array<{ url: string }>;
+  location?: string;
+  role?: string;
+  company?: string;
+  contentPreview?: string;
+  publishedDate?: string;
   relevanceScore?: JobAnalysisResult["score"];
   relevanceReason?: JobAnalysisResult["reason"];
   recommendation?: JobAnalysisResult["recommendation"];
+  tailoredResume?: string;
+  coverLetter?: string;
 }
 
 export interface RSSData {
@@ -76,4 +83,22 @@ export interface JobAnalysisResult {
   keyMatches: string[];
   gaps: string[];
   recommendation: "Apply" | "Consider" | "Skip";
+}
+
+// Application materials types
+export interface TailoredResume {
+  tailoredExperience: Array<{
+    company: string;
+    position: string;
+    duration: string;
+    tailoredAchievements: string[];
+    relevantTechnologies: string[];
+  }>;
+  tailoredProjects: Array<{
+    title: string;
+    description: string;
+    duration: string;
+    tailoredAchievements: string[];
+    relevantTechnologies: string[];
+  }>;
 }

@@ -1,10 +1,10 @@
 import "jsr:@std/dotenv/load";
 import process from "node:process";
-import { analyzeJobsBatch } from "./gemini.ts";
-import { uploadToGoogleSheet } from "./gsheet.ts";
-import { saveJobs } from "./jobs.ts";
-import { loadResumeData } from "./resume.ts";
-import { fetchRSSFeed } from "./rss.ts";
+import { generateApplicationMaterials } from "./business/application.ts";
+import { analyzeJobsBatch } from "./business/insights.ts";
+import { loadResumeData, saveJobs } from "./integration/file-system.ts";
+import { filterNewJobs, uploadToGoogleSheet } from "./integration/gsheet.ts";
+import { fetchRSSFeed } from "./integration/rss.ts";
 
 async function main() {
   try {
@@ -15,27 +15,39 @@ async function main() {
     const jobsData = await fetchRSSFeed();
     console.log(`✅ Fetched ${jobsData.items.length} jobs\n`);
 
-    // Step 2: Load resume data
+    // Step 2: Check for new jobs in Google Sheets (early filtering)
+    console.log("🔍 Checking for new jobs...");
+    let newJobsData = await filterNewJobs(jobsData);
+    if (newJobsData.length === 0) {
+      console.log("🎉 No new jobs found! All jobs already exist in the sheet.");
+      console.log("✅ Job hunt automation completed successfully!");
+      return;
+    }
+    console.log(`📝 Found ${newJobsData.length} new jobs to process\n`);
+
+    // Step 3: Load resume data
     console.log("📄 Loading resume data...");
     const resumeData = loadResumeData();
     console.log("✅ Resume data loaded\n");
 
-    // Step 3: Analyze job relevance
-    console.log("🔍 Analyzing job relevance...");
-    const analyzedJobs = await analyzeJobsBatch(jobsData.items, resumeData);
+    // Step 4: Analyze job relevance
+    console.log("🤖 Analyzing job relevance...");
+    newJobsData = await analyzeJobsBatch(newJobsData, resumeData);
 
-    // Step 4: Update the jobs data with analyzed results
-    jobsData.items = analyzedJobs;
-    console.log("✅ Job analysis completed\n");
+    // Step 6: Generate application materials for high-scoring jobs
+    console.log("📝 Generating application materials for high-scoring jobs...");
+    newJobsData = await generateApplicationMaterials(newJobsData, resumeData);
 
-    // Step 5: Save jobs with relevance scores in the data folder
-    saveJobs(jobsData);
+    // Step 7: Save jobs to file system
+    saveJobs(newJobsData);
     console.log("✅ Jobs saved with relevance scores\n");
 
-    // Step 6: Upload to Google Sheets
+    // Step 8: Upload jobs to Google Sheets
     console.log("📊 Uploading to Google Sheets...");
-    await uploadToGoogleSheet(jobsData);
-    console.log("✅ Uploaded to Google Sheets\n");
+    await uploadToGoogleSheet(newJobsData);
+    console.log(`✅ Uploaded ${newJobsData.length} jobs to Google Sheets\n`);
+
+    console.log("🎉 Job hunt automation completed successfully!");
   } catch (error) {
     console.error("❌ Error in job hunt automation:", error);
     process.exit(1);

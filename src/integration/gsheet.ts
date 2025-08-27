@@ -124,14 +124,12 @@ export async function uploadToGoogleSheet(jobs: JobItem[]): Promise<void> {
 
   console.log(`🔍 Uploading ${jobsToUpload.length} out of ${jobs.length} jobs to Google Sheets`);
 
-  // Check if we have any jobs to upload
   if (jobsToUpload.length === 0) {
     console.log("📝 No jobs to upload to Google Sheets");
     return;
   }
 
   try {
-    // Get existing URLs to determine if we need headers
     console.log("Reading existing data from sheet...");
     const existingDataResponse = await sheets.spreadsheets.values.get({
       spreadsheetId,
@@ -167,7 +165,6 @@ export async function uploadToGoogleSheet(jobs: JobItem[]): Promise<void> {
       newRows.push(row);
     }
 
-    // If sheet is empty, add headers first
     if (existingRows.length === 0) {
       console.log("Sheet is empty, adding headers and new data...");
       const allData = [HEADERS, ...newRows];
@@ -217,7 +214,6 @@ async function setSheetFormatting(
     const sheetId = await getSheetId(sheets, spreadsheetId, sheetName);
     const requests: sheets_v4.Schema$Request[] = [];
 
-    // Set fixed row heights
     requests.push({
       updateDimensionProperties: {
         range: {
@@ -255,7 +251,7 @@ async function setSheetFormatting(
         },
         cell: {
           userEnteredFormat: {
-            wrapStrategy: "CLIP", // Prevents text wrapping and auto-expansion
+            wrapStrategy: "CLIP",
           },
         },
         fields: "userEnteredFormat.wrapStrategy",

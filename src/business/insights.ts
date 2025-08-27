@@ -65,7 +65,6 @@ Return ONLY a JSON object with this exact structure:
 Focus on the candidate's 4+ years of full-stack development experience, TypeScript/React expertise, Golang/SQL expertise and leadership experience. If the role does not accept candidates from Vancouver Metro Area, skip it and add this to the reason, if that's the case. the work arrengement can be hybrid or remote. If the role does not require a specific number of years of experience, set the yearsOfExperienceRequired to 0.
 `;
 
-// Analyze a single job's relevance
 async function analyzeJobRelevance(
   job: JobItem,
   { resume, ai }: { resume: ResumeData; ai: GoogleGenAI },
@@ -81,7 +80,6 @@ async function analyzeJobRelevance(
     const text = await generateContent(ai, prompt);
     const analysis = getJsonFromResponse(text) as JobAnalysisResult;
 
-    // Validate the response structure
     if (
       isNaN(analysis.score) ||
       !analysis.yearsOfExperienceRequired ||

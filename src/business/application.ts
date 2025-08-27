@@ -114,7 +114,6 @@ async function generateTailoredResume(
     const response = await generateContent(ai, prompt);
     const tailoredResume = getJsonFromResponse(response) as TailoredResume;
 
-    // Validate the response structure
     if (
       !Array.isArray(tailoredResume.tailoredExperience) ||
       !Array.isArray(tailoredResume.tailoredProjects)

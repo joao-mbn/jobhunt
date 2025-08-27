@@ -51,7 +51,8 @@ export async function processWithRateLimit<T, A, R>(
 
   for (let i = 0; i < batches.length; i++) {
     if (i > 0) {
-      await delay(1e3 * 60); // wait 1 minute between batches to avoid rate limiting
+      const oneMinute = 1e3 * 60;
+      await delay(oneMinute);
     }
 
     const batch = batches[i]!;

@@ -1,4 +1,3 @@
-// Core job and RSS data types
 export interface JobItem {
   id: string;
   url: string;
@@ -35,7 +34,6 @@ export interface RSSData {
   items: JobItem[];
 }
 
-// Resume data types
 export interface ResumeData {
   personalInfo: {
     name: string;
@@ -69,7 +67,6 @@ export interface ResumeData {
   };
 }
 
-// Google Sheets configuration types
 export interface GoogleSheetConfig {
   spreadsheetId: string;
   sheetName: string;
@@ -79,7 +76,6 @@ export interface GoogleSheetConfig {
   };
 }
 
-// Gemini analysis result types
 export interface JobAnalysisResult {
   score: number;
   reason: string;
@@ -91,7 +87,6 @@ export interface JobAnalysisResult {
   hardSkillsRequired: string[];
 }
 
-// Application materials types
 export interface TailoredResume {
   tailoredExperience: Array<{
     company: string;

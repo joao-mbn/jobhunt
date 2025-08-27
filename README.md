@@ -1,14 +1,119 @@
-# Linkedin
+# Job Hunt Automation
 
-https://www.linkedin.com/jobs/search/?f_E=2%2C3%2C4&f_TPR=r3600&f_WT=2%2C3&geoId=101174742&keywords=(%22full%20stack%22%20OR%20%22full-stack%22%20OR%20%22fullstack%22%20OR%20%22software%20engineer%22%20OR%20%22backend%22%20OR%20%22frontend%22)%20AND%20(React%20OR%20%22Next.js%22%20OR%20Node%20OR%20Vue%20OR%20Golang%20OR%20GO%20OR%20%22C%23%22%20OR%20%22C%20Sharp%22%20OR%20%22SQL%22%20OR%20Express%20OR%20Postgres%20OR%20Postgresql%20OR%20GraphQL)%20AND%20(Vancouver%20OR%20%22Greater%20Vancouver%22%20OR%20Burnaby%20OR%20Richmond%20OR%20%22New%20Westminster%22%20OR%20Surrey%20OR%20Coquitlam%20OR%20Canada%20OR%20Remote)&origin=JOB_SEARCH_PAGE_JOB_FILTER&refresh=true&sortBy=R&spellCorrectionEnabled=true
+An intelligent job search automation system that fetches job postings from RSS feeds, analyzes their
+relevance using AI, generates tailored application materials, and organizes everything in Google
+Sheets.
 
-https://www.reddit.com/r/jobsearchhacks/comments/1jedoz0/linkedin_url_hacking_to_find_jobs_posted_less/
+## 🎯 What It Does
 
-("full stack" OR "full-stack" OR "fullstack" OR "software engineer" OR "backend" OR "frontend") AND
-(React OR "Next.js" OR Node OR Vue OR Golang OR GO OR "C#" OR "C Sharp" OR "SQL" OR Express OR
-Postgres OR Postgresql OR GraphQL) AND (Vancouver OR "Greater Vancouver" OR Burnaby OR Richmond OR
-"New Westminster" OR Surrey OR Coquitlam OR Canada OR Remote)
+This project automates the entire job hunting process:
 
-# Levels.fyi
+1. **Fetches Jobs**: Retrieves job postings from RSS feeds (LinkedIn, etc.)
+2. **AI Analysis**: Uses AI to further extract infos and rank the positions according to my fit
+   preferences.
+3. **Smart Filtering**: Filters high ranking positions
+4. **Application Materials**: Generates tailored resumes and cover letters for high-scoring jobs
+5. **Organization**: Saves everything to Google Sheets with detailed analysis
+6. **Automation**: Runs hourly via cron job to continuously monitor for new opportunities
 
-https://www.levels.fyi/jobs/title/software-engineer?companySizes=mid%2Clarge%2Centerprise%2Cearly&employmentTypes=full_time&locationSlugs=greater-vancouver%2Ccanada&postedAfterTimeType=days&postedAfterValue=1&standardLevels=mid_staff%2Centry&workArrangements=hybrid%2Cremote&jobId=137150773602460358
+### Key Components
+
+- **RSS Integration** (`src/integration/rss.ts`): Fetches job postings from RSS feeds
+- **AI Analysis** (`src/business/insights.ts`): Uses Gemini AI to score job relevance
+- **Application Generation** (`src/business/application.ts`): Creates tailored resumes and cover
+  letters
+- **Google Sheets Integration** (`src/integration/gsheet.ts`): Organizes and stores job data
+- **File System** (`src/integration/file-system.ts`): Manages local data storage
+- **Cron Job** (`src/cron.ts`): Runs the automation hourly
+
+## 📋 Prerequisites
+
+- [Deno](https://deno.land/) runtime (latest version)
+- Google Cloud Platform account with Gemini AI API access
+- Google Sheets API credentials
+- RSS feed endpoint for job postings
+
+## ⚙️ Setup
+
+### 1. Clone and Install Dependencies
+
+```bash
+git clone <repository-url>
+cd jobhunt
+deno cache src/index.ts
+```
+
+### 2. Environment Variables
+
+Create a `.env` file in the root directory:
+
+```env
+# Google Gemini AI
+GOOGLE_API_KEY=your_gemini_api_key_here
+
+# RSS Feed
+RSS_ENDPOINT=https://your-rss-feed-url.com/feed
+
+# Google Sheets
+GOOGLE_SPREADSHEET_ID=your_spreadsheet_id_here
+GOOGLE_SHEET_NAME=Job Data
+GOOGLE_CLIENT_EMAIL=your_service_account_email@project.iam.gserviceaccount.com
+GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour private key here\n-----END PRIVATE KEY-----"
+```
+
+### 3. Google Cloud Setup
+
+1. **Create a Google Cloud Project**
+2. **Enable APIs**:
+   - Gemini AI API
+   - Google Sheets API
+3. **Create Service Account**:
+   - Go to IAM & Admin → Service Accounts
+   - Create new service account
+   - Download JSON credentials
+   - Extract `client_email` and `private_key` to your `.env` file
+
+### 4. Google Sheets Setup
+
+1. Create a new Google Sheet
+2. Share it with your service account email (with Editor permissions)
+3. Copy the spreadsheet ID from the URL
+4. Update `GOOGLE_SPREADSHEET_ID` in your `.env` file
+
+### 5. Resume Configuration
+
+Update `data/myResume.json` with your current resume information. The AI uses this to:
+
+- Score job relevance
+- Generate tailored application materials
+- Match your skills to job requirements
+
+## 🎮 Usage
+
+### Manual Run
+
+```bash
+# Run the job hunt automation once
+deno run dev
+```
+
+### Automated Cron Job
+
+```bash
+# Start the cron job (runs every hour)
+deno run cron
+```
+
+### Development Tasks
+
+```bash
+# Format code
+deno task fmt
+
+# Lint code
+deno task lint
+```
+
+### Debug Mode (VS Code & Forks)
+
+Run und Debug with the configuration `Debug Deno` under `.vscode/launch.json`

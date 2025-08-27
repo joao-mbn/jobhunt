@@ -21,6 +21,7 @@ const HEADERS = [
   "Relevance Score",
   "Relevance Reason",
   "Recommendation",
+  "Content",
   "Resume Text",
   "Cover Letter Text",
 ];
@@ -151,6 +152,7 @@ export async function uploadToGoogleSheet(jobs: JobItem[]): Promise<void> {
         job.relevanceScore?.toString() ?? "",
         job.relevanceReason ?? "",
         job.recommendation ?? "",
+        job.content_text ?? "",
         job.tailoredResume ?? "",
         job.coverLetter ?? "",
       ];
@@ -215,7 +217,7 @@ async function setSheetFormatting(
           sheetId,
           dimension: "ROWS",
           startIndex: startRow,
-          endIndex: endRow,
+          endIndex: endRow + 1,
         },
         properties: {
           pixelSize: ROW_HEIGHT,
@@ -228,7 +230,7 @@ async function setSheetFormatting(
           sheetId,
           dimension: "COLUMNS",
           startIndex: 0,
-          endIndex: HEADERS.length,
+          endIndex: HEADERS.length + 1,
         },
         properties: {
           pixelSize: COLUMN_WIDTH,
@@ -240,9 +242,9 @@ async function setSheetFormatting(
         range: {
           sheetId,
           startRowIndex: startRow,
-          endRowIndex: endRow,
+          endRowIndex: endRow + 1,
           startColumnIndex: 0,
-          endColumnIndex: HEADERS.length,
+          endColumnIndex: HEADERS.length + 1,
         },
         cell: {
           userEnteredFormat: {

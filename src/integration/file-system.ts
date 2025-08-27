@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import { JobItem, ResumeData } from "../types.ts";
-import { formatDate } from "../utils/format.ts";
+import { formatDateTime } from "../utils/format.ts";
 
 export function saveJobs(jobs: JobItem[]): void {
   const dir = "data/linkedinJobs";
@@ -8,7 +8,7 @@ export function saveJobs(jobs: JobItem[]): void {
     fs.mkdirSync(dir, { recursive: true });
   }
 
-  const today = formatDate(new Date());
+  const today = formatDateTime(new Date());
   const filename = `linkedinJobs-${today}.json`;
 
   fs.writeFileSync(`${dir}/${filename}`, JSON.stringify(jobs, null, 2));

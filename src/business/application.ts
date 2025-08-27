@@ -125,7 +125,7 @@ async function generateTailoredResume(
     return formatTailoredResume(tailoredResume);
   } catch (error) {
     console.error(`Error generating tailored resume for job ${job.id}:`, error);
-    throw error;
+    return "";
   }
 }
 
@@ -153,7 +153,7 @@ async function generateCoverLetter(
     return coverLetter.content;
   } catch (error) {
     console.error(`Error generating cover letter for job ${job.id}:`, error);
-    throw error;
+    return "";
   }
 }
 
@@ -174,7 +174,7 @@ async function processApplication(
     return { ...job, tailoredResume, coverLetter };
   } catch (error) {
     console.error(`Failed to generate application materials for job ${job.id}:`, error);
-    throw error;
+    return { ...job, tailoredResume: "", coverLetter: "" };
   }
 }
 

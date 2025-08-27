@@ -1,7 +1,12 @@
 import { google, sheets_v4 } from "googleapis";
 import type { JobItem, RSSData } from "../types.ts";
 import { MIN_RELEVANCE_SCORE } from "../utils/constants.ts";
-import { breakdownTitle, formatContentPreview, formatDate } from "../utils/format.ts";
+import {
+  breakdownTitle,
+  formatContentPreview,
+  formatDate,
+  formatDateTime,
+} from "../utils/format.ts";
 
 const COLUMN_WIDTH = 100;
 const ROW_HEIGHT = 21;
@@ -74,10 +79,12 @@ async function getExistingUrls(): Promise<Set<string>> {
 
     const existingRows = existingDataResponse.data.values || [];
     const existingUrls = new Set<string>();
-
+    const urlIndex = existingRows[0].findIndex((cell) => cell === "URL");
     existingRows.forEach((row) => {
-      if (row?.[5] && typeof row[5] === "string" && row[5].startsWith("https://")) {
-        existingUrls.add(row[5]);
+      if (
+        row?.[urlIndex] && typeof row[urlIndex] === "string" && row[urlIndex].startsWith("https://")
+      ) {
+        existingUrls.add(row[urlIndex]);
       }
     });
 
@@ -137,10 +144,10 @@ export async function uploadToGoogleSheet(jobs: JobItem[]): Promise<void> {
 
     for (const job of jobsToUpload) {
       const row = [
-        new Date().toLocaleDateString(), // Processing date
+        formatDateTime(new Date()), // Processing date
         job.id ?? "",
-        job.title ?? "",
         job.url ?? "",
+        job.title ?? "",
         job.company ?? "",
         job.location ?? "",
         job.role ?? "",

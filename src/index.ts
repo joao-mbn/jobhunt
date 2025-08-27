@@ -45,7 +45,6 @@ export async function main() {
     // Step 8: Upload jobs to Google Sheets
     console.log("📊 Uploading to Google Sheets...");
     await uploadToGoogleSheet(newJobsData);
-    console.log(`✅ Uploaded ${newJobsData.length} jobs to Google Sheets\n`);
 
     console.log("🎉 Job hunt automation completed successfully!");
   } catch (error) {

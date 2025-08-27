@@ -1,5 +1,5 @@
 import { google, sheets_v4 } from "googleapis";
-import type { JobItem, RSSData } from "../types.ts";
+import type { JobItem } from "../types.ts";
 import { MIN_RELEVANCE_SCORE } from "../utils/constants.ts";
 import {
   breakdownTitle,
@@ -97,11 +97,11 @@ async function getExistingUrls(): Promise<Set<string>> {
   }
 }
 
-export async function filterNewJobs(jobsData: RSSData): Promise<JobItem[]> {
+export async function filterNewJobs(jobsData: JobItem[]): Promise<JobItem[]> {
   const existingUrls = await getExistingUrls();
 
-  const newJobs = jobsData.items.filter((item) => !existingUrls.has(item.url));
-  console.log(`🔍 Filtered jobs: ${jobsData.items.length} total, ${newJobs.length} new`);
+  const newJobs = jobsData.filter((item) => !existingUrls.has(item.url));
+  console.log(`🔍 Filtered jobs: ${jobsData.length} total, ${newJobs.length} new`);
 
   return newJobs.map((item) => {
     const { company, role, location } = breakdownTitle(item.title);

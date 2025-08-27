@@ -13,7 +13,7 @@ export async function main() {
     // Step 1: Fetch RSS feed and get jobs in memory
     console.log("📡 Fetching RSS feed...");
     const jobsData = await fetchRSSFeed();
-    console.log(`✅ Fetched ${jobsData.items.length} jobs\n`);
+    console.log(`✅ Fetched ${jobsData.length} jobs\n`);
 
     // Step 2: Check for new jobs in Google Sheets (early filtering)
     console.log("🔍 Checking for new jobs...");

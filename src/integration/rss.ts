@@ -1,6 +1,6 @@
-import type { RSSData } from "../types.ts";
+import type { JobItem, RSSData } from "../types.ts";
 
-export async function fetchRSSFeed(): Promise<RSSData> {
+export async function fetchRSSFeed(): Promise<JobItem[]> {
   const url = Deno.env.get("RSS_ENDPOINT");
   if (!url) {
     throw new Error("RSS_ENDPOINT is not set");
@@ -17,9 +17,9 @@ export async function fetchRSSFeed(): Promise<RSSData> {
     }
 
     const data = (await response.json()) as RSSData;
-    return data;
+    return data.items;
   } catch (error) {
     console.error("Error fetching RSS feed:", error);
-    throw error;
+    return [];
   }
 }

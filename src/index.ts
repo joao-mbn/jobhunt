@@ -6,7 +6,7 @@ import { loadResumeData, saveJobs } from "./integration/file-system.ts";
 import { filterNewJobs, uploadToGoogleSheet } from "./integration/gsheet.ts";
 import { fetchRSSFeed } from "./integration/rss.ts";
 
-async function main() {
+export async function main() {
   try {
     console.log("🚀 Starting job hunt automation...\n");
 
@@ -54,4 +54,6 @@ async function main() {
   }
 }
 
-main();
+if (import.meta.main) {
+  main();
+}

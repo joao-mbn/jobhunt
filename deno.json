@@ -1,6 +1,7 @@
 {
   "tasks": {
-    "dev": "deno run --watch src/index.ts",
+    "dev": "deno run --allow-all src/index.ts",
+    "cron": "deno run --allow-all --unstable-cron src/cron.ts",
     "lint": "deno lint src/",
     "fmt": "deno fmt src/"
   },
@@ -12,7 +13,7 @@
     "googleapis": "npm:googleapis@^157.0.0"
   },
   "compilerOptions": {
-    "lib": ["dom", "deno.ns"]
+    "lib": ["dom", "deno.ns", "deno.unstable"]
   },
   "fmt": {
     "lineWidth": 100,

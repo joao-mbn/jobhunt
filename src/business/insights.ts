@@ -1,10 +1,6 @@
-import { GoogleGenAI } from "@google/genai";
-import {
-  createGenAIClient,
-  generateContent,
-  getJsonFromResponse,
-  processWithRateLimit,
-} from "../integration/gemini.ts";
+import { AIClient } from "../integration/ai/ai-client.ts";
+import { GeminiAIClient } from "../integration/ai/gemini.ts";
+import { LocalAIClient } from "../integration/ai/local-ai.ts";
 import { JobAnalysisResult, JobItem, ResumeData } from "../types.ts";
 
 const RELEVANCE_PROMPT = `
@@ -65,62 +61,93 @@ Return ONLY a JSON object with this exact structure:
 Focus on the candidate's 4+ years of full-stack development experience, TypeScript/React expertise, Golang/SQL expertise and leadership experience. If the role does not accept candidates from Vancouver Metro Area, skip it and add this to the reason, if that's the case. the work arrengement can be hybrid or remote. If the role does not require a specific number of years of experience, set the yearsOfExperienceRequired to 0.
 `;
 
-async function analyzeJobRelevance(
-  job: JobItem,
-  { resume, ai }: { resume: ResumeData; ai: GoogleGenAI },
-): Promise<JobItem> {
-  try {
+function generatePrompts(
+  jobs: JobItem[],
+  resume: ResumeData,
+): { prompt: string; key: string; index: number }[] {
+  return jobs.map((job, i) => {
     const prompt = RELEVANCE_PROMPT.replace(
       "{resume}",
       JSON.stringify(resume, null, 2),
     )
       .replace("{jobTitle}", job.title)
-      .replace("{jobDescription}", job.content_text.substring(0, 10000)); // Limit description length
-
-    const text = await generateContent(ai, prompt);
-    const analysis = getJsonFromResponse(text) as JobAnalysisResult;
-
-    if (
-      isNaN(analysis.score) ||
-      !analysis.yearsOfExperienceRequired ||
-      typeof analysis.reason !== "string" ||
-      typeof analysis.recommendation !== "string" ||
-      typeof analysis.estimatedCompensation !== "string" ||
-      !Array.isArray(analysis.hardSkillsRequired)
-    ) {
-      throw new Error("Invalid response structure from Gemini");
-    }
-
-    return {
-      ...job,
-      relevanceScore: analysis.score || 0,
-      relevanceReason: analysis.reason || "Reason missing",
-      recommendation: analysis.recommendation || "Skip",
-      estimatedCompensation: analysis.estimatedCompensation || "Unknown",
-      yearsOfExperienceRequired: analysis.yearsOfExperienceRequired || "0",
-      hardSkillsRequired: analysis.hardSkillsRequired.join(", "),
-    };
-  } catch (error) {
-    console.error(`Error analyzing job ${job.id}:`, error);
-    return {
-      ...job,
-      relevanceScore: 0,
-      relevanceReason: "Analysis failed",
-      recommendation: "Skip",
-      estimatedCompensation: "Unknown",
-      yearsOfExperienceRequired: "0",
-      hardSkillsRequired: "",
-    };
-  }
+      .replace("{jobDescription}", job.content_text.substring(0, 10000));
+    return { prompt, key: job.id, index: i };
+  });
 }
 
 export async function analyzeJobsBatch(jobs: JobItem[], resume: ResumeData): Promise<JobItem[]> {
   console.log(`Starting analysis of ${jobs.length} jobs...`);
 
-  const ai = createGenAIClient();
-  const analyzedJobs = await processWithRateLimit(jobs, analyzeJobRelevance, { resume, ai });
+  const ai = new GeminiAIClient();
+  const localAi = new LocalAIClient();
+  const prompts = generatePrompts(jobs, resume);
+  const promises: Promise<JobItem>[] = [];
+
+  for await (const { response, request } of ai.streamContent(prompts)) {
+    const job = jobs.find((job) => job.id === request.key);
+    if (!job) {
+      console.error(`Job ${request.key} not found`);
+      continue;
+    }
+
+    promises.push(
+      response.then((result) => getAnalysisFromAi(ai, result, job)).catch(async (error) => {
+        console.error(`Error analyzing job ${request.key} with Gemini:`, error);
+        try {
+          const localResponse = await localAi.generateContent(request.prompt);
+          return getAnalysisFromAi(localAi, localResponse, job);
+        } catch (error) {
+          console.error(`Error analyzing job ${request.key} with Local AI:`, error);
+          return {
+            ...job,
+            relevanceScore: 0,
+            relevanceReason: "Analysis failed",
+            estimatedCompensation: "Unknown",
+            yearsOfExperienceRequired: "0",
+            recommendation: "Skip",
+          };
+        }
+      }),
+    );
+  }
+
+  const analyzedJobs = await Promise.all(promises);
   analyzedJobs.sort((a, b) => (b.relevanceScore || 0) - (a.relevanceScore || 0));
 
   console.log(`Completed analysis of ${analyzedJobs.length} jobs`);
   return analyzedJobs;
+}
+
+function getAnalysisFromAi(ai: AIClient, result: string, job: JobItem) {
+  const json = ai.getJsonContent(result);
+  if (!isJobAnalysisResult(json)) {
+    throw new Error("Invalid analysis response ");
+  }
+  return {
+    ...job,
+    ...json,
+    hardSkillsRequired: json.hardSkillsRequired.join(", "),
+  };
+}
+
+function isJobAnalysisResult(response: unknown): response is JobAnalysisResult {
+  if (typeof response !== "object" || response === null) {
+    return false;
+  }
+
+  const requiredFields = [
+    "yearsOfExperienceRequired",
+    "reason",
+    "recommendation",
+    "estimatedCompensation",
+    "hardSkillsRequired",
+  ];
+  for (const field of requiredFields) {
+    if (!(field in response)) {
+      return false;
+    }
+  }
+
+  return ("score" in response) && !isNaN((response as JobAnalysisResult).score);
 }

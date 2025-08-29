@@ -19,7 +19,8 @@ This project automates the entire job hunting process:
 ### Key Components
 
 - **RSS Integration** (`src/integration/rss.ts`): Fetches job postings from RSS feeds
-- **AI Analysis** (`src/business/insights.ts`): Uses Gemini AI to score job relevance
+- **AI Analysis** (`src/business/insights.ts`): Uses Gemini AI to score job relevance. If Gemini API
+  fails, it tries using Local AI if configured.
 - **Application Generation** (`src/business/application.ts`): Creates tailored resumes and cover
   letters
 - **Google Sheets Integration** (`src/integration/gsheet.ts`): Organizes and stores job data
@@ -82,11 +83,23 @@ GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour private key here\n-----END
 
 ### 5. Resume Configuration
 
-Update `data/myResume.json` with your current resume information. The AI uses this to:
+Create a file `data/myResume.json` with your current resume information. The AI uses this to:
 
 - Score job relevance
 - Generate tailored application materials
 - Match your skills to job requirements
+
+### 6. [Optional] Local AI All-in-one Setup
+
+Use this if you want to run local models instead of resorting to Gemini API. If you don't have
+docker installed, install it first. Then, install Local AI All-in-one:
+
+```sh
+docker run -p 8080:8080 --name local-ai -ti localai/localai:latest-aio-cpu
+```
+
+[Local AI](https://localai.io/basics/try/) is compatible with the
+[Open AI API](https://platform.openai.com/docs/api-reference/introduction)
 
 ## 🎮 Usage
 

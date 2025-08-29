@@ -7,7 +7,7 @@ export async function fetchRSSFeed(): Promise<JobItem[]> {
   }
 
   try {
-    const response = await fetch(url.toString(), {
+    const response = await fetch("https://rss.app/feeds/v1.1/5l6cbW6vRLn99r0i.json", {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });

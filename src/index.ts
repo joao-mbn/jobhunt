@@ -1,10 +1,11 @@
 import "jsr:@std/dotenv/load";
 import process from "node:process";
-import { generateApplicationMaterials } from "./business/application.ts";
+import { generateCoverLetter } from "./business/application.ts";
 import { analyzeJobsBatch } from "./business/insights.ts";
 import { loadResumeData, saveJobs } from "./integration/file-system.ts";
 import { filterNewJobs, uploadToGoogleSheet } from "./integration/gsheet.ts";
 import { fetchRSSFeed } from "./integration/rss.ts";
+import { MIN_RELEVANCE_SCORE } from "./utils/constants.ts";
 
 export async function main() {
   try {
@@ -34,9 +35,14 @@ export async function main() {
     console.log("🤖 Analyzing job relevance...");
     newJobsData = await analyzeJobsBatch(newJobsData, resumeData);
 
+    // Step 5: Filter out jobs with low relevance scores
+    newJobsData = newJobsData.filter((job) =>
+      job.relevanceScore && job.relevanceScore >= MIN_RELEVANCE_SCORE
+    );
+
     // Step 6: Generate application materials for high-scoring jobs
     console.log("📝 Generating application materials for high-scoring jobs...");
-    newJobsData = await generateApplicationMaterials(newJobsData, resumeData);
+    newJobsData = await generateCoverLetter(newJobsData, resumeData);
 
     // Step 7: Save jobs to file system
     saveJobs(newJobsData);

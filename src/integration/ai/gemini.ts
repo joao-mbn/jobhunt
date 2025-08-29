@@ -1,5 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
-import { AIClient, PromptRequest } from "./ai-client.ts";
+import { AIClient } from "./ai-client.ts";
 
 const models = {
   "gemini-2.0-flash-lite": {
@@ -8,19 +8,31 @@ const models = {
     requestsPerDay: 200,
     tokensPerMinute: 1e6,
   },
+  "gemini-2.5-pro": {
+    name: "gemini-2.5-pro",
+    requestsPerMinute: 5,
+    requestsPerDay: 100,
+    tokensPerMinute: 2.5e5,
+  },
+  "gemini-2.5-flash-lite": {
+    name: "gemini-2.5-flash-lite",
+    requestsPerMinute: 15,
+    requestsPerDay: 1000,
+    tokensPerMinute: 1e6,
+  },
 } as const;
-
-const GEMINI_MODEL = models["gemini-2.0-flash-lite"];
 
 export class GeminiAIClient implements AIClient {
   ai: GoogleGenAI;
+  name = "gemini";
+  model: keyof typeof models;
 
-  constructor() {
+  constructor(model: keyof typeof models) {
     const geminiApiKey = Deno.env.get("GEMINI_API_KEY");
     if (!geminiApiKey) {
       throw new Error("GEMINI_API_KEY environment variable is required");
     }
-
+    this.model = model;
     this.ai = new GoogleGenAI({ apiKey: geminiApiKey });
   }
 
@@ -34,15 +46,9 @@ export class GeminiAIClient implements AIClient {
 
   async generateContent(prompt: string) {
     const response = await this.ai.models.generateContent({
-      model: GEMINI_MODEL.name,
+      model: this.model,
       contents: prompt,
     });
     return response.text ?? "";
-  }
-
-  async *streamContent(requests: PromptRequest[]) {
-    for (const request of requests) {
-      yield { response: this.generateContent(request.prompt), request };
-    }
   }
 }

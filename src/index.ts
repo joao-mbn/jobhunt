@@ -35,18 +35,18 @@ export async function main() {
     console.log("🤖 Analyzing job relevance...");
     newJobsData = await analyzeJobsBatch(newJobsData, resumeData);
 
-    // Step 5: Filter out jobs with low relevance scores
+    // Step 5: Save jobs to file system
+    saveJobs(newJobsData);
+    console.log("✅ Jobs saved with relevance scores\n");
+
+    // Step 6: Filter out jobs with low relevance scores
     newJobsData = newJobsData.filter((job) =>
       job.relevanceScore && job.relevanceScore >= MIN_RELEVANCE_SCORE
     );
 
-    // Step 6: Generate application materials for high-scoring jobs
+    // Step 7: Generate application materials for high-scoring jobs
     console.log("📝 Generating application materials for high-scoring jobs...");
     newJobsData = await generateCoverLetter(newJobsData, resumeData);
-
-    // Step 7: Save jobs to file system
-    saveJobs(newJobsData);
-    console.log("✅ Jobs saved with relevance scores\n");
 
     // Step 8: Upload jobs to Google Sheets
     console.log("📊 Uploading to Google Sheets...");

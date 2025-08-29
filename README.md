@@ -19,10 +19,8 @@ This project automates the entire job hunting process:
 ### Key Components
 
 - **RSS Integration** (`src/integration/rss.ts`): Fetches job postings from RSS feeds
-- **AI Analysis** (`src/business/insights.ts`): Uses Gemini AI to score job relevance. If Gemini API
-  fails, it tries using Local AI if configured.
-- **Application Generation** (`src/business/application.ts`): Creates tailored resumes and cover
-  letters
+- **AI Analysis** (`src/business/insights.ts`): Uses Gemini AI to score job relevance
+- **Application Generation** (`src/business/application.ts`): Uses AI to generate cover letters
 - **Google Sheets Integration** (`src/integration/gsheet.ts`): Organizes and stores job data
 - **File System** (`src/integration/file-system.ts`): Manages local data storage
 - **Cron Job** (`src/cron.ts`): Runs the automation hourly

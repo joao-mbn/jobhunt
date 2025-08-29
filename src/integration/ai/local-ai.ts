@@ -1,4 +1,4 @@
-import { AIClient, PromptRequest } from "./ai-client.ts";
+import { AIClient } from "./ai-client.ts";
 
 const LOCAL_AI_CONFIG = {
   model: "gpt-4",
@@ -7,6 +7,8 @@ const LOCAL_AI_CONFIG = {
 } as const;
 
 export class LocalAIClient implements AIClient {
+  name = "local-ai";
+
   constructor() {}
 
   getJsonContent(response: string): unknown {
@@ -60,14 +62,6 @@ export class LocalAIClient implements AIClient {
       console.error("❌ Error generating content with Local AI:", error);
       const errorMessage = error instanceof Error ? error.message : String(error);
       throw new Error(`Failed to generate content: ${errorMessage}`);
-    }
-  }
-
-  async *streamContent(
-    requests: PromptRequest[],
-  ): AsyncGenerator<{ response: Promise<string>; request: PromptRequest }> {
-    for (const request of requests) {
-      yield { response: this.generateContent(request.prompt), request };
     }
   }
 }

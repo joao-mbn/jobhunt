@@ -1,4 +1,4 @@
-import { AIClient, PromptRequest } from "../integration/ai/ai-client.ts";
+import { attemptPromptSequentially } from "../integration/ai/ai-client.ts";
 import { GeminiAIClient } from "../integration/ai/gemini.ts";
 import { LocalAIClient } from "../integration/ai/local-ai.ts";
 import { JobItem, ResumeData } from "../types.ts";
@@ -43,15 +43,14 @@ Return ONLY a JSON object with this exact structure:
 - Avoid business jargon
 `;
 
-function generatePrompts(jobs: JobItem[], resume: ResumeData): PromptRequest[] {
-  return jobs.map((job, index) => ({
-    prompt: COVER_LETTER_PROMPT.replace("{resume}", JSON.stringify(resume, null, 2))
-      .replace("{jobTitle}", job.title)
-      .replace("{company}", job?.company || "")
-      .replace("{jobDescription}", job.content_text.substring(0, 10000)),
-    key: job.id,
-    index,
-  }));
+function generatePrompt(job: JobItem, resume: ResumeData): string {
+  return COVER_LETTER_PROMPT.replace(
+    "{resume}",
+    JSON.stringify(resume, null, 2),
+  )
+    .replace("{jobTitle}", job.title)
+    .replace("{company}", job?.company || "")
+    .replace("{jobDescription}", job.content_text.substring(0, 10000));
 }
 
 export async function generateCoverLetter(
@@ -60,38 +59,25 @@ export async function generateCoverLetter(
 ): Promise<JobItem[]> {
   console.log(`🔍 Starting cover letter generation for ${jobs.length} jobs...`);
 
-  const geminiAi = new GeminiAIClient();
-  const localAi = new LocalAIClient();
-  const prompts = generatePrompts(jobs, resume);
-  const promises: Promise<JobItem>[] = [];
-
-  for await (const { response, request } of geminiAi.streamContent(prompts)) {
-    const job = jobs.find((job) => job.id === request.key);
-    if (!job) {
-      console.error(`Job ${request.key} not found`);
-      continue;
+  const ais = [
+    new GeminiAIClient("gemini-2.5-pro"),
+    new GeminiAIClient("gemini-2.5-flash-lite"),
+    new GeminiAIClient("gemini-2.0-flash-lite"),
+    new LocalAIClient(),
+  ];
+  const promises = jobs.map(async (job) => {
+    const prompt = generatePrompt(job, resume);
+    try {
+      const { response } = await attemptPromptSequentially(ais, {
+        prompt,
+        key: job.id,
+        options: { asJson: true, validateJson: isCoverLetterResponse },
+      });
+      return { ...job, coverLetter: (response as { content: string }).content };
+    } catch {
+      return { ...job, coverLetter: "" };
     }
-
-    promises.push(
-      response.then((result) => getCoverLetterFromAi(geminiAi, result, job)).catch(
-        async (error) => {
-          console.error(
-            `Error generating cover letter for job ${request.key} with Gemini: ${error}`,
-          );
-
-          try {
-            const localResponse = await localAi.generateContent(request.prompt);
-            return getCoverLetterFromAi(localAi, localResponse, job);
-          } catch (error) {
-            console.error(
-              `Error generating cover letter for job ${request.key} with Local AI: ${error}`,
-            );
-            return { ...job, coverLetter: "" };
-          }
-        },
-      ),
-    );
-  }
+  });
 
   const jobsWithCoverLetter = await Promise.all(promises);
 
@@ -99,14 +85,9 @@ export async function generateCoverLetter(
   return jobsWithCoverLetter;
 }
 
-function getCoverLetterFromAi(ai: AIClient, response: string, job: JobItem) {
-  const localJson = ai.getJsonContent(response);
-  const localCoverLetter = localJson as { content: string };
-  if (!("content" in localCoverLetter) || typeof localCoverLetter.content !== "string") {
-    throw new Error("Invalid cover letter response structure");
-  }
-  return {
-    ...job,
-    coverLetter: localCoverLetter.content,
-  };
+function isCoverLetterResponse(response: unknown): response is { content: string } {
+  return response != null &&
+    typeof response === "object" &&
+    "content" in response &&
+    typeof (response as { content: string }).content === "string";
 }

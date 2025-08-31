@@ -35,5 +35,7 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
 # secrets
 TODO/*
+TASKS.md
 credentials.json
 transform-load/data/*
+legacy-transform-load

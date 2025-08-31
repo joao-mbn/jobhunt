@@ -1,7 +1,6 @@
 {
   "version": "5",
   "specifiers": {
-    "jsr:@openai/openai@^5.16.0": "5.16.0",
     "jsr:@std/assert@1": "1.0.14",
     "jsr:@std/dotenv@*": "0.225.5",
     "jsr:@std/dotenv@~0.225.5": "0.225.5",
@@ -9,17 +8,9 @@
     "npm:@google/genai@^1.15.0": "1.15.0",
     "npm:@types/node@*": "24.2.0",
     "npm:@types/node@^24.3.0": "24.3.0",
-    "npm:googleapis@157": "157.0.0",
-    "npm:playwright@^1.40.0": "1.55.0",
-    "npm:zod@3": "3.25.76"
+    "npm:googleapis@157": "157.0.0"
   },
   "jsr": {
-    "@openai/openai@5.16.0": {
-      "integrity": "1a6f67fb6a7d8ca79e0a6cb0480941df8c76ecc12a5338f6c7112bd64ca21844",
-      "dependencies": [
-        "npm:zod"
-      ]
-    },
     "@std/assert@1.0.14": {
       "integrity": "68d0d4a43b365abc927f45a9b85c639ea18a9fab96ad92281e493e4ed84abaa4",
       "dependencies": [
@@ -129,11 +120,6 @@
       "dependencies": [
         "fetch-blob"
       ]
-    },
-    "fsevents@2.3.2": {
-      "integrity": "sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==",
-      "os": ["darwin"],
-      "scripts": true
     },
     "function-bind@1.1.2": {
       "integrity": "sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA=="
@@ -324,20 +310,6 @@
     "object-inspect@1.13.4": {
       "integrity": "sha512-W67iLl4J2EXEGTbfeHCffrjDfitvLANg0UlX3wFUUSTx92KXRFegMHUVgSqE+wvhAbi4WqjGg9czysTV2Epbew=="
     },
-    "playwright-core@1.55.0": {
-      "integrity": "sha512-GvZs4vU3U5ro2nZpeiwyb0zuFaqb9sUiAJuyrWpcGouD8y9/HLgGbNRjIph7zU9D3hnPaisMl9zG9CgFi/biIg==",
-      "bin": true
-    },
-    "playwright@1.55.0": {
-      "integrity": "sha512-sdCWStblvV1YU909Xqx0DhOjPZE4/5lJsIS84IfN9dAZfcl/CIZ5O8l3o0j7hPMjDvqoTF8ZUcc+i/GL5erstA==",
-      "dependencies": [
-        "playwright-core"
-      ],
-      "optionalDependencies": [
-        "fsevents"
-      ],
-      "bin": true
-    },
     "qs@6.14.0": {
       "integrity": "sha512-YWWTjgABSKcvs/nWBi9PycY/JiPJqOD4JA6o9Sej2AtvSGarXxKC3OQSk4pAarbdQlKAh5D4FCQkJNkW+GAn3w==",
       "dependencies": [
@@ -411,20 +383,15 @@
     },
     "ws@8.18.3": {
       "integrity": "sha512-PEIGCY5tSlUt50cqyMXfCzX+oOPqN0vuGqWzbcJ2xvnkzkq46oOpz7dQaTDBdfICb4N14+GARUDw2XV2N4tvzg=="
-    },
-    "zod@3.25.76": {
-      "integrity": "sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ=="
     }
   },
   "workspace": {
     "dependencies": [
-      "jsr:@openai/openai@^5.16.0",
       "jsr:@std/assert@1",
       "jsr:@std/dotenv@~0.225.5",
       "npm:@google/genai@^1.15.0",
       "npm:@types/node@^24.3.0",
-      "npm:googleapis@157",
-      "npm:playwright@^1.40.0"
+      "npm:googleapis@157"
     ]
   }
 }

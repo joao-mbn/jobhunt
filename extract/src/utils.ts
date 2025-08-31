@@ -1,4 +1,6 @@
-import { delay } from "../utils/promise.ts";
+export function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 export function randomDelay(minMs: number = 1000, maxMs: number = 3000): Promise<void> {
   const delayMs = Math.floor(Math.random() * (maxMs - minMs + 1)) + minMs;

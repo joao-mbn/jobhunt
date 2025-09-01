@@ -2,9 +2,9 @@ import { chromium, type Browser, type Page } from "@playwright/test";
 import { retryWithBackoff } from "../utils/promise.ts";
 import type { RawSource, Scraper } from "./scraper.ts";
 
-const JOBS_URL = "https://www.levels.fyi/jobs";
-
 export class LevelsScraper implements Scraper {
+  jobsUrl = "https://www.levels.fyi/jobs";
+
   fetchJobs() {
     console.log("🔍 Starting levels job scraping...");
 
@@ -25,7 +25,7 @@ export class LevelsScraper implements Scraper {
         await page.setViewportSize({ width: 1920, height: 1080 });
 
         console.log("📄 Navigating to levels.fyi jobs page...");
-        await page.goto(JOBS_URL);
+        await page.goto(this.jobsUrl);
 
         // Close initial popup
         await page.getByRole("button", { name: "Close" }).first().click();

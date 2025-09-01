@@ -1,5 +1,5 @@
-import type { LinkedInData } from "../types/types.ts";
-import type { Scraper } from "./scraper.ts";
+import type { LinkedInData } from "../types/source.ts";
+import type { Scraper } from "./types.ts";
 
 export class LinkedInScraper implements Scraper {
   async fetchJobs() {
@@ -20,9 +20,10 @@ export class LinkedInScraper implements Scraper {
 
       const data = (await response.json()) as LinkedInData;
       return data.items.map((item) => ({
-        name: "linkedin",
-        id: item.id,
-        details: item as unknown as Record<string, unknown>,
+        name: item.title,
+        jobId: item.id,
+        details: item,
+        source: "linkedin",
       }));
     } catch (error) {
       console.error("Error fetching RSS feed:", error);

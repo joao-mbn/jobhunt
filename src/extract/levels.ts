@@ -1,6 +1,7 @@
 import { chromium, type Browser, type Page } from "@playwright/test";
+import type { RawJob } from "../types/job.ts";
 import { retryWithBackoff } from "../utils/promise.ts";
-import type { RawSource, Scraper } from "./scraper.ts";
+import type { Scraper } from "./types.ts";
 
 export class LevelsScraper implements Scraper {
   jobsUrl = "https://www.levels.fyi/jobs";
@@ -40,10 +41,10 @@ export class LevelsScraper implements Scraper {
         const jobLinks = await page.locator('a[href^="/jobs?jobId="]').all();
         console.log(`📋 Found ${jobLinks.length} job links`);
 
-        const rawJobs: RawSource[] = [];
+        const rawJobs: RawJob[] = [];
         for (const jobLink of jobLinks) {
           await jobLink.click();
-          const id = (await jobLink.getAttribute("href")).split("jobId=")[1];
+          const jobId = (await jobLink.getAttribute("href")).split("jobId=")[1];
           const headerContainer = page.locator('section[class*="job-details-header"]').first();
           const title = await headerContainer.locator("h1").first().textContent();
           const headerDetails = await headerContainer.locator('p[class*="job-details-header_detailsRow"]').first().textContent();
@@ -55,8 +56,9 @@ export class LevelsScraper implements Scraper {
 
           const description = await page.locator('div[class*="job-details-about_plainTextDescription"]').first().textContent();
           rawJobs.push({
-            name: "levels",
-            id,
+            source: "levels",
+            name: title,
+            jobId,
             details: {
               title,
               headerDetails,

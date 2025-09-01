@@ -23,17 +23,6 @@ export interface JobItem {
   coverLetter?: string;
 }
 
-export interface LinkedInData {
-  version: string;
-  title: string;
-  home_page_url: string;
-  feed_url: string;
-  favicon: string;
-  language: string;
-  description: string;
-  items: JobItem[];
-}
-
 export interface ResumeData {
   personalInfo: {
     name: string;

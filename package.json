@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "init-db": "node --env-file=.env src/db/init-db.ts",
+    "init-db": "node --env-file=.env src/db/index.ts",
     "extract": "node --env-file=.env src/extract/index.ts"
   },
   "keywords": [],

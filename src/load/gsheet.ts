@@ -1,5 +1,5 @@
 import { google, sheets_v4 } from "googleapis";
-import type { JobItem } from "../types/types.ts";
+import type { JobItem } from "../types/definitions/types.ts";
 import { MIN_RELEVANCE_SCORE } from "../utils/constants.ts";
 import { breakdownTitle, formatContentPreview, formatDate, formatDateTime } from "../utils/format.ts";
 

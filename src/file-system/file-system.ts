@@ -1,5 +1,5 @@
 import fs from "fs";
-import type { ResumeData } from "../types/types.ts";
+import type { ResumeData } from "../types/definitions/types.ts";
 
 export function loadResumeData(): ResumeData {
   try {

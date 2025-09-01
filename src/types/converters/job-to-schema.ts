@@ -1,5 +1,5 @@
-import type { BaseRecord, CleanJob, EnhancedJob, Prefills, RawJob } from "../types/job.ts";
-import type { DBBaseRecord, DBCleanJob, DBEnhancedJob, DBPrefills, DBRawJob } from "../types/schema.ts";
+import type { BaseRecord, CleanJob, EnhancedJob, Prefills, RawJob } from "../definitions/job.ts";
+import type { DBBaseRecord, DBCleanJob, DBEnhancedJob, DBPrefills, DBRawJob } from "../definitions/schema.ts";
 
 export function fromBaseRecordToDBBaseRecord(record: BaseRecord): DBBaseRecord {
   return {

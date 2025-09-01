@@ -1,4 +1,4 @@
-import type { LinkedInData } from "../types/source.ts";
+import type { LinkedInData } from "../types/definitions/source.ts";
 import type { Scraper } from "./types.ts";
 
 export class LinkedInScraper implements Scraper {

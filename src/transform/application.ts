@@ -1,7 +1,7 @@
 import { attemptPromptSequentially } from "../ai/ai-client.ts";
 import { gemini2_0FlashLiteAIClient, gemini2_5FlashLiteAIClient, gemini2_5ProAIClient } from "../ai/gemini.ts";
 import { localAIClient } from "../ai/local-ai.ts";
-import type { JobItem, ResumeData } from "../types/types.ts";
+import type { JobItem, ResumeData } from "../types/definitions/types.ts";
 
 const COVER_LETTER_PROMPT = `
 You are an expert cover letter writer. Your task is to create a compelling, personalized cover letter for a specific job application.

@@ -1,5 +1,5 @@
 import { chromium, type Browser, type Page } from "@playwright/test";
-import type { RawJob } from "../types/job.ts";
+import type { RawJob } from "../types/definitions/job.ts";
 import { retryWithBackoff } from "../utils/promise.ts";
 import type { Scraper } from "./types.ts";
 

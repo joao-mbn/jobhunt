@@ -1,7 +1,7 @@
-import { attemptPromptSequentially } from "../integration/ai/ai-client.ts";
-import { GeminiAIClient } from "../integration/ai/gemini.ts";
-import { LocalAIClient } from "../integration/ai/local-ai.ts";
-import { JobItem, ResumeData } from "../types.ts";
+import { attemptPromptSequentially } from "../ai/ai-client.ts";
+import { GeminiAIClient } from "../ai/gemini.ts";
+import { LocalAIClient } from "../ai/local-ai.ts";
+import type { JobItem, ResumeData } from "../types/types.ts";
 
 const COVER_LETTER_PROMPT = `
 You are an expert cover letter writer. Your task is to create a compelling, personalized cover letter for a specific job application.
@@ -85,7 +85,9 @@ export async function generateCoverLetter(
   return jobsWithCoverLetter;
 }
 
-function isCoverLetterResponse(response: unknown): response is { content: string } {
+function isCoverLetterResponse(
+  response: unknown,
+): response is { content: string } {
   return response != null &&
     typeof response === "object" &&
     "content" in response &&

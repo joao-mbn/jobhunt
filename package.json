@@ -10,8 +10,12 @@
   "license": "ISC",
   "packageManager": "pnpm@10.13.1",
   "devDependencies": {
-    "@playwright/test": "^1.55.0",
     "@types/node": "^24.3.0",
     "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "@google/genai": "^1.16.0",
+    "@playwright/test": "^1.55.0",
+    "googleapis": "^157.0.0"
   }
 }

@@ -3,10 +3,10 @@
   "editor.codeActionsOnSave": {
     "source.fixAll": "explicit",
     "source.organizeImports": "explicit"
-  },
-  "deno.enable": true,
+  }
+  /* "deno.enable": true,
   "editor.defaultFormatter": "denoland.vscode-deno",
   "[typescript]": {
     "editor.defaultFormatter": "denoland.vscode-deno"
-  }
+  } */
 }

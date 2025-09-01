@@ -1,5 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
-import { AIClient } from "./ai-client.ts";
+import type { AIClient } from "./ai-client.ts";
 
 const models = {
   "gemini-2.0-flash-lite": {
@@ -28,7 +28,7 @@ export class GeminiAIClient implements AIClient {
   model: keyof typeof models;
 
   constructor(model: keyof typeof models) {
-    const geminiApiKey = Deno.env.get("GEMINI_API_KEY");
+    const geminiApiKey = process.env.GEMINI_API_KEY;
     if (!geminiApiKey) {
       throw new Error("GEMINI_API_KEY environment variable is required");
     }

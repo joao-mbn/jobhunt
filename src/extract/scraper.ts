@@ -1,4 +1,5 @@
 import { LevelsScraper } from "./levels.ts";
+import { LinkedInScraper } from "./linkedin.ts";
 
 export interface RawSource {
   name: string;
@@ -10,6 +11,4 @@ export interface Scraper {
   fetchJobs: () => Promise<RawSource[]>;
 }
 
-export const scrapers: Scraper[] = [
-  new LevelsScraper(),
-];
+export const scrapers: Scraper[] = [new LevelsScraper(), new LinkedInScraper()];

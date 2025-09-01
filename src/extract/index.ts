@@ -1,4 +1,4 @@
-import { scrapers } from "./src/scraper.ts";
+import { scrapers } from "./scraper.ts";
 
 async function main() {
   try {

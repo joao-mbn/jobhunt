@@ -1,7 +1,7 @@
-import { attemptPromptSequentially } from "../integration/ai/ai-client.ts";
-import { GeminiAIClient } from "../integration/ai/gemini.ts";
-import { LocalAIClient } from "../integration/ai/local-ai.ts";
-import { JobAnalysisResult, JobItem, ResumeData } from "../types.ts";
+import { attemptPromptSequentially } from "../ai/ai-client.ts";
+import { GeminiAIClient } from "../ai/gemini.ts";
+import { LocalAIClient } from "../ai/local-ai.ts";
+import type { JobAnalysisResult, JobItem, ResumeData } from "../types/types.ts";
 
 const RELEVANCE_PROMPT = `
 You are an expert job matching AI assistant. Your task is to analyze job postings and rate their relevance to a specific candidate based on their resume.
@@ -70,7 +70,10 @@ function generatePrompt(job: JobItem, resume: ResumeData): string {
     .replace("{jobDescription}", job.content_text.substring(0, 10000));
 }
 
-export async function analyzeJobsBatch(jobs: JobItem[], resume: ResumeData): Promise<JobItem[]> {
+export async function analyzeJobsBatch(
+  jobs: JobItem[],
+  resume: ResumeData,
+): Promise<JobItem[]> {
   console.log(`Starting analysis of ${jobs.length} jobs...`);
 
   const ais = [
@@ -92,10 +95,13 @@ export async function analyzeJobsBatch(jobs: JobItem[], resume: ResumeData): Pro
         ...(response as JobAnalysisResult),
         relevanceScore: (response as JobAnalysisResult).score,
         relevanceReason: (response as JobAnalysisResult).reason,
-        hardSkillsRequired: (response as JobAnalysisResult).hardSkillsRequired.join(", "),
-        yearsOfExperienceRequired: (response as JobAnalysisResult).yearsOfExperienceRequired,
+        hardSkillsRequired: (response as JobAnalysisResult).hardSkillsRequired
+          .join(", "),
+        yearsOfExperienceRequired:
+          (response as JobAnalysisResult).yearsOfExperienceRequired,
         recommendation: (response as JobAnalysisResult).recommendation,
-        estimatedCompensation: (response as JobAnalysisResult).estimatedCompensation,
+        estimatedCompensation:
+          (response as JobAnalysisResult).estimatedCompensation,
       };
     } catch {
       return {

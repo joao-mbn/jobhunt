@@ -37,5 +37,6 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 TODO/*
 TASKS.md
 credentials.json
+my-resume.json
 transform-load/data/*
 legacy-transform-load

@@ -1,8 +1,9 @@
+import type { RawJob } from "../types/definitions/job.ts";
 import type { LinkedInData } from "../types/definitions/source.ts";
 import type { Scraper } from "./types.ts";
 
 export class LinkedInScraper implements Scraper {
-  async fetchJobs() {
+  async fetchJobs(): Promise<RawJob[]> {
     const url = process.env.RSS_ENDPOINT;
     if (!url) {
       throw new Error("RSS_ENDPOINT is not set");
@@ -21,7 +22,7 @@ export class LinkedInScraper implements Scraper {
       const data = (await response.json()) as LinkedInData;
       return data.items.map((item) => ({
         name: item.title,
-        jobId: item.id,
+        jobId: item.url.split("view/")[1] ?? item.id,
         details: item,
         source: "linkedin",
       }));

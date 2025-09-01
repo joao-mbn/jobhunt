@@ -1,12 +1,12 @@
 import { chromium, type Browser, type Page } from "@playwright/test";
 import type { RawJob } from "../types/definitions/job.ts";
-import { retryWithBackoff } from "../utils/promise.ts";
+import { randomDelay, retryWithBackoff } from "../utils/promise.ts";
 import type { Scraper } from "./types.ts";
 
 export class LevelsScraper implements Scraper {
   jobsUrl = "https://www.levels.fyi/jobs";
 
-  fetchJobs() {
+  fetchJobs(): Promise<RawJob[]> {
     console.log("🔍 Starting levels job scraping...");
 
     return retryWithBackoff(async () => {
@@ -38,6 +38,7 @@ export class LevelsScraper implements Scraper {
 
         // Find job links using the href pattern
         console.log("🔍 Looking for job links...");
+        await randomDelay(2000, 3000);
         const jobLinks = await page.locator('a[href^="/jobs?jobId="]').all();
         console.log(`📋 Found ${jobLinks.length} job links`);
 

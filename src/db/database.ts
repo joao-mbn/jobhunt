@@ -70,6 +70,24 @@ class Database {
     }
   }
 
+  insert(table: string, columns: string[], paramsArray: SQLInputValue[][]): void {
+    if (paramsArray.length === 0) return;
+
+    const db = this.getDatabase();
+    try {
+      const insert = db.prepare(`
+        INSERT INTO ${table} (${columns.join(", ")})
+        VALUES (${Array(columns.length).fill("?").join(", ")});
+      `);
+      for (const params of paramsArray) {
+        insert.run(...params);
+      }
+    } catch (error) {
+      console.error("Error executing bulk insert:", error);
+      throw error;
+    }
+  }
+
   /**
    * Disposes of the database connection (for use with try-with-resources pattern)
    */

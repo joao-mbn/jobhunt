@@ -1,6 +1,6 @@
 import { attemptPromptSequentially } from "../ai/ai-client.ts";
-import { GeminiAIClient } from "../ai/gemini.ts";
-import { LocalAIClient } from "../ai/local-ai.ts";
+import { gemini2_0FlashLiteAIClient, gemini2_5FlashLiteAIClient, gemini2_5ProAIClient } from "../ai/gemini.ts";
+import { localAIClient } from "../ai/local-ai.ts";
 import type { JobItem, ResumeData } from "../types/types.ts";
 
 const COVER_LETTER_PROMPT = `
@@ -44,27 +44,16 @@ Return ONLY a JSON object with this exact structure:
 `;
 
 function generatePrompt(job: JobItem, resume: ResumeData): string {
-  return COVER_LETTER_PROMPT.replace(
-    "{resume}",
-    JSON.stringify(resume, null, 2),
-  )
+  return COVER_LETTER_PROMPT.replace("{resume}", JSON.stringify(resume, null, 2))
     .replace("{jobTitle}", job.title)
     .replace("{company}", job?.company || "")
     .replace("{jobDescription}", job.content_text.substring(0, 10000));
 }
 
-export async function generateCoverLetter(
-  jobs: JobItem[],
-  resume: ResumeData,
-): Promise<JobItem[]> {
+export async function generateCoverLetter(jobs: JobItem[], resume: ResumeData): Promise<JobItem[]> {
   console.log(`🔍 Starting cover letter generation for ${jobs.length} jobs...`);
 
-  const ais = [
-    new GeminiAIClient("gemini-2.5-pro"),
-    new GeminiAIClient("gemini-2.5-flash-lite"),
-    new GeminiAIClient("gemini-2.0-flash-lite"),
-    new LocalAIClient(),
-  ];
+  const ais = [gemini2_5ProAIClient, gemini2_5FlashLiteAIClient, gemini2_0FlashLiteAIClient, localAIClient];
   const promises = jobs.map(async (job) => {
     const prompt = generatePrompt(job, resume);
     try {
@@ -85,11 +74,6 @@ export async function generateCoverLetter(
   return jobsWithCoverLetter;
 }
 
-function isCoverLetterResponse(
-  response: unknown,
-): response is { content: string } {
-  return response != null &&
-    typeof response === "object" &&
-    "content" in response &&
-    typeof (response as { content: string }).content === "string";
+function isCoverLetterResponse(response: unknown): response is { content: string } {
+  return response != null && typeof response === "object" && "content" in response && typeof (response as { content: string }).content === "string";
 }

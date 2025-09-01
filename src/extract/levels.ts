@@ -111,3 +111,5 @@ export class LevelsScraper implements Scraper {
     await page.locator("html").click();
   }
 }
+
+export const levelsScraper = new LevelsScraper();

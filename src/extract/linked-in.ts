@@ -1,4 +1,4 @@
-import type { LinkedinData } from "../types/types.ts";
+import type { LinkedInData } from "../types/types.ts";
 import type { Scraper } from "./scraper.ts";
 
 export class LinkedInScraper implements Scraper {
@@ -18,7 +18,7 @@ export class LinkedInScraper implements Scraper {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = (await response.json()) as LinkedinData;
+      const data = (await response.json()) as LinkedInData;
       return data.items.map((item) => ({
         name: "linkedin",
         id: item.id,
@@ -30,3 +30,5 @@ export class LinkedInScraper implements Scraper {
     }
   }
 }
+
+export const linkedinScraper = new LinkedInScraper();

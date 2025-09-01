@@ -23,7 +23,7 @@ export interface JobItem {
   coverLetter?: string;
 }
 
-export interface LinkedinData {
+export interface LinkedInData {
   version: string;
   title: string;
   home_page_url: string;

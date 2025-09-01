@@ -1,6 +1,6 @@
 import { attemptPromptSequentially } from "../ai/ai-client.ts";
-import { GeminiAIClient } from "../ai/gemini.ts";
-import { LocalAIClient } from "../ai/local-ai.ts";
+import { gemini2_0FlashLiteAIClient, gemini2_5FlashLiteAIClient, gemini2_5ProAIClient } from "../ai/gemini.ts";
+import { localAIClient } from "../ai/local-ai.ts";
 import type { JobAnalysisResult, JobItem, ResumeData } from "../types/types.ts";
 
 const RELEVANCE_PROMPT = `
@@ -62,26 +62,15 @@ Focus on the candidate's 4+ years of full-stack development experience, TypeScri
 `;
 
 function generatePrompt(job: JobItem, resume: ResumeData): string {
-  return RELEVANCE_PROMPT.replace(
-    "{resume}",
-    JSON.stringify(resume, null, 2),
-  )
+  return RELEVANCE_PROMPT.replace("{resume}", JSON.stringify(resume, null, 2))
     .replace("{jobTitle}", job.title)
     .replace("{jobDescription}", job.content_text.substring(0, 10000));
 }
 
-export async function analyzeJobsBatch(
-  jobs: JobItem[],
-  resume: ResumeData,
-): Promise<JobItem[]> {
+export async function analyzeJobsBatch(jobs: JobItem[], resume: ResumeData): Promise<JobItem[]> {
   console.log(`Starting analysis of ${jobs.length} jobs...`);
 
-  const ais = [
-    new GeminiAIClient("gemini-2.5-pro"),
-    new GeminiAIClient("gemini-2.5-flash-lite"),
-    new GeminiAIClient("gemini-2.0-flash-lite"),
-    new LocalAIClient(),
-  ];
+  const ais = [gemini2_5ProAIClient, gemini2_5FlashLiteAIClient, gemini2_0FlashLiteAIClient, localAIClient];
   const promises = jobs.map(async (job): Promise<JobItem | null> => {
     const prompt = generatePrompt(job, resume);
     try {
@@ -95,13 +84,10 @@ export async function analyzeJobsBatch(
         ...(response as JobAnalysisResult),
         relevanceScore: (response as JobAnalysisResult).score,
         relevanceReason: (response as JobAnalysisResult).reason,
-        hardSkillsRequired: (response as JobAnalysisResult).hardSkillsRequired
-          .join(", "),
-        yearsOfExperienceRequired:
-          (response as JobAnalysisResult).yearsOfExperienceRequired,
+        hardSkillsRequired: (response as JobAnalysisResult).hardSkillsRequired.join(", "),
+        yearsOfExperienceRequired: (response as JobAnalysisResult).yearsOfExperienceRequired,
         recommendation: (response as JobAnalysisResult).recommendation,
-        estimatedCompensation:
-          (response as JobAnalysisResult).estimatedCompensation,
+        estimatedCompensation: (response as JobAnalysisResult).estimatedCompensation,
       };
     } catch {
       return {
@@ -128,18 +114,12 @@ function isJobAnalysisResult(response: unknown): response is JobAnalysisResult {
     return false;
   }
 
-  const requiredFields = [
-    "yearsOfExperienceRequired",
-    "reason",
-    "recommendation",
-    "estimatedCompensation",
-    "hardSkillsRequired",
-  ];
+  const requiredFields = ["yearsOfExperienceRequired", "reason", "recommendation", "estimatedCompensation", "hardSkillsRequired"];
   for (const field of requiredFields) {
     if (!(field in response)) {
       return false;
     }
   }
 
-  return ("score" in response) && !isNaN((response as JobAnalysisResult).score);
+  return "score" in response && !isNaN((response as JobAnalysisResult).score);
 }

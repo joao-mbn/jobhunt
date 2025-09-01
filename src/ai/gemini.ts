@@ -52,3 +52,7 @@ export class GeminiAIClient implements AIClient {
     return response.text ?? "";
   }
 }
+
+export const gemini2_5ProAIClient = new GeminiAIClient("gemini-2.5-pro");
+export const gemini2_5FlashLiteAIClient = new GeminiAIClient("gemini-2.5-flash-lite");
+export const gemini2_0FlashLiteAIClient = new GeminiAIClient("gemini-2.0-flash-lite");

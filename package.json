@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "type": "module",
-  "scripts": {},
+  "scripts": {
+    "init-db": "node --env-file=.env src/db/init-db.ts"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

@@ -1,8 +1,9 @@
 import { existsSync, mkdirSync } from "fs";
-import { DatabaseSync, type DatabaseSyncOptions } from "node:sqlite";
+import type { DatabaseSyncOptions, SQLInputValue, SQLOutputValue } from "node:sqlite";
+import { DatabaseSync } from "node:sqlite";
 import { join } from "path";
 
-class DatabaseManager {
+class Database {
   private database: DatabaseSync | null = null;
   private dbPath = "./data/jobhunt.db";
   private config: DatabaseSyncOptions;
@@ -59,6 +60,16 @@ class DatabaseManager {
     }
   }
 
+  query(sql: string, ...params: SQLInputValue[]): Record<string, SQLOutputValue>[] {
+    const db = this.getDatabase();
+    try {
+      return db.prepare(sql).all(...params);
+    } catch (error) {
+      console.error("Error executing SQL:", error);
+      throw error;
+    }
+  }
+
   /**
    * Disposes of the database connection (for use with try-with-resources pattern)
    */
@@ -68,4 +79,4 @@ class DatabaseManager {
 }
 
 // Export a singleton instance
-export const db = new DatabaseManager();
+export const db = new Database();

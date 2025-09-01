@@ -27,16 +27,10 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 .cache
 *.tsbuildinfo
 
-# IntelliJ based IDEs
-.idea
-
-# Finder (MacOS) folder config
-.DS_Store
-
 # secrets
 TODO/*
 TASKS.md
 credentials.json
-my-resume.json
-transform-load/data/*
+data/my-resume.json
 legacy-transform-load
+data/*

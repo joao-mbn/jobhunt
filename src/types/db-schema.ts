@@ -1,19 +1,19 @@
-export interface BaseRecord {
+export interface DBBaseRecord {
   id?: string;
   fail_count?: number;
   created_at: string;
   updated_at: string;
 }
 
-export interface Job extends BaseRecord {
+export interface DBJob extends DBBaseRecord {
   name: string;
   job_id: string;
   details: Record<string, unknown>;
 }
 
-export interface RawJob extends Job {}
+export interface DBRawJob extends DBJob {}
 
-export interface CleanJob extends Job {
+export interface DBCleanJob extends DBJob {
   work_arrangement?: string;
   compensation?: string;
   company?: string;
@@ -25,13 +25,13 @@ export interface CleanJob extends Job {
   uploaded_to_sheet: boolean;
 }
 
-export interface EnhancedJob extends CleanJob {
+export interface DBEnhancedJob extends DBCleanJob {
   relevance_score?: number;
   relevance_reason?: string;
   recommendation?: string;
 }
 
-export interface Prefills extends BaseRecord {
+export interface DBPrefills extends DBBaseRecord {
   clean_job_id: string;
   cover_letter?: string;
 }

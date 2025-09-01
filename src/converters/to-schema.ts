@@ -16,6 +16,7 @@ export function fromRawJobToDBRawJob(job: RawJob): DBRawJob {
     name: job.name,
     job_id: job.jobId,
     details: job.details,
+    source: job.source,
   };
 }
 

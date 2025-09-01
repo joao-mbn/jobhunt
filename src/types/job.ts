@@ -9,6 +9,7 @@ export interface Job extends BaseRecord {
   name: string;
   jobId: string;
   details: Record<string, unknown>;
+  source: string;
 }
 
 export interface RawJob extends Job {}

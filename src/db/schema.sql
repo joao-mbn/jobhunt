@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS raw_jobs (
     name TEXT NOT NULL,
     job_id TEXT NOT NULL UNIQUE,
     details TEXT NOT NULL,
+    source TEXT NOT NULL,
     fail_count INTEGER DEFAULT 0,
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at TEXT NOT NULL DEFAULT (datetime('now'))
@@ -19,6 +20,7 @@ CREATE TABLE IF NOT EXISTS clean_jobs (
     name TEXT NOT NULL,
     job_id TEXT NOT NULL UNIQUE,
     details TEXT NOT NULL,
+    source TEXT NOT NULL,
     work_arrangement TEXT,
     compensation TEXT,
     company TEXT,
@@ -37,6 +39,7 @@ CREATE TABLE IF NOT EXISTS enhanced_jobs (
     name TEXT NOT NULL,
     job_id TEXT NOT NULL UNIQUE,
     details TEXT NOT NULL,
+    source TEXT NOT NULL,
     work_arrangement TEXT,
     compensation TEXT,
     company TEXT,

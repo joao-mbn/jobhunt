@@ -9,6 +9,7 @@ export interface DBJob extends DBBaseRecord {
   name: string;
   job_id: string;
   details: Record<string, unknown>;
+  source: string;
 }
 
 export interface DBRawJob extends DBJob {}

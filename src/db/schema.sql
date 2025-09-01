@@ -27,7 +27,6 @@ CREATE TABLE IF NOT EXISTS clean_jobs (
     published_date TEXT,
     years_of_experience_required TEXT,
     hard_skills_required TEXT,
-    uploaded_to_sheet INTEGER NOT NULL DEFAULT FALSE,
     fail_count INTEGER DEFAULT 0,
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at TEXT NOT NULL DEFAULT (datetime('now'))
@@ -47,7 +46,7 @@ CREATE TABLE IF NOT EXISTS enhanced_jobs (
     years_of_experience_required TEXT,
     hard_skills_required TEXT,
     uploaded_to_sheet INTEGER NOT NULL DEFAULT FALSE,
-    relevance_score REAL, -- Float for relevance score
+    relevance_score INTEGER,
     relevance_reason TEXT,
     recommendation TEXT,
     fail_count INTEGER DEFAULT 0,
@@ -57,12 +56,12 @@ CREATE TABLE IF NOT EXISTS enhanced_jobs (
 
 CREATE TABLE IF NOT EXISTS prefills (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    clean_job_id INTEGER NOT NULL,
+    enhanced_job_id INTEGER NOT NULL,
     cover_letter TEXT,
     fail_count INTEGER DEFAULT 0,
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at TEXT NOT NULL DEFAULT (datetime('now')),
-    FOREIGN KEY (clean_job_id) REFERENCES clean_jobs(id) ON DELETE CASCADE
+    FOREIGN KEY (enhanced_job_id) REFERENCES enhanced_jobs(id) ON DELETE CASCADE
 ) STRICT;
 
 -- Create triggers to automatically update the updated_at timestamp

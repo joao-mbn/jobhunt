@@ -1,0 +1,37 @@
+export interface BaseRecord {
+  id?: number;
+  failCount?: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface Job extends BaseRecord {
+  name: string;
+  jobId: string;
+  details: Record<string, unknown>;
+}
+
+export interface RawJob extends Job {}
+
+export interface CleanJob extends Job {
+  workArrangement?: "Remote" | "Hybrid" | "On-Site";
+  compensation?: string;
+  company?: string;
+  location?: string;
+  role?: string;
+  publishedDate?: Date;
+  yearsOfExperienceRequired?: string;
+  hardSkillsRequired?: string;
+}
+
+export interface EnhancedJob extends CleanJob {
+  relevanceScore?: number;
+  relevanceReason?: string;
+  recommendation?: "Apply" | "Consider" | "Skip";
+  uploadedToSheet: boolean;
+}
+
+export interface Prefills extends BaseRecord {
+  enhancedJobId: number;
+  coverLetter?: string;
+}

@@ -2,6 +2,9 @@ import { readFileSync } from "fs";
 import { join } from "path";
 import { db } from "./database.ts";
 
+/**
+ * This a one-time script to initialize the database schema.
+ */
 async function main() {
   try {
     const schemaPath = join(process.cwd(), "src", "db", "schema.sql");

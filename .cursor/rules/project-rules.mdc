@@ -1,0 +1,106 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+
+# Job Hunt Automation - Cursor Rules
+
+> **📖 For detailed project information, setup instructions, and architecture details, see the [README.md](../../README.md#job-hunt-automation)**
+
+## Quick Reference
+
+- **Project Type**: ETL pipeline for job postings with AI analysis
+- **Architecture**: Extract → Transform (3-stage) → Load → Google Sheets
+- **Tech Stack**: Node.js v24+, TypeScript, SQLite, Google APIs, Playwright
+- **Package Manager**: pnpm (primary)
+
+## Development Patterns
+
+### Entry Points & Module Structure
+
+- Each major folder contains an `index.ts` with a `main()` function
+- Modules can run independently or as part of the orchestrated pipeline
+- Use `pnpm run <script>` for individual steps or `pnpm run cron` for full pipeline
+
+### Code Organization
+
+> **📖 See [README.md - Folder Structure](../../README.md#folder-structure) for detailed folder structure and conventions**
+
+- Each major folder contains an `index.ts` with a `main()` function
+- Modules can run independently or as part of the orchestrated pipeline
+- Use `pnpm run <script>` for individual steps or `pnpm run cron` for full pipeline
+
+### TypeScript & Data Flow
+
+- Use interfaces over types, avoid enums
+- Follow ETL pipeline data structures: Raw → Cleaned → Enhanced → Pre-fills
+- Implement proper error handling with fail counts and retry logic
+- Use functional programming patterns, avoid classes
+
+### Database Operations
+
+- SQLite database at `data/jobhunt.db`
+- Batch processing to avoid memory spikes
+- Implement cleanup jobs for failed/old data
+- Use transactions for data consistency
+
+## Development Workflow
+
+> **📖 See [README.md - Setup](../../README.md#️-setup) for detailed setup, environment configuration, and testing instructions**
+
+### Quick Commands
+
+- **Setup**: `pnpm i && pnpm run init-db`
+- **Full Pipeline**: `pnpm run cron`
+- **Individual Steps**: `pnpm run extract`, `pnpm run transform-clean`, etc.
+- **Debug**: Use JavaScript Debug Terminal in VS Code
+
+## Common Development Tasks
+
+> **📖 See [README.md - Usage](../../README.md#-usage) for detailed development patterns and troubleshooting**
+
+### Key File Locations
+
+- **New Job Sources**: `src/extract/` + update schema if needed
+- **AI Analysis**: `src/transform/enhance/` for scoring algorithms
+- **Database Changes**: `src/db/schema.sql` → `pnpm run init-db`
+- **Google Sheets**: Verify permissions and test with small datasets
+
+## Best Practices
+
+> **📖 See [README.md](../../README.md#job-hunt-automation) for detailed best practices and troubleshooting**
+
+### Key Principles
+
+- **Performance**: Batch processing, proper indexing, regular cleanup
+- **Error Handling**: Fail count tracking, graceful degradation, circuit breakers
+- **Monitoring**: Success rates, API usage, database health, data freshness
+
+## Troubleshooting
+
+> **📖 See [README.md](../../README.md#-usage) for detailed troubleshooting and common issues**
+
+### Quick Debug Commands
+
+- `pnpm run extract` - Test data extraction
+- `pnpm run transform-clean` - Test data cleaning
+- `pnpm run transform-enhance` - Test AI enhancement
+- `pnpm run transform-prefills` - Test pre-fill generation
+- `pnpm run load` - Test Google Sheets integration
+
+## File Naming & Organization
+
+- Use descriptive names for modules and functions
+- Follow the established folder structure
+- Keep related functionality together
+- Use consistent naming conventions across the codebase
+
+## Integration Points
+
+> **📖 See [README.md](../../README.md#️-setup) for detailed integration setup and configuration**
+
+- **AI Services**: Gemini API (cloud) or Local AI (Docker)
+- **External APIs**: Google Sheets, RSS feeds, LinkedIn
+- **Data Sources**: Web scraping, RSS feeds, manual imports
+- **Output**: Google Sheets with structured job data and application materials

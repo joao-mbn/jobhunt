@@ -75,6 +75,7 @@ class Database {
 
     const db = this.getDatabase();
     try {
+      // use parameterized query to avoid SQL injection and escape characters
       const insert = db.prepare(`
         INSERT INTO ${table} (${columns.join(", ")})
         VALUES (${Array(columns.length).fill("?").join(", ")});

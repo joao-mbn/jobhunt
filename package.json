@@ -6,7 +6,12 @@
   "type": "module",
   "scripts": {
     "init-db": "node --env-file=.env src/db/index.ts",
-    "extract": "node --env-file=.env src/extract/index.ts"
+    "cron": "node --env-file=.env src/cron/index.ts",
+    "extract": "node --env-file=.env src/extract/index.ts",
+    "transform-clean": "node --env-file=.env src/transform/clean/index.ts",
+    "transform-enhance": "node --env-file=.env src/transform/enhance/index.ts",
+    "transform-prefills": "node --env-file=.env src/transform/prefills/index.ts",
+    "load": "node --env-file=.env src/load/index.ts"
   },
   "keywords": [],
   "author": "",

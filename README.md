@@ -1,36 +1,10 @@
 # Job Hunt Automation
 
-An intelligent job search automation system that fetches job postings from RSS feeds, analyzes their
-relevance using AI, generates tailored application materials, and organizes everything in Google
-Sheets.
-
 ## 🎯 What It Does
-
-This project automates the entire job hunting process:
-
-1. **Fetches Jobs**: Retrieves job postings from RSS feeds (LinkedIn, etc.)
-2. **AI Analysis**: Uses AI to further extract infos and rank the positions according to my fit
-   preferences.
-3. **Smart Filtering**: Filters high ranking positions
-4. **Application Materials**: Generates tailored resumes and cover letters for high-scoring jobs
-5. **Organization**: Saves everything to Google Sheets with detailed analysis
-6. **Automation**: Runs hourly via cron job to continuously monitor for new opportunities
 
 ### Key Components
 
-- **RSS Integration** (`src/integration/rss.ts`): Fetches job postings from RSS feeds
-- **AI Analysis** (`src/business/insights.ts`): Uses Gemini AI to score job relevance
-- **Application Generation** (`src/business/application.ts`): Uses AI to generate cover letters
-- **Google Sheets Integration** (`src/integration/gsheet.ts`): Organizes and stores job data
-- **File System** (`src/integration/file-system.ts`): Manages local data storage
-- **Cron Job** (`src/cron.ts`): Runs the automation hourly
-
 ## 📋 Prerequisites
-
-- [Deno](https://deno.land/) runtime (latest version)
-- Google Cloud Platform account with Gemini AI API access
-- Google Sheets API credentials
-- RSS feed endpoint for job postings
 
 ## ⚙️ Setup
 
@@ -39,7 +13,7 @@ This project automates the entire job hunting process:
 ```bash
 git clone <repository-url>
 cd jobhunt
-deno cache src/index.ts
+pnpm i
 ```
 
 ### 2. Environment Variables
@@ -81,7 +55,7 @@ GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour private key here\n-----END
 
 ### 5. Resume Configuration
 
-Create a file `data/myResume.json` with your current resume information. The AI uses this to:
+Create a file `data/my-resume.json` with your current resume information. The AI uses this to:
 
 - Score job relevance
 - Generate tailored application materials
@@ -127,4 +101,4 @@ deno task lint
 
 ### Debug Mode (VS Code & Forks)
 
-Run und Debug with the configuration `Debug Deno` under `.vscode/launch.json`
+- Start any flow you wish to debug with a JavaScript debug terminal. `package.json` have a few scripts you can run in isolation.

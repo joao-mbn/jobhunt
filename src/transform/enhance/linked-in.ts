@@ -1,7 +1,7 @@
-import { attemptPromptSequentially } from "../ai/ai-client.ts";
-import { gemini2_0FlashLiteAIClient, gemini2_5FlashLiteAIClient, gemini2_5ProAIClient } from "../ai/gemini.ts";
-import { localAIClient } from "../ai/local-ai.ts";
-import type { JobAnalysisResult, JobItem, ResumeData } from "../types/definitions/types.ts";
+import { attemptPromptSequentially } from "../../ai/ai-client.ts";
+import { gemini2_0FlashLiteAIClient, gemini2_5FlashLiteAIClient, gemini2_5ProAIClient } from "../../ai/gemini.ts";
+import { localAIClient } from "../../ai/local-ai.ts";
+import type { JobAnalysisResult, JobItem, ResumeData } from "../../types/definitions/types.ts";
 
 const RELEVANCE_PROMPT = `
 You are an expert job matching AI assistant. Your task is to analyze job postings and rate their relevance to a specific candidate based on their resume.

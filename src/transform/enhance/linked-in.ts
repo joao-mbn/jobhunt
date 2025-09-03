@@ -1,6 +1,6 @@
-import { attemptPromptSequentially } from "../../ai/ai-client.ts";
 import { gemini2_0FlashLiteAIClient, gemini2_5FlashLiteAIClient, gemini2_5ProAIClient } from "../../ai/gemini.ts";
 import { localAIClient } from "../../ai/local-ai.ts";
+import { attemptPromptSequentially } from "../../ai/utils.ts";
 import type { JobAnalysisResult, JobItem, ResumeData } from "../../types/definitions/types.ts";
 
 const RELEVANCE_PROMPT = `
@@ -114,7 +114,13 @@ function isJobAnalysisResult(response: unknown): response is JobAnalysisResult {
     return false;
   }
 
-  const requiredFields = ["yearsOfExperienceRequired", "reason", "recommendation", "estimatedCompensation", "hardSkillsRequired"];
+  const requiredFields = [
+    "yearsOfExperienceRequired",
+    "reason",
+    "recommendation",
+    "estimatedCompensation",
+    "hardSkillsRequired",
+  ];
   for (const field of requiredFields) {
     if (!(field in response)) {
       return false;

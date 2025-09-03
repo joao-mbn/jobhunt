@@ -1,6 +1,6 @@
-import { attemptPromptSequentially } from "../../ai/ai-client.ts";
 import { gemini2_0FlashLiteAIClient, gemini2_5FlashLiteAIClient, gemini2_5ProAIClient } from "../../ai/gemini.ts";
 import { localAIClient } from "../../ai/local-ai.ts";
+import { attemptPromptSequentially } from "../../ai/utils.ts";
 import type { JobItem, ResumeData } from "../../types/definitions/types.ts";
 
 const COVER_LETTER_PROMPT = `
@@ -75,5 +75,10 @@ export async function generateCoverLetter(jobs: JobItem[], resume: ResumeData): 
 }
 
 function isCoverLetterResponse(response: unknown): response is { content: string } {
-  return response != null && typeof response === "object" && "content" in response && typeof (response as { content: string }).content === "string";
+  return (
+    response != null &&
+    typeof response === "object" &&
+    "content" in response &&
+    typeof (response as { content: string }).content === "string"
+  );
 }

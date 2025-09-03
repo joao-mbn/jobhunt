@@ -1,4 +1,4 @@
-import type { DBBaseRecord, DBCleanJob, DBEnhancedJob, DBJob, DBPrefills, DBRawJob } from "../types/definitions/schema.ts";
+import type { DBBaseRecord, DBCleanJob, DBEnhancedJob, DBJob, DBPrefills, DBRawJob } from "../definitions/schema.ts";
 import { hasOptionalFields, hasRequiredFields } from "./has-fields.ts";
 
 export function isDBBaseRecord(record: unknown): record is DBBaseRecord {
@@ -23,7 +23,7 @@ export function isDBJob(job: unknown): job is DBJob {
   const requiredFields: Partial<Record<keyof DBJob, string>> = {
     name: "string",
     job_id: "string",
-    details: "object",
+    details: "string",
     source: "string",
   };
   return hasRequiredFields(job, requiredFields);

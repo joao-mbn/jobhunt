@@ -1,4 +1,4 @@
-import type { BaseRecord, CleanJob, EnhancedJob, Job, Prefills, RawJob } from "../types/definitions/job.ts";
+import type { BaseRecord, CleanJob, EnhancedJob, Job, Prefills, RawJob } from "../definitions/job.ts";
 import { hasOptionalFields, hasRequiredFields } from "./has-fields.ts";
 
 export function isBaseRecord(record: unknown): record is BaseRecord {

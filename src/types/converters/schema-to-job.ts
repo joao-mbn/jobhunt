@@ -15,8 +15,8 @@ export function fromDBRawJobToRawJob(job: DBRawJob): RawJob {
     ...fromDBBaseRecordToBaseRecord(job),
     name: job.name,
     jobId: job.job_id,
-    details: job.details,
-    source: job.source,
+    details: JSON.parse(job.details),
+    source: job.source as "linkedin" | "levels",
   };
 }
 

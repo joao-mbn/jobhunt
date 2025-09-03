@@ -1,5 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
-import type { AIClient } from "./ai-client.ts";
+import type { AIClient } from "./types.ts";
 
 const models = {
   "gemini-2.0-flash-lite": {

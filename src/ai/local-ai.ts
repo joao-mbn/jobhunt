@@ -1,4 +1,4 @@
-import type { AIClient } from "./ai-client.ts";
+import type { AIClient } from "./types.ts";
 
 const LOCAL_AI_CONFIG = {
   model: "gpt-4",

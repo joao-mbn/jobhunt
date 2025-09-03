@@ -16,9 +16,6 @@ export interface LinkedInData {
     date_published: string;
     authors: { name: string }[];
     attachments?: { url: string }[];
-    location?: string;
-    role?: string;
-    company?: string;
   }[];
 }
 

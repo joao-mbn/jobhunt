@@ -75,7 +75,7 @@ class Database {
 
     const db = this.getDatabase();
     try {
-      // use parameterized query to avoid SQL injection and escape characters
+      this.beginTransaction();
       const insert = db.prepare(`
         INSERT INTO ${table} (${columns.join(", ")})
         VALUES (${Array(columns.length).fill("?").join(", ")});
@@ -83,10 +83,21 @@ class Database {
       for (const params of paramsArray) {
         insert.run(...params);
       }
+      this.commitTransaction();
     } catch (error) {
       console.error("Error executing bulk insert:", error);
       throw error;
     }
+  }
+
+  beginTransaction(): void {
+    const db = this.getDatabase();
+    db.exec(`BEGIN TRANSACTION`);
+  }
+
+  commitTransaction(): void {
+    const db = this.getDatabase();
+    db.exec(`COMMIT`);
   }
 
   /**

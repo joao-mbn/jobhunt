@@ -1,12 +1,11 @@
 import { db } from "../db/database.ts";
-import { levelsScraper } from "./levels.ts";
 import { linkedinScraper } from "./linked-in.ts";
 
 async function main() {
   try {
     // Step 1: Fetch jobs from scrapers
     console.log("📡 Fetching jobs from scrapers...");
-    const scrapers = [levelsScraper, linkedinScraper];
+    const scrapers = [linkedinScraper];
     const extractedJobs = (await Promise.all(scrapers.map((s) => s.fetchJobs()))).flat();
 
     if (extractedJobs.length === 0) {
@@ -33,12 +32,13 @@ async function main() {
 
     // Step 3: Store jobs in the database
     console.log("📤 Storing jobs in the database...");
-    db.insert(
-      "raw_jobs",
-      ["name", "job_id", "details", "source"],
-      newJobs.map((job) => [job.name, job.jobId, JSON.stringify(job.details), job.source])
-    );
-
+    await db.withTransaction(async () => {
+      db.insert(
+        "raw_jobs",
+        ["name", "job_id", "details", "source"],
+        newJobs.map((job) => [job.name, job.jobId, JSON.stringify(job.details), job.source])
+      );
+    });
     console.log("🎉 Jobs stored in the database successfully!");
   } catch (error) {
     console.error("❌ Error in levels scraper:", error);

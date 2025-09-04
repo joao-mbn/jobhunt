@@ -1,5 +1,6 @@
 import { ais, attemptPromptSequentially } from "../../ai/utils.ts";
 import { hasOptionalFields } from "../../types/validators/has-fields.ts";
+import { fromDateStringSafely } from "../../utils/date.ts";
 import type { AIGeneratedCleanJobInfo } from "./types.ts";
 
 const JOB_INFO_EXTRACTION_PROMPT = `
@@ -57,7 +58,7 @@ export async function extractInfoFromDescription(
 
     return {
       ...response,
-      publishedDate: response.publishedDate ? new Date(response.publishedDate) : undefined,
+      publishedDate: fromDateStringSafely(response.publishedDate),
     };
   } catch (error) {
     console.error(`Failed to extract job info for job ${jobId}:`, error);

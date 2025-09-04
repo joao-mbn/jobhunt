@@ -1,7 +1,6 @@
 import { db } from "../../db/database.ts";
 import type { Job, RawJob } from "../../types/definitions/job.ts";
 import { deleteCleanedRawJobs, insertNewCleanJobs, queryRawJobs, updateFailedCleaning } from "./db.ts";
-import { levelsCleaner } from "./levels.ts";
 import { linkedInCleaner } from "./linked-in.ts";
 import type { CleanResult, CleanResultFailure, CleanResultSuccess } from "./types.ts";
 
@@ -20,25 +19,24 @@ async function main() {
     const failedResults = cleanResults.filter((result): result is CleanResultFailure => !result.success);
     console.log(`Cleaning completed: ${successfulResults.length} successful, ${failedResults.length} failed`);
 
-    db.beginTransaction();
+    await db.withTransaction(async () => {
+      // Step 3: Update the fail_count for the failed jobs
+      if (failedResults.length > 0) {
+        console.log(`Updating fail_count for ${failedResults.length} failed jobs...`);
+        updateFailedCleaning(failedResults);
+      }
 
-    // Step 3: Update the fail_count for the failed jobs
-    if (failedResults.length > 0) {
-      console.log(`Updating fail_count for ${failedResults.length} failed jobs...`);
-      updateFailedCleaning(failedResults);
-    }
+      // Step 4: Insert the successful results and delete the raw jobs
+      if (successfulResults.length > 0) {
+        console.log(`Inserting ${successfulResults.length} new clean jobs...`);
+        insertNewCleanJobs(successfulResults);
 
-    // Step 4: Insert the successful results and delete the raw jobs
-    if (successfulResults.length > 0) {
-      console.log(`Inserting ${successfulResults.length} new clean jobs...`);
-      insertNewCleanJobs(successfulResults);
+        console.log(`Deleting ${successfulResults.length} raw jobs...`);
+        deleteCleanedRawJobs(successfulResults);
+      }
 
-      console.log(`Deleting ${successfulResults.length} raw jobs...`);
-      deleteCleanedRawJobs(successfulResults);
-    }
-
-    db.commitTransaction();
-    console.log("Data cleaning process completed successfully");
+      console.log("Data cleaning process completed successfully");
+    });
   } catch (error) {
     console.error("Failed to clean data:", error);
     process.exitCode = 1;
@@ -62,11 +60,8 @@ async function cleanJobs(rawJobs: RawJob[]): Promise<CleanResult[]> {
         switch (source) {
           case "linkedin":
             return linkedInCleaner.clean(jobs);
-          case "levels":
-            return levelsCleaner.clean(jobs);
           default:
-            console.warn(`Unknown source: ${source}`);
-            return Promise.resolve([]);
+            throw new Error(`Unknown source: ${source}`);
         }
       })
     )

@@ -1,3 +1,4 @@
+import { fromDateStringSafely } from "../../utils/date.ts";
 import type { BaseRecord, CleanJob, EnhancedJob, Prefills, RawJob } from "../definitions/job.ts";
 import type { DBBaseRecord, DBCleanJob, DBEnhancedJob, DBPrefills, DBRawJob } from "../definitions/schema.ts";
 
@@ -5,8 +6,8 @@ export function fromDBBaseRecordToBaseRecord(record: DBBaseRecord): BaseRecord {
   return {
     id: record.id,
     failCount: record.fail_count,
-    createdAt: record.created_at ? new Date(record.created_at) : undefined,
-    updatedAt: record.updated_at ? new Date(record.updated_at) : undefined,
+    createdAt: fromDateStringSafely(record.created_at),
+    updatedAt: fromDateStringSafely(record.updated_at),
   };
 }
 
@@ -32,7 +33,7 @@ export function fromDBCleanJobToCleanJob(job: DBCleanJob): CleanJob {
     company: job.company,
     location: job.location,
     role: job.role,
-    publishedDate: job.published_date ? new Date(job.published_date) : undefined,
+    publishedDate: fromDateStringSafely(job.published_date),
     yearsOfExperienceRequired: job.years_of_experience_required,
     hardSkillsRequired: job.hard_skills_required,
   };

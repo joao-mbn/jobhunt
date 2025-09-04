@@ -13,7 +13,7 @@ export function queryRawJobs() {
       LIMIT 15
     `);
 
-  const dbRawJobs = rawJobsResult.map(isDBRawJob) as unknown as DBRawJob[];
+  const dbRawJobs = rawJobsResult.filter(isDBRawJob) as unknown as DBRawJob[];
   const rawJobs = dbRawJobs.map(fromDBRawJobToRawJob);
   return rawJobs;
 }
@@ -52,13 +52,12 @@ export function insertNewCleanJobs(successfulResults: CleanResultSuccess[]) {
     .filter(({ jobId }) => !existingCleanJobs.some((j) => j.job_id === jobId))
     .map(({ job }) => job);
   const newCleanDBJobs = newCleanJobs.map(fromCleanJobToDBCleanJob);
-  const columns = Object.keys(newCleanDBJobs[0]) as (keyof DBCleanJob)[];
-
-  if (newCleanJobs.length > 0) {
-    db.insert(
-      "clean_jobs",
-      columns,
-      newCleanDBJobs.map((job) => columns.map((column) => job[column]))
-    );
+  if (newCleanJobs.length === 0) {
+    return;
   }
+
+  const columns = (Object.keys(newCleanDBJobs[0]) as (keyof DBCleanJob)[]).filter((column) => column !== "id");
+  const rows = newCleanDBJobs.map((job) => columns.map((column) => job[column] ?? null));
+
+  db.insert("clean_jobs", columns, rows);
 }

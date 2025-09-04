@@ -75,7 +75,6 @@ class Database {
 
     const db = this.getDatabase();
     try {
-      this.beginTransaction();
       const insert = db.prepare(`
         INSERT INTO ${table} (${columns.join(", ")})
         VALUES (${Array(columns.length).fill("?").join(", ")});
@@ -83,7 +82,6 @@ class Database {
       for (const params of paramsArray) {
         insert.run(...params);
       }
-      this.commitTransaction();
     } catch (error) {
       console.error("Error executing bulk insert:", error);
       throw error;
@@ -98,6 +96,12 @@ class Database {
   commitTransaction(): void {
     const db = this.getDatabase();
     db.exec(`COMMIT`);
+  }
+
+  async withTransaction(callback: () => Promise<void>): Promise<void> {
+    this.beginTransaction();
+    await callback();
+    this.commitTransaction();
   }
 
   /**

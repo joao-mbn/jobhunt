@@ -47,6 +47,7 @@ export function isDBCleanJob(job: unknown): job is DBCleanJob {
     published_date: "string",
     years_of_experience_required: "string",
     hard_skills_required: "string",
+    job_description: "string",
   };
   return hasOptionalFields(job, optionalFields);
 }

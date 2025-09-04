@@ -23,6 +23,7 @@ export interface DBCleanJob extends DBJob {
   published_date?: string;
   years_of_experience_required?: string;
   hard_skills_required?: string;
+  job_description?: string;
 }
 
 export interface DBEnhancedJob extends DBCleanJob {

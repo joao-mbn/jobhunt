@@ -47,6 +47,7 @@ export function isCleanJob(job: unknown): job is CleanJob {
     publishedDate: "date",
     yearsOfExperienceRequired: "string",
     hardSkillsRequired: "string",
+    jobDescription: "string",
   };
   return hasOptionalFields(job, optionalFields);
 }

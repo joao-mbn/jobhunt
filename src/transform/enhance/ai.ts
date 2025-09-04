@@ -64,7 +64,7 @@ Return ONLY a JSON object with this exact structure:
 - Pay attention to location preferences, work arrangement preferences, and career goals from the resume
 `;
 
-export async function enhanceJobWithAI(job: CleanJob, jobId: string): Promise<AIGeneratedEnhancedJobInfo> {
+export async function enhanceJobWithAI(job: CleanJob): Promise<AIGeneratedEnhancedJobInfo> {
   const resume = getResume();
 
   const prompt = JOB_ENHANCEMENT_PROMPT.replace(
@@ -78,18 +78,18 @@ export async function enhanceJobWithAI(job: CleanJob, jobId: string): Promise<AI
     .replace("{{compensation}}", job.compensation || "Not specified")
     .replace("{{yearsOfExperienceRequired}}", job.yearsOfExperienceRequired || "Not specified")
     .replace("{{hardSkillsRequired}}", job.hardSkillsRequired || "Not specified")
-    .replace("{{jobDescription}}", job.jobDescription);
+    .replace("{{jobDescription}}", job.jobDescription || "Not specified");
 
   try {
     const { response } = (await attemptPromptSequentially(ais, {
       prompt,
-      key: jobId,
+      key: job.jobId,
       options: { asJson: true, validateJson: isAIEnhancedJobInfo },
     })) as { response: AIGeneratedEnhancedJobInfo };
 
     return response;
   } catch (error) {
-    console.error(`Failed to enhance job ${jobId} with AI:`, error);
+    console.error(`Failed to enhance job ${job.jobId} with AI:`, error);
     // Return default values if AI enhancement fails
     return {
       relevanceScore: 0,

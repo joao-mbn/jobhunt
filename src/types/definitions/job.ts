@@ -23,6 +23,7 @@ export interface CleanJob extends Job {
   publishedDate?: Date;
   yearsOfExperienceRequired?: string;
   hardSkillsRequired?: string;
+  jobDescription?: string;
 }
 
 export interface EnhancedJob extends CleanJob {

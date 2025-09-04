@@ -43,10 +43,7 @@ Return ONLY a JSON object with this exact structure:
 - Be conservative - only extract information that is clearly stated
 `;
 
-export async function extractInfoFromDescription(
-  jobDescription: string,
-  jobId: string
-): Promise<AIGeneratedCleanJobInfo> {
+export async function extractInfoWithAI(jobDescription: string, jobId: string): Promise<AIGeneratedCleanJobInfo> {
   const prompt = JOB_INFO_EXTRACTION_PROMPT.replace("{{jobDescription}}", jobDescription);
 
   try {

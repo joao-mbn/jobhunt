@@ -32,6 +32,7 @@ export function fromCleanJobToDBCleanJob(job: CleanJob): DBCleanJob {
     published_date: toDateStringSafely(job.publishedDate),
     years_of_experience_required: job.yearsOfExperienceRequired,
     hard_skills_required: job.hardSkillsRequired,
+    job_description: job.jobDescription,
   };
 }
 

@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS clean_jobs (
     published_date TEXT,
     years_of_experience_required TEXT,
     hard_skills_required TEXT,
+    job_description TEXT,
     fail_count INTEGER DEFAULT 0,
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at TEXT NOT NULL DEFAULT (datetime('now'))
@@ -48,6 +49,7 @@ CREATE TABLE IF NOT EXISTS enhanced_jobs (
     published_date TEXT,
     years_of_experience_required TEXT,
     hard_skills_required TEXT,
+    job_description TEXT NULL,
     uploaded_to_sheet INTEGER NOT NULL DEFAULT FALSE,
     relevance_score INTEGER,
     relevance_reason TEXT,

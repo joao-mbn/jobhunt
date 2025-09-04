@@ -18,4 +18,4 @@ export interface CleanResultFailure {
   job: null;
 }
 
-export type AIGeneratedCleanJobInfo = Omit<CleanJob, keyof RawJob>;
+export type AIGeneratedCleanJobInfo = Omit<CleanJob, keyof RawJob | "jobDescription">;

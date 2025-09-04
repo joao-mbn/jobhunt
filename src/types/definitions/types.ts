@@ -44,7 +44,7 @@ export interface ResumeData {
     achievements: string[];
     technologies: string[];
   }>;
-  skills: {
+  hardSkills: {
     programmingLanguages: string[];
     frontend: string[];
     backend: string[];
@@ -54,6 +54,8 @@ export interface ResumeData {
     testing: string[];
     dataScience: string[];
   };
+  preferredLocations: string[];
+  preferredSkills: string[];
 }
 
 export interface GoogleSheetConfig {

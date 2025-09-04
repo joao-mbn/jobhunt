@@ -29,7 +29,7 @@ export interface DBEnhancedJob extends DBCleanJob {
   relevance_score?: number;
   relevance_reason?: string;
   recommendation?: string;
-  uploaded_to_sheet: boolean;
+  uploaded_to_sheet: number;
 }
 
 export interface DBPrefills extends DBBaseRecord {

@@ -41,7 +41,7 @@ export function fromEnhancedJobToDBEnhancedJob(job: EnhancedJob): DBEnhancedJob 
     relevance_score: job.relevanceScore,
     relevance_reason: job.relevanceReason,
     recommendation: job.recommendation,
-    uploaded_to_sheet: job.uploadedToSheet,
+    uploaded_to_sheet: job.uploadedToSheet ? 1 : 0,
   };
 }
 

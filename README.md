@@ -50,7 +50,7 @@ Run `pnpm run init-db` to create an empty file-based SQLite database under `data
 
 ### Resume Configuration
 
-Create a file `data/my-resume.json` with your current resume information. There are no set structure. This information is fed into the AI for generating insights and prefills.
+Create a file `data/my-resume.json` with your current resume information. There is no set structure. This information is fed into the AI for generating insights and prefills.
 
 ### Google Cloud Setup
 

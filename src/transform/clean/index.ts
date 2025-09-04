@@ -1,8 +1,8 @@
 import { db } from "../../db/database.ts";
-import type { Job, RawJob } from "../../types/definitions/job.ts";
+import { transformBySource } from "../utils.ts";
 import { deleteCleanedRawJobs, insertNewCleanJobs, queryRawJobs, updateFailedCleaning } from "./db.ts";
 import { linkedInCleaner } from "./linked-in.ts";
-import type { CleanResult, CleanResultFailure, CleanResultSuccess } from "./types.ts";
+import type { CleanResultFailure, CleanResultSuccess } from "./types.ts";
 
 async function main() {
   try {
@@ -13,7 +13,10 @@ async function main() {
     console.log(`Found ${rawJobs.length} valid raw jobs to process`);
 
     // Step 2: Clean the raw jobs
-    const cleanResults = await cleanJobs(rawJobs);
+    const cleanResults = await transformBySource(rawJobs, {
+      linkedin: linkedInCleaner.clean,
+      levels: undefined,
+    });
 
     const successfulResults = cleanResults.filter((result): result is CleanResultSuccess => result.success);
     const failedResults = cleanResults.filter((result): result is CleanResultFailure => !result.success);
@@ -43,30 +46,6 @@ async function main() {
   } finally {
     db.disconnect();
   }
-}
-
-async function cleanJobs(rawJobs: RawJob[]): Promise<CleanResult[]> {
-  const jobsBySource = rawJobs.reduce((acc, job) => {
-    if (!acc[job.source]) {
-      acc[job.source] = [];
-    }
-    acc[job.source].push(job);
-    return acc;
-  }, {} as Record<Job["source"], RawJob[]>);
-
-  const cleanResults = (
-    await Promise.all(
-      Object.entries(jobsBySource).map(([source, jobs]) => {
-        switch (source) {
-          case "linkedin":
-            return linkedInCleaner.clean(jobs);
-          default:
-            throw new Error(`Unknown source: ${source}`);
-        }
-      })
-    )
-  ).flat();
-  return cleanResults;
 }
 
 if (import.meta.main) {

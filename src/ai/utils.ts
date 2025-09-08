@@ -24,7 +24,11 @@ export async function attemptPromptSequentially(ais: AIClient[], request: Prompt
       }
       return { response: json, request };
     } catch (error) {
-      console.error(`Error generating content for job ${request.key} with ${ai.name}: ${error}`);
+      if (error != null && typeof error === "object" && "status" in error && error.status === 429) {
+        console.error(`Rate limit exceeded on ${ai.name}`);
+      } else {
+        console.error(`Error generating content for job ${request.key} with ${ai.name}: ${error}`);
+      }
     }
   }
 

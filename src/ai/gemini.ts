@@ -24,7 +24,7 @@ const models = {
 
 export class GeminiAIClient implements AIClient {
   ai: GoogleGenAI;
-  name = "gemini";
+  name: string;
   model: keyof typeof models;
 
   constructor(model: keyof typeof models) {
@@ -33,6 +33,7 @@ export class GeminiAIClient implements AIClient {
       throw new Error("GEMINI_API_KEY environment variable is required");
     }
     this.model = model;
+    this.name = models[model].name;
     this.ai = new GoogleGenAI({ apiKey: geminiApiKey });
   }
 

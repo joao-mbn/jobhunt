@@ -7,7 +7,7 @@ const LOCAL_AI_CONFIG = {
 } as const;
 
 export class LocalAIClient implements AIClient {
-  name = "local-ai";
+  name = "local-ai " + LOCAL_AI_CONFIG.model;
 
   getJsonContent(response: string): unknown {
     const jsonMatch = response.match(/\{[\s\S]*\}/);

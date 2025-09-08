@@ -78,7 +78,7 @@ export function isPrefill(prefill: unknown): prefill is Prefills {
   }
 
   const requiredFields: Partial<Record<keyof Prefills, string>> = {
-    enhancedJobId: "number",
+    enhancedJobId: "string",
   };
   if (!hasRequiredFields(prefill, requiredFields)) {
     return false;

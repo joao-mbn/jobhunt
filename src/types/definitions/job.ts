@@ -34,6 +34,6 @@ export interface EnhancedJob extends CleanJob {
 }
 
 export interface Prefills extends BaseRecord {
-  enhancedJobId: number;
+  enhancedJobId: string;
   coverLetter?: string;
 }

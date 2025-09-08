@@ -34,6 +34,6 @@ export interface DBEnhancedJob extends DBCleanJob {
 }
 
 export interface DBPrefills extends DBBaseRecord {
-  enhanced_job_id: number;
+  enhanced_job_id: string;
   cover_letter?: string;
 }

@@ -61,12 +61,11 @@ CREATE TABLE IF NOT EXISTS enhanced_jobs (
 
 CREATE TABLE IF NOT EXISTS prefills (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    enhanced_job_id INTEGER NOT NULL,
+    enhanced_job_id TEXT NOT NULL,
     cover_letter TEXT,
-    fail_count INTEGER DEFAULT 0,
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at TEXT NOT NULL DEFAULT (datetime('now')),
-    FOREIGN KEY (enhanced_job_id) REFERENCES enhanced_jobs(id) ON DELETE CASCADE
+    FOREIGN KEY (enhanced_job_id) REFERENCES enhanced_jobs(job_id) ON DELETE CASCADE
 ) STRICT;
 
 -- Create triggers to automatically update the updated_at timestamp

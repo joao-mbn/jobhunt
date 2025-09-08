@@ -78,7 +78,7 @@ export function isDBPrefills(prefills: unknown): prefills is DBPrefills {
   }
 
   const requiredFields: Partial<Record<keyof DBPrefills, string>> = {
-    enhanced_job_id: "number",
+    enhanced_job_id: "string",
   };
   if (!hasRequiredFields(prefills, requiredFields)) {
     return false;

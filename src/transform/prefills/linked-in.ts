@@ -30,7 +30,6 @@ Create a cover letter that:
 Return ONLY a JSON object with this exact structure:
 {
   "content": "<full cover letter text with proper paragraphs>",
-  "wordCount": <number of words>
 }
 
 ## GUIDELINES:

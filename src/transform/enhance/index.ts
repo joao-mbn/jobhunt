@@ -1,8 +1,7 @@
 import { db } from "../../db/database.ts";
-import { transformBySource } from "../utils.ts";
+import { enhanceJobWithAI } from "./ai.ts";
 import { deleteEnhancedCleanJobs, insertNewEnhancedJobs, queryCleanJobs, updateFailedEnhancement } from "./db.ts";
-import { linkedInEnhancer } from "./linked-in.ts";
-import type { EnhanceResultFailure, EnhanceResultSuccess } from "./types.ts";
+import type { EnhanceResult, EnhanceResultFailure, EnhanceResultSuccess } from "./types.ts";
 
 async function main() {
   try {
@@ -13,10 +12,21 @@ async function main() {
     console.log(`Found ${cleanJobs.length} valid clean jobs to process`);
 
     // Step 2: Enhance the clean jobs
-    const enhanceResults = await transformBySource(cleanJobs, {
-      linkedin: linkedInEnhancer.enhance,
-      levels: undefined,
+    const promises = cleanJobs.map(async (cleanJob) => {
+      if (!cleanJob.jobDescription && !(cleanJob.hardSkillsRequired && cleanJob.yearsOfExperienceRequired)) {
+        return { success: false, jobId: cleanJob.jobId, job: null };
+      }
+
+      try {
+        const enhancedInfo = await enhanceJobWithAI(cleanJob);
+        const enhancedJob = { ...cleanJob, ...enhancedInfo, uploadedToSheet: false };
+        return { success: true, jobId: cleanJob.jobId, job: enhancedJob };
+      } catch (error) {
+        console.error(`Failed to enhance job ${cleanJob.jobId}:`, error);
+        return { success: false, jobId: cleanJob.jobId, job: null };
+      }
     });
+    const enhanceResults = (await Promise.all(promises)) as EnhanceResult[];
 
     const successfulResults = enhanceResults.filter((result): result is EnhanceResultSuccess => result.success);
     const failedResults = enhanceResults.filter((result): result is EnhanceResultFailure => !result.success);

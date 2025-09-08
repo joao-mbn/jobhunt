@@ -26,7 +26,7 @@ export function hasOptionalFields(job: unknown, optionalFields: Record<string, s
   }
 
   for (const [field, type] of Object.entries(optionalFields)) {
-    if (!(field in job)) {
+    if (!(field in job) || job[field] == null) {
       continue;
     }
 

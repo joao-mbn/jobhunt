@@ -1,7 +1,8 @@
 import { db } from "../../db/database.ts";
+import { objectsToColumnsAndRows } from "../../db/utils.ts";
 import { fromEnhancedJobToDBEnhancedJob } from "../../types/converters/job-to-schema.ts";
 import { fromDBCleanJobToCleanJob } from "../../types/converters/schema-to-job.ts";
-import type { DBCleanJob, DBEnhancedJob } from "../../types/definitions/schema.ts";
+import type { DBCleanJob } from "../../types/definitions/schema.ts";
 import { isDBCleanJob } from "../../types/validators/schema.ts";
 import type { EnhanceResultFailure, EnhanceResultSuccess } from "./types.ts";
 
@@ -51,13 +52,12 @@ export function insertNewEnhancedJobs(successfulResults: EnhanceResultSuccess[])
   const newEnhancedJobs = successfulResults
     .filter(({ jobId }) => !existingEnhancedJobs.some((j) => j.job_id === jobId))
     .map(({ job }) => job);
-  const newEnhancedDBJobs = newEnhancedJobs.map(fromEnhancedJobToDBEnhancedJob);
   if (newEnhancedJobs.length === 0) {
     return;
   }
 
-  const columns = (Object.keys(newEnhancedDBJobs[0]) as (keyof DBEnhancedJob)[]).filter((column) => column !== "id");
-  const rows = newEnhancedDBJobs.map((job) => columns.map((column) => job[column] ?? null));
+  const newEnhancedDBJobs = newEnhancedJobs.map(fromEnhancedJobToDBEnhancedJob);
+  const { columns, rows } = objectsToColumnsAndRows(newEnhancedDBJobs);
 
   db.insert("enhanced_jobs", columns, rows);
 }

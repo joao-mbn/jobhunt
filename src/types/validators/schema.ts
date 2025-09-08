@@ -10,7 +10,6 @@ export function isDBBaseRecord(record: unknown): record is DBBaseRecord {
     created_at: "string",
     updated_at: "string",
     id: "number",
-    fail_count: "number",
   };
   return hasRequiredFields(record, requiredFields);
 }
@@ -23,10 +22,18 @@ export function isDBJob(job: unknown): job is DBJob {
   const requiredFields: Partial<Record<keyof DBJob, string>> = {
     name: "string",
     job_id: "string",
+    fail_count: "number",
     details: "string",
     source: "string",
   };
-  return hasRequiredFields(job, requiredFields);
+  if (!hasRequiredFields(job, requiredFields)) {
+    return false;
+  }
+
+  const optionalFields: Partial<Record<keyof DBJob, string>> = {
+    fail_count: "number",
+  };
+  return hasOptionalFields(job, optionalFields);
 }
 
 export function isDBRawJob(job: unknown): job is DBRawJob {
@@ -58,7 +65,7 @@ export function isDBEnhancedJob(job: unknown): job is DBEnhancedJob {
   }
 
   const requiredFields: Partial<Record<keyof DBEnhancedJob, string>> = {
-    uploaded_to_sheet: "boolean",
+    uploaded_to_sheet: "number",
   };
   if (!hasRequiredFields(job, requiredFields)) {
     return false;

@@ -59,7 +59,6 @@ export async function extractInfoWithAI(jobDescription: string, jobId: string): 
     };
   } catch (error) {
     console.error(`Failed to extract job info for job ${jobId}:`, error);
-    // Return default values if AI extraction fails
     return {};
   }
 }

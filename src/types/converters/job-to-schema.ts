@@ -5,7 +5,6 @@ import type { DBBaseRecord, DBCleanJob, DBEnhancedJob, DBPrefills, DBRawJob } fr
 export function fromBaseRecordToDBBaseRecord(record: BaseRecord): DBBaseRecord {
   return {
     id: record.id,
-    fail_count: record.failCount,
     created_at: toDateStringSafely(record.createdAt),
     updated_at: toDateStringSafely(record.updatedAt),
   };
@@ -16,6 +15,7 @@ export function fromRawJobToDBRawJob(job: RawJob): DBRawJob {
     ...fromBaseRecordToDBBaseRecord(job),
     name: job.name,
     job_id: job.jobId,
+    fail_count: job.failCount,
     details: JSON.stringify(job.details),
     source: job.source,
   };

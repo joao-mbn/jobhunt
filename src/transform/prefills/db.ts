@@ -1,7 +1,8 @@
 import { db } from "../../db/database.ts";
+import { objectsToColumnsAndRows } from "../../db/utils.ts";
 import { fromPrefillsToDBPrefills } from "../../types/converters/job-to-schema.ts";
 import { fromDBEnhancedJobToEnhancedJob } from "../../types/converters/schema-to-job.ts";
-import type { DBEnhancedJob, DBPrefills } from "../../types/definitions/schema.ts";
+import type { DBEnhancedJob } from "../../types/definitions/schema.ts";
 import { isDBEnhancedJob } from "../../types/validators/schema.ts";
 import { MIN_RELEVANCE_SCORE } from "../../utils/constants.ts";
 import type { PrefillsResultFailure, PrefillsResultSuccess } from "./types.ts";
@@ -54,8 +55,7 @@ export function insertNewPrefills(successfulResults: PrefillsResultSuccess[]) {
   }
 
   const newPrefillsDB = newPrefills.map(fromPrefillsToDBPrefills);
-  const columns = (Object.keys(newPrefillsDB[0]) as (keyof DBPrefills)[]).filter((column) => column !== "id");
-  const rows = newPrefillsDB.map((prefills) => columns.map((column) => prefills[column] ?? null));
+  const { columns, rows } = objectsToColumnsAndRows(newPrefillsDB);
 
   db.insert("prefills", columns, rows);
 }

@@ -8,7 +8,6 @@ export function isBaseRecord(record: unknown): record is BaseRecord {
 
   const optionalFields: Partial<Record<keyof BaseRecord, string>> = {
     id: "number",
-    failCount: "number",
     createdAt: "date",
     updatedAt: "date",
   };
@@ -26,7 +25,14 @@ export function isJob(job: unknown): job is Job {
     details: "object",
     source: "string",
   };
-  return hasRequiredFields(job, requiredFields);
+  if (!hasRequiredFields(job, requiredFields)) {
+    return false;
+  }
+
+  const optionalFields: Partial<Record<keyof Job, string>> = {
+    failCount: "number",
+  };
+  return hasOptionalFields(job, optionalFields);
 }
 
 export function isRawJob(job: unknown): job is RawJob {

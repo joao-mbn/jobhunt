@@ -1,7 +1,8 @@
 import { db } from "../../db/database.ts";
+import { objectsToColumnsAndRows } from "../../db/utils.ts";
 import { fromCleanJobToDBCleanJob } from "../../types/converters/job-to-schema.ts";
 import { fromDBRawJobToRawJob } from "../../types/converters/schema-to-job.ts";
-import type { DBCleanJob, DBRawJob } from "../../types/definitions/schema.ts";
+import type { DBRawJob } from "../../types/definitions/schema.ts";
 import { isDBRawJob } from "../../types/validators/schema.ts";
 import type { CleanResultFailure, CleanResultSuccess } from "./types.ts";
 
@@ -51,13 +52,12 @@ export function insertNewCleanJobs(successfulResults: CleanResultSuccess[]) {
   const newCleanJobs = successfulResults
     .filter(({ jobId }) => !existingCleanJobs.some((j) => j.job_id === jobId))
     .map(({ job }) => job);
-  const newCleanDBJobs = newCleanJobs.map(fromCleanJobToDBCleanJob);
   if (newCleanJobs.length === 0) {
     return;
   }
 
-  const columns = (Object.keys(newCleanDBJobs[0]) as (keyof DBCleanJob)[]).filter((column) => column !== "id");
-  const rows = newCleanDBJobs.map((job) => columns.map((column) => job[column] ?? null));
+  const newCleanDBJobs = newCleanJobs.map(fromCleanJobToDBCleanJob);
+  const { columns, rows } = objectsToColumnsAndRows(newCleanDBJobs);
 
   db.insert("clean_jobs", columns, rows);
 }

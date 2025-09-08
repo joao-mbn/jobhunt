@@ -1,6 +1,5 @@
 export interface DBBaseRecord {
   id?: number;
-  fail_count?: number;
   created_at: string;
   updated_at: string;
 }
@@ -8,6 +7,7 @@ export interface DBBaseRecord {
 export interface DBJob extends DBBaseRecord {
   name: string;
   job_id: string;
+  fail_count?: number;
   details: string;
   source: string;
 }

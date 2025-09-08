@@ -1,6 +1,5 @@
 export interface BaseRecord {
   id?: number;
-  failCount?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -8,6 +7,7 @@ export interface BaseRecord {
 export interface Job extends BaseRecord {
   name: string;
   jobId: string;
+  failCount?: number;
   details: Record<string, unknown>;
   source: "linkedin" | "levels";
 }

@@ -1,9 +1,5 @@
 import type { CleanJob, EnhancedJob } from "../../types/definitions/job.ts";
 
-export interface Enhancer {
-  enhance(cleanJobs: CleanJob[]): Promise<EnhanceResult[]>;
-}
-
 export type EnhanceResult = EnhanceResultSuccess | EnhanceResultFailure;
 
 export interface EnhanceResultSuccess {

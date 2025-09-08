@@ -1,4 +1,5 @@
 import { db } from "../db/database.ts";
+import { insertRawJobs, queryJobIds } from "./db.ts";
 import { linkedinScraper } from "./linked-in.ts";
 
 async function main() {
@@ -16,13 +17,7 @@ async function main() {
 
     // Step 2: Filter out jobs that are already in the database
     console.log("🔍 Filtering out jobs that are already in the database...");
-    const existingJobs = db.query(`
-      SELECT job_id FROM raw_jobs
-      UNION
-      SELECT job_id FROM clean_jobs
-      UNION
-      SELECT job_id FROM enhanced_jobs;
-    `);
+    const existingJobs = queryJobIds();
     const newJobs = extractedJobs.filter((job) => !existingJobs.some((j) => j.job_id === job.jobId));
     if (newJobs.length === 0) {
       console.log("❌ No jobs to store");
@@ -33,11 +28,7 @@ async function main() {
     // Step 3: Store jobs in the database
     console.log("📤 Storing jobs in the database...");
     await db.withTransaction(async () => {
-      db.insert(
-        "raw_jobs",
-        ["name", "job_id", "details", "source"],
-        newJobs.map((job) => [job.name, job.jobId, JSON.stringify(job.details), job.source])
-      );
+      insertRawJobs(newJobs);
     });
     console.log("🎉 Jobs stored in the database successfully!");
   } catch (error) {

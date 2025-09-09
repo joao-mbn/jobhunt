@@ -29,7 +29,6 @@ export function updateFailedCleaning(failedResults: CleanResultFailure[]) {
          WHERE job_id IN (${placeholders})`,
     ...jobIds
   );
-  return jobIds;
 }
 
 export function deleteCleanedRawJobs(successfulResults: CleanResultSuccess[]) {

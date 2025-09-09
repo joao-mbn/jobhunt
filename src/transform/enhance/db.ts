@@ -29,7 +29,6 @@ export function updateFailedEnhancement(failedResults: EnhanceResultFailure[]) {
          WHERE job_id IN (${placeholders})`,
     ...jobIds
   );
-  return jobIds;
 }
 
 export function deleteEnhancedCleanJobs(successfulResults: EnhanceResultSuccess[]) {

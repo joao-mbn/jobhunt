@@ -15,7 +15,8 @@ export function queryEnhancedJobsWithoutPrefills() {
       WHERE p.enhanced_job_id IS NULL
         AND ej.fail_count <= 3
         AND ej.relevance_score >= ${MIN_RELEVANCE_SCORE}
-      ORDER BY ej.relevance_score DESC, ej.created_at ASC
+        AND ej.uploaded_to_sheet = 0
+      ORDER BY ej.created_at ASC
       LIMIT 15
     `);
 
@@ -34,7 +35,6 @@ export function updateFailedPrefills(failedResults: PrefillsResultFailure[]) {
          WHERE job_id IN (${placeholders})`,
     ...jobIds
   );
-  return jobIds;
 }
 
 export function insertNewPrefills(successfulResults: PrefillsResultSuccess[]) {

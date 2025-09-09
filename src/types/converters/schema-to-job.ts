@@ -24,9 +24,9 @@ export function fromDBRawJobToRawJob(job: DBRawJob): RawJob {
 }
 
 export function fromDBCleanJobToCleanJob(job: DBCleanJob): CleanJob {
-  const workArrangement = ["Remote", "Hybrid", "On-Site"].includes(job.work_arrangement)
-    ? (job.work_arrangement as "Remote" | "Hybrid" | "On-Site")
-    : undefined;
+  const workArrangement = ["Remote", "Hybrid", "On-Site", "Not specified"].includes(job.work_arrangement)
+    ? (job.work_arrangement as "Remote" | "Hybrid" | "On-Site" | "Not specified")
+    : "Not specified";
 
   return {
     ...fromDBRawJobToRawJob(job),

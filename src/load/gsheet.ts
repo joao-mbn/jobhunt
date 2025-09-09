@@ -47,7 +47,7 @@ export async function getExistingJobIds(): Promise<Set<string>> {
       range: sheetName,
     });
 
-    const jobs = existingDataResponse.data.values.map(gsheetRowToEnhancedJobWithPrefills);
+    const jobs = existingDataResponse.data.values?.map(gsheetRowToEnhancedJobWithPrefills) ?? [];
     return new Set(jobs.map((job) => job.jobId));
   } catch (error) {
     console.error("❌ Error checking existing job IDs:", error);
@@ -66,7 +66,7 @@ export async function uploadToGoogleSheet(jobs: GSheetRow[]): Promise<void> {
       range: sheetName,
     });
 
-    const existingRows = existingDataResponse.data.values || [];
+    const existingRows = existingDataResponse.data.values ?? [];
     if (existingRows.length === 0) {
       console.log("Sheet is empty, adding headers and new data...");
       const allData = [[...GSHEET_HEADERS], ...jobs];

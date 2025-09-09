@@ -30,7 +30,11 @@ export const GSHEET_JOB_MAPPER: {
   { gsheetColumn: "Title", gsheetIndex: 4, jobField: "name" },
   { gsheetColumn: "Company", gsheetIndex: 5, jobField: "company" },
   { gsheetColumn: "Location", gsheetIndex: 6, jobField: "location" },
-  { gsheetColumn: "Work Arrangement", gsheetIndex: 7, jobField: "workArrangement" },
+  {
+    gsheetColumn: "Work Arrangement",
+    gsheetIndex: 7,
+    jobField: "workArrangement",
+  },
   { gsheetColumn: "Role", gsheetIndex: 8, jobField: "role" },
   { gsheetColumn: "Estimated Compensation", gsheetIndex: 9, jobField: "compensation" },
   { gsheetColumn: "Content", gsheetIndex: 10, jobField: "jobDescription" },

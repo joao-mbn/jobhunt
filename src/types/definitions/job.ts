@@ -16,7 +16,7 @@ export interface Job extends BaseRecord {
 export interface RawJob extends Job {}
 
 export interface CleanJob extends Job {
-  workArrangement?: "Remote" | "Hybrid" | "On-Site";
+  workArrangement?: "Remote" | "Hybrid" | "On-Site" | "Not specified";
   compensation?: string;
   company?: string;
   location?: string;

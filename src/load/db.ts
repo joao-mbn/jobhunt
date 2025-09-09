@@ -8,7 +8,7 @@ export function queryEnhancedJobsWithPrefills(): EnhancedJobWithPrefills[] {
   const result = db.query(`
     SELECT
       ej.*,
-      p.cover_letter,
+      p.cover_letter
     FROM enhanced_jobs ej
     JOIN prefills p ON ej.job_id = p.enhanced_job_id
     WHERE ej.relevance_score >= ${MIN_RELEVANCE_SCORE}
@@ -43,7 +43,7 @@ export function markJobsAsUploaded(jobIds: string[]): void {
 
   db.query(
     `UPDATE enhanced_jobs
-     SET uploaded_to_sheet = 1, updated_at = datetime('now')
+     SET uploaded_to_sheet = 1
      WHERE job_id IN (${placeholders})`,
     ...jobIds
   );

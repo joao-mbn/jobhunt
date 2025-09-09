@@ -7,6 +7,7 @@ export interface DBBaseRecord {
 export interface DBJob extends DBBaseRecord {
   name: string;
   job_id: string;
+  url: string;
   fail_count?: number;
   details: string;
   source: string;

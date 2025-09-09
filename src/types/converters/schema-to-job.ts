@@ -11,13 +11,15 @@ export function fromDBBaseRecordToBaseRecord(record: DBBaseRecord): BaseRecord {
 }
 
 export function fromDBRawJobToRawJob(job: DBRawJob): RawJob {
+  const source = ["linkedin", "levels"].includes(job.source) ? (job.source as "linkedin" | "levels") : undefined;
   return {
     ...fromDBBaseRecordToBaseRecord(job),
     name: job.name,
     jobId: job.job_id,
+    url: job.url,
     failCount: job.fail_count,
     details: JSON.parse(job.details),
-    source: job.source as "linkedin" | "levels",
+    source,
   };
 }
 

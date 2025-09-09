@@ -22,6 +22,7 @@ export function isJob(job: unknown): job is Job {
   const requiredFields: Partial<Record<keyof Job, string>> = {
     name: "string",
     jobId: "string",
+    url: "string",
     details: "object",
     source: "string",
   };

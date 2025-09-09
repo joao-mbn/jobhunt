@@ -7,6 +7,7 @@ export interface BaseRecord {
 export interface Job extends BaseRecord {
   name: string;
   jobId: string;
+  url: string;
   failCount?: number;
   details: Record<string, unknown>;
   source: "linkedin" | "levels";
@@ -37,3 +38,5 @@ export interface Prefills extends BaseRecord {
   enhancedJobId: string;
   coverLetter?: string;
 }
+
+export type EnhancedJobWithPrefills = Pick<Prefills, "coverLetter"> & EnhancedJob;

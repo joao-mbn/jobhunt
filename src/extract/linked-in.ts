@@ -23,6 +23,7 @@ export class LinkedInScraper implements Scraper {
       return data.items.map((item) => ({
         name: item.title,
         jobId: item.url.split("view/")[1] ?? item.id,
+        url: item.url,
         details: item,
         source: "linkedin",
       }));

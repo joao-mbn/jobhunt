@@ -22,6 +22,7 @@ export function isDBJob(job: unknown): job is DBJob {
   const requiredFields: Partial<Record<keyof DBJob, string>> = {
     name: "string",
     job_id: "string",
+    url: "string",
     fail_count: "number",
     details: "string",
     source: "string",

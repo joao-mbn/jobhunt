@@ -1,40 +1,23 @@
 import { google, sheets_v4 } from "googleapis";
-import type { JobItem } from "../types/definitions/types.ts";
-import { MIN_RELEVANCE_SCORE } from "../utils/constants.ts";
-import { breakdownTitle, formatContentPreview, formatDate, formatDateTime } from "../utils/format.ts";
+import { GSHEET_JOB_MAPPER, gsheetRowToEnhancedJobWithPrefills } from "../types/converters/job-to-gsheet.ts";
+import type { GSheetRow } from "../types/definitions/gsheet.ts";
 
 const COLUMN_WIDTH = 100;
 const ROW_HEIGHT = 21;
-const HEADERS = [
-  "Date",
-  "Job ID",
-  "URL",
-  "Title",
-  "Company",
-  "Location",
-  "Role",
-  "Estimated Compensation",
-  "Published Date",
-  "Content Preview",
-  "Years of Experience Required",
-  "Hard Skills Required",
-  "Relevance Score",
-  "Relevance Reason",
-  "Recommendation",
-  "Content",
-  "Resume Text",
-  "Cover Letter Text",
-];
+const GSHEET_HEADERS = GSHEET_JOB_MAPPER.toSorted((a, b) => a.gsheetIndex - b.gsheetIndex).map(
+  (mapper) => mapper.gsheetColumn
+);
 
 function connectToGoogleSheets() {
   const spreadsheetId = process.env.GOOGLE_SPREADSHEET_ID!;
-  const sheetName = process.env.GOOGLE_SHEET_NAME || "Job Data";
+  const sheetName = process.env.GOOGLE_SHEET_NAME;
   const credentials = {
     client_email: process.env.GOOGLE_CLIENT_EMAIL!,
     private_key: process.env.GOOGLE_PRIVATE_KEY!.replace(/\\n/g, "\n"),
   };
 
-  const isSheetsOnEnv = process.env.GOOGLE_SPREADSHEET_ID && process.env.GOOGLE_CLIENT_EMAIL && process.env.GOOGLE_PRIVATE_KEY;
+  const isSheetsOnEnv =
+    process.env.GOOGLE_SPREADSHEET_ID && process.env.GOOGLE_CLIENT_EMAIL && process.env.GOOGLE_PRIVATE_KEY;
 
   if (!isSheetsOnEnv) {
     throw new Error("Google Sheets environment variables are not set");
@@ -54,7 +37,7 @@ async function getSheetId(sheets: sheets_v4.Sheets, spreadsheetId: string, sheet
   return sheet?.properties?.sheetId ?? 0;
 }
 
-async function getExistingUrls(): Promise<Set<string>> {
+export async function getExistingJobIds(): Promise<Set<string>> {
   const { sheets, spreadsheetId, sheetName } = connectToGoogleSheets();
 
   try {
@@ -64,53 +47,17 @@ async function getExistingUrls(): Promise<Set<string>> {
       range: sheetName,
     });
 
-    const existingRows = existingDataResponse.data.values || [];
-    const existingUrls = new Set<string>();
-    const urlIndex = existingRows[0].findIndex((cell) => cell === "URL");
-    existingRows.forEach((row) => {
-      if (row?.[urlIndex] && typeof row[urlIndex] === "string" && row[urlIndex].startsWith("https://")) {
-        existingUrls.add(row[urlIndex]);
-      }
-    });
-
-    console.log(`📊 Found ${existingUrls.size} existing job URLs in sheet`);
-    return existingUrls;
+    const jobs = existingDataResponse.data.values.map(gsheetRowToEnhancedJobWithPrefills);
+    return new Set(jobs.map((job) => job.jobId));
   } catch (error) {
-    console.error("❌ Error checking existing URLs:", error);
+    console.error("❌ Error checking existing job IDs:", error);
     console.log("⚠️  Continuing without duplicate check...");
     return new Set<string>();
   }
 }
 
-export async function filterNewJobs(jobsData: JobItem[]): Promise<JobItem[]> {
-  const existingUrls = await getExistingUrls();
-
-  const newJobs = jobsData.filter((item) => !existingUrls.has(item.url));
-  console.log(`🔍 Filtered jobs: ${jobsData.length} total, ${newJobs.length} new`);
-
-  return newJobs.map((item) => {
-    const { company, role, location } = breakdownTitle(item.title);
-    return {
-      ...item,
-      company,
-      role,
-      location,
-      contentPreview: formatContentPreview(item.content_text),
-      publishedDate: formatDate(new Date(item.date_published)),
-    };
-  });
-}
-
-export async function uploadToGoogleSheet(jobs: JobItem[]): Promise<void> {
+export async function uploadToGoogleSheet(jobs: GSheetRow[]): Promise<void> {
   const { sheets, spreadsheetId, sheetName } = connectToGoogleSheets();
-  const jobsToUpload = jobs.filter((job) => job.relevanceScore && job.relevanceScore >= MIN_RELEVANCE_SCORE);
-
-  console.log(`🔍 Uploading ${jobsToUpload.length} out of ${jobs.length} jobs to Google Sheets`);
-
-  if (jobsToUpload.length === 0) {
-    console.log("📝 No jobs to upload to Google Sheets");
-    return;
-  }
 
   try {
     console.log("Reading existing data from sheet...");
@@ -120,37 +67,9 @@ export async function uploadToGoogleSheet(jobs: JobItem[]): Promise<void> {
     });
 
     const existingRows = existingDataResponse.data.values || [];
-
-    const newRows: string[][] = [];
-
-    for (const job of jobsToUpload) {
-      const row = [
-        formatDateTime(new Date()), // Processing date
-        job.id ?? "",
-        job.url ?? "",
-        job.title ?? "",
-        job.company ?? "",
-        job.location ?? "",
-        job.role ?? "",
-        job.estimatedCompensation ?? "",
-        job.publishedDate ?? "",
-        job.contentPreview ?? "",
-        job.yearsOfExperienceRequired?.toString() ?? "",
-        job.hardSkillsRequired?.toString() ?? "",
-        job.relevanceScore?.toString() ?? "",
-        job.relevanceReason ?? "",
-        job.recommendation ?? "",
-        job.content_text ?? "",
-        job.tailoredResume ?? "",
-        job.coverLetter ?? "",
-      ];
-
-      newRows.push(row);
-    }
-
     if (existingRows.length === 0) {
       console.log("Sheet is empty, adding headers and new data...");
-      const allData = [HEADERS, ...newRows];
+      const allData = [[...GSHEET_HEADERS], ...jobs];
 
       await sheets.spreadsheets.values.update({
         spreadsheetId,
@@ -160,20 +79,19 @@ export async function uploadToGoogleSheet(jobs: JobItem[]): Promise<void> {
           values: allData,
         },
       });
-      console.log(`Successfully uploaded ${newRows.length} job records to Google Sheet`);
     } else {
       await sheets.spreadsheets.values.append({
         spreadsheetId,
         range: sheetName,
         valueInputOption: "RAW",
         requestBody: {
-          values: newRows,
+          values: jobs,
         },
       });
-      console.log(`Successfully appended ${newRows.length} job records to Google Sheet`);
     }
+    console.log(`Successfully appended ${jobs.length} job records to Google Sheet`);
 
-    await setSheetFormatting(sheets, spreadsheetId, sheetName, existingRows.length, newRows.length + existingRows.length);
+    await setSheetFormatting(sheets, spreadsheetId, sheetName, existingRows.length, jobs.length + existingRows.length);
   } catch (error) {
     console.error("Error uploading to Google Sheet:", error);
     throw error;
@@ -212,7 +130,7 @@ async function setSheetFormatting(
             sheetId,
             dimension: "COLUMNS",
             startIndex: 0,
-            endIndex: HEADERS.length + 1,
+            endIndex: GSHEET_HEADERS.length + 1,
           },
           properties: {
             pixelSize: COLUMN_WIDTH,
@@ -227,7 +145,7 @@ async function setSheetFormatting(
             startRowIndex: startRow,
             endRowIndex: endRow + 1,
             startColumnIndex: 0,
-            endColumnIndex: HEADERS.length + 1,
+            endColumnIndex: GSHEET_HEADERS.length + 1,
           },
           cell: {
             userEnteredFormat: {

@@ -3,7 +3,7 @@ import { generatePrefillsWithAI } from "./ai.ts";
 import { insertNewPrefills, queryEnhancedJobsWithoutPrefills, updateFailedPrefills } from "./db.ts";
 import type { PrefillsResult, PrefillsResultFailure, PrefillsResultSuccess } from "./types.ts";
 
-async function main() {
+export async function main() {
   try {
     console.log("Starting prefills generation process...");
 

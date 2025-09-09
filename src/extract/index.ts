@@ -2,7 +2,7 @@ import { db } from "../db/database.ts";
 import { insertRawJobs, queryJobIds } from "./db.ts";
 import { linkedinScraper } from "./linked-in.ts";
 
-async function main() {
+export async function main() {
   try {
     // Step 1: Fetch jobs from scrapers
     console.log("📡 Fetching jobs from scrapers...");

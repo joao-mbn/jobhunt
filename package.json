@@ -24,6 +24,7 @@
   "dependencies": {
     "@google/genai": "^1.16.0",
     "@playwright/test": "^1.55.0",
-    "googleapis": "^157.0.0"
+    "googleapis": "^157.0.0",
+    "node-cron": "^4.2.1"
   }
 }

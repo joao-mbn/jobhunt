@@ -4,7 +4,7 @@ import { deleteCleanedRawJobs, insertNewCleanJobs, queryRawJobs, updateFailedCle
 import { linkedInCleaner } from "./linked-in.ts";
 import type { CleanResultFailure, CleanResultSuccess } from "./types.ts";
 
-async function main() {
+export async function main() {
   try {
     console.log("Starting data cleaning process...");
 

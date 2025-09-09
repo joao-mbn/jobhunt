@@ -3,7 +3,7 @@ import { enhanceJobWithAI } from "./ai.ts";
 import { deleteEnhancedCleanJobs, insertNewEnhancedJobs, queryCleanJobs, updateFailedEnhancement } from "./db.ts";
 import type { EnhanceResult, EnhanceResultFailure, EnhanceResultSuccess } from "./types.ts";
 
-async function main() {
+export async function main() {
   try {
     console.log("Starting data enhancement process...");
 

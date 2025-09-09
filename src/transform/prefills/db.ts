@@ -17,7 +17,7 @@ export function queryEnhancedJobsWithoutPrefills() {
         AND ej.relevance_score >= ${MIN_RELEVANCE_SCORE}
         AND ej.uploaded_to_sheet = 0
       ORDER BY ej.created_at ASC
-      LIMIT 15
+      LIMIT 5
     `);
 
   const dbEnhancedJobs = enhancedJobsResult.filter(isDBEnhancedJob) as unknown as DBEnhancedJob[];

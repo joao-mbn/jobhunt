@@ -11,7 +11,7 @@ export function queryRawJobs() {
       SELECT * FROM raw_jobs
       WHERE fail_count <= 3
       ORDER BY created_at ASC
-      LIMIT 15
+      LIMIT 5
     `);
 
   const dbRawJobs = rawJobsResult.filter(isDBRawJob) as unknown as DBRawJob[];

@@ -11,7 +11,7 @@ export function queryCleanJobs() {
       SELECT * FROM clean_jobs
       WHERE fail_count <= 3
       ORDER BY created_at ASC
-      LIMIT 15
+      LIMIT 5
     `);
 
   const dbCleanJobs = cleanJobsResult.filter(isDBCleanJob) as unknown as DBCleanJob[];

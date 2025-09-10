@@ -56,7 +56,12 @@ export function insertNewEnhancedJobs(successfulResults: EnhanceResultSuccess[])
   }
 
   const newEnhancedDBJobs = newEnhancedJobs.map(fromEnhancedJobToDBEnhancedJob);
-  const { columns, rows } = objectsToColumnsAndRows(newEnhancedDBJobs);
+  const { columns, rows } = objectsToColumnsAndRows(newEnhancedDBJobs, [
+    "id",
+    "created_at",
+    "updated_at",
+    "fail_count",
+  ]);
 
   db.insert("enhanced_jobs", columns, rows);
 }

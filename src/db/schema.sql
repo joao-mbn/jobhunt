@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS raw_jobs (
     url TEXT NOT NULL,
     details TEXT NOT NULL,
     source TEXT NOT NULL,
-    fail_count INTEGER DEFAULT 0,
+    fail_count INTEGER DEFAULT 0 NOT NULL,
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 ) STRICT;
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS clean_jobs (
     years_of_experience_required TEXT,
     hard_skills_required TEXT,
     job_description TEXT,
-    fail_count INTEGER DEFAULT 0,
+    fail_count INTEGER DEFAULT 0 NOT NULL,
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 ) STRICT;
@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS enhanced_jobs (
     relevance_score INTEGER,
     relevance_reason TEXT,
     recommendation TEXT,
-    fail_count INTEGER DEFAULT 0,
+    fail_count INTEGER DEFAULT 0 NOT NULL,
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 ) STRICT;

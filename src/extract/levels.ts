@@ -1,10 +1,11 @@
 import { chromium, type Browser, type Page } from "@playwright/test";
 import type { RawJob } from "../types/definitions/job.ts";
-import { randomDelay, retryWithBackoff } from "../utils/promise.ts";
+import { retryWithBackoff } from "../utils/promise.ts";
 import type { Scraper } from "./types.ts";
 
 export class LevelsScraper implements Scraper {
-  jobsUrl = "https://www.levels.fyi/jobs";
+  jobsUrl =
+    "https://www.levels.fyi/jobs/title/software-engineer/location/greater-vancouver?postedAfterTimeType=days&postedAfterValue=1&standardLevels=entry%2Cmid_staff%2Cprincipal&workArrangements=remote%2Chybrid";
 
   fetchJobs(): Promise<RawJob[]> {
     console.log("🔍 Starting levels job scraping...");
@@ -12,62 +13,35 @@ export class LevelsScraper implements Scraper {
     return retryWithBackoff(async () => {
       let browser: Browser | undefined = undefined;
       try {
-        // Launch browser for personal use
         browser = await chromium.launch({ headless: false });
 
         const page = await browser.newPage();
 
-        // Set user agent to avoid detection
         await page.setExtraHTTPHeaders({
-          "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
+          "User-Agent":
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
         });
 
-        // Set viewport
         await page.setViewportSize({ width: 1920, height: 1080 });
 
-        console.log("📄 Navigating to levels.fyi jobs page...");
         await page.goto(this.jobsUrl);
-
-        // Close initial popup
         await page.getByRole("button", { name: "Close" }).first().click();
+        await this.setupCurrency(page);
 
-        await this.setupFilters(page);
-
-        // Wait for results to load
-        console.log("⏳ Waiting for job results to load...");
-
-        // Find job links using the href pattern
         console.log("🔍 Looking for job links...");
-        await randomDelay(2000, 3000);
-        const jobLinks = await page.locator('a[href^="/jobs?jobId="]').all();
-        console.log(`📋 Found ${jobLinks.length} job links`);
-
+        let offset = 0;
         const rawJobs: RawJob[] = [];
-        for (const jobLink of jobLinks) {
-          await jobLink.click();
-          const jobId = (await jobLink.getAttribute("href")).split("jobId=")[1];
-          const headerContainer = page.locator('section[class*="job-details-header"]').first();
-          const title = await headerContainer.locator("h1").first().textContent();
-          const headerDetails = await headerContainer.locator('p[class*="job-details-header_detailsRow"]').first().textContent();
-          const applyUrl = await headerContainer.locator('a[class*="job-details-header_applyNowButton"]').first().getAttribute("href");
 
-          // Check if compensation element exists before trying to get its text content
-          const compensationElement = headerContainer.locator('div[class*="job-details-header_compensationRow"]').first();
-          const compensation = (await compensationElement.count()) > 0 ? await compensationElement.textContent() : null;
+        while (offset < 100 /* safety break */) {
+          await page.goto(`${this.jobsUrl}&offset=${offset}`);
+          const rawJobsForPage = await this.extractJobsOnPage(page);
+          if (rawJobsForPage.length === 0) {
+            break;
+          }
+          rawJobs.push(...rawJobsForPage);
 
-          const description = await page.locator('div[class*="job-details-about_plainTextDescription"]').first().textContent();
-          rawJobs.push({
-            source: "levels",
-            name: title,
-            jobId,
-            details: {
-              title,
-              headerDetails,
-              applyUrl,
-              compensation,
-              description,
-            },
-          });
+          // There are 5 companies per page, but there might be more jobs because a company might have multiple jobs
+          offset += 5;
         }
 
         return rawJobs;
@@ -77,41 +51,56 @@ export class LevelsScraper implements Scraper {
     });
   }
 
-  private async setupFilters(page: Page) {
-    console.log("📄 Setting up filters...");
+  private async extractJobsOnPage(page: Page) {
+    const jobLinks = await page.locator('a[href^="/jobs?jobId="]').all();
+    console.log(`📋 Found ${jobLinks.length} job links`);
 
-    // Select currency
-    await page.getByRole("button", { name: "R$ BRL / mo" }).click();
-    await page.getByRole("button", { name: "🇨🇦 CAD - C$ Canadian Dollar" }).click();
+    const rawJobs: RawJob[] = [];
+    for (const jobLink of jobLinks) {
+      await jobLink.click();
+      const jobId = (await jobLink.getAttribute("href")).split("jobId=")[1];
+      const headerContainer = page.locator('section[class*="job-details-header"]').first();
+      const title = await headerContainer.locator("h1").first().textContent();
+      const headerDetails = await headerContainer
+        .locator('p[class*="job-details-header_detailsRow"]')
+        .first()
+        .textContent();
+      const applyUrl = await headerContainer
+        .locator('a[class*="job-details-header_applyNowButton"]')
+        .first()
+        .getAttribute("href");
 
-    // Select location
-    await page.getByRole("button", { name: "Location", exact: true }).click();
-    await page.getByRole("checkbox", { name: "🇨🇦Canada" }).click();
-    await page.locator("html").click();
+      const compensationElement = headerContainer.locator('div[class*="job-details-header_compensationRow"]').first();
+      const compensation = (await compensationElement.count()) > 0 ? await compensationElement.textContent() : null;
 
-    // Select title
-    await page.getByRole("button", { name: "Title" }).click();
-    await page.getByRole("checkbox", { name: "💻Software Engineer", exact: true }).click();
-    await page.locator("html").click();
+      const content = page.locator('div[class*="job-details-about_markdownText"]');
+      const description = (await content.count()) > 0 ? await content.textContent() : null;
 
-    // Select level
-    await page.getByRole("button", { name: "Level" }).click();
-    await page.getByRole("checkbox", { name: "Entry Level" }).click();
-    await page.getByRole("checkbox", { name: "Senior" }).click();
-    await page.getByRole("checkbox", { name: "Principal" }).click();
-    await page.locator("html").click();
+      rawJobs.push({
+        source: "levels",
+        name: title,
+        jobId,
+        url: `https://www.levels.fyi/jobs?jobId=${jobId}`,
+        details: {
+          title,
+          headerDetails,
+          applyUrl,
+          compensation,
+          description,
+        },
+      });
+    }
 
-    // Select remote
-    await page.getByRole("button", { name: "Remote" }).click();
-    await page.getByRole("checkbox", { name: "Fully Remote" }).click();
-    await page.getByRole("checkbox", { name: "Hybrid" }).click();
-    await page.getByRole("checkbox", { name: "Hybrid" }).press("Escape");
+    return rawJobs;
+  }
 
-    // Select date posted
-    await page.getByRole("button", { name: "Date Posted" }).click();
-    await page.getByRole("textbox", { name: "30" }).click();
-    await page.getByRole("textbox", { name: "30" }).fill("3");
-    await page.locator("html").click();
+  private async setupCurrency(page: Page) {
+    await page.locator('button[class*="currencyButton"]').click();
+    await page.locator("button").filter({ hasText: "Canadian Dollar" }).first().click();
+
+    await page.locator('button[class*="currencyButton"]').click();
+    await page.locator('button[role="tab"]').filter({ hasText: "Annual" }).click();
+    await page.locator('ul[class*="currency-locale-selector"] button').filter({ hasText: "Annual" }).first().click();
   }
 }
 

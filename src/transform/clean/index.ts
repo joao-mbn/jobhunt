@@ -1,6 +1,7 @@
 import { db } from "../../db/database.ts";
 import { transformBySource } from "../utils.ts";
 import { deleteCleanedRawJobs, insertNewCleanJobs, queryRawJobs, updateFailedCleaning } from "./db.ts";
+import { levelsCleaner } from "./levels.ts";
 import { linkedInCleaner } from "./linked-in.ts";
 import type { CleanResultFailure, CleanResultSuccess } from "./types.ts";
 
@@ -15,7 +16,7 @@ export async function main() {
     // Step 2: Clean the raw jobs
     const cleanResults = await transformBySource(rawJobs, {
       linkedin: linkedInCleaner.clean,
-      levels: undefined,
+      levels: levelsCleaner.clean,
     });
 
     const successfulResults = cleanResults.filter((result): result is CleanResultSuccess => result.success);

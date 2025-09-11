@@ -39,4 +39,4 @@ export class LinkedInScraper implements Scraper {
   }
 }
 
-export const linkedinScraper = new LinkedInScraper();
+export const linkedInScraper = new LinkedInScraper();

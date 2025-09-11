@@ -19,7 +19,7 @@ export class LevelsScraper implements Scraper {
     let browser: Browser | undefined = undefined;
     const rawJobs: RawJob[] = [];
     try {
-      browser = await chromium.launch({ headless: false });
+      browser = await chromium.launch();
 
       const page = await browser.newPage();
 

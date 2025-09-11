@@ -35,7 +35,7 @@ Periodic cleanup jobs also run to eliminate junk data that either has no value t
 ### Clone and Install Dependencies
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/joao-mbn/jobhunt.git
 cd jobhunt
 pnpm i
 ```

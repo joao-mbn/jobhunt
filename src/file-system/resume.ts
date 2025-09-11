@@ -1,10 +1,9 @@
 import fs from "fs";
-import type { ResumeData } from "../types/definitions/types.ts";
 
 // Cache the resume data at module level
-let resumeDataCache: ResumeData | null = null;
+let resumeDataCache: Record<string, unknown> | null = null;
 
-export function getResume(): ResumeData | null {
+export function getResume(): Record<string, unknown> | null {
   if (resumeDataCache !== null) {
     return resumeDataCache;
   }

@@ -5,11 +5,16 @@ import { join } from "path";
 
 class Database {
   private database: DatabaseSync | null = null;
-  private dbPath = "./data/jobhunt.db";
+  private dbPath: string;
   private config: DatabaseSyncOptions;
 
   constructor(config?: DatabaseSyncOptions) {
     this.config = { timeout: 5000, ...config };
+    if (!process.env.DB_PATH) {
+      throw new Error("DB_PATH is not set");
+    }
+
+    this.dbPath = process.env.DB_PATH;
     this.ensureDataDirectory();
   }
 

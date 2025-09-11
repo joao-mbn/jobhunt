@@ -46,7 +46,7 @@ pnpm i
 
 ### Initialize the database
 
-Run `pnpm run init-db` to create an empty file-based SQLite database under `data/jobhunt.db`
+Run `pnpm run init-db` to create an empty file-based SQLite database under the path specified in `.env` file (see below).
 
 ### Resume Configuration
 
@@ -89,29 +89,29 @@ Create a `.env` file in the root directory:
 
 ```env
 # Google Gemini AI
-GOOGLE_API_KEY=your_gemini_api_key_here
+GEMINI_API_KEY=your_gemini_api_key_here
 
 # RSS Feed
 RSS_ENDPOINT=https://your-rss-feed-url.com/feed
 
 # Google Sheets
 GOOGLE_SPREADSHEET_ID=your_spreadsheet_id_here
-GOOGLE_SHEET_NAME=Job Data
+GOOGLE_SHEET_NAME=your_sheet_name_here
 GOOGLE_CLIENT_EMAIL=your_service_account_email@project.iam.gserviceaccount.com
 GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour private key here\n-----END PRIVATE KEY-----"
+
+DB_PATH=./data/jobhunt.db
 ```
 
 ## 🎮 Usage
 
-- Run `pnpm run cron` to start the entire application with the multiple cron jobs.
+Run `pnpm run cron` to start the entire application with the multiple cron jobs.
 
-### Run individual steps
+## Debug (VS Code & Forks)
 
-- Any `index.ts` is meant to be an entry point that runs in isolation, and `package.json` have a few scripts you can run in isolation.
+Any `index.ts` is meant to be an entry point that runs in isolation, and `package.json` have a few scripts you can run in isolation. Run any individual step using a Javascript Debug Terminal.
 
-### Debug Mode (VS Code & Forks)
-
-- Run any individual step using a Javascript Debug Terminal
+By default the scripts will get environment variables from `.env.test`, so that test and production don't mix. It's recommended that you copy `.env` and change the values, most importantly the `GOOGLE_SPREADSHEET_ID` and/or `GOOGLE_SHEET_NAME` and the `DB_PATH`.
 
 ## Project Organization
 
@@ -126,8 +126,8 @@ src/
 ├── file-system/           # File system operations and utilities
 ├── load/                  # Data loading to external services (Google Sheets)
 ├── transform/             # Data transformation pipeline
-│   ├── clean-up/          # Raw data cleaning and parsing
-│   ├── insights/          # AI-powered job analysis and scoring
+│   ├── clean/             # Raw data cleaning and parsing
+│   ├── enhance/           # AI-powered job analysis and scoring
 │   └── prefills/          # Application material generation
 ├── types/                 # TypeScript type definitions and validators
 │   ├── converters/        # Data format converters
@@ -144,5 +144,5 @@ data/                      # Database files and resume data
 Each folder that serves as an entry point contains an `index.ts` file with a `main()` function. This convention is meant to easily identify modules of the application that work on its own. For example:
 
 - `src/extract/index.ts` - Run data extraction in isolation
-- `src/transform/clean-up/index.ts` - Run data cleaning independently
+- `src/transform/clean/index.ts` - Run data cleaning independently
 - `src/cron/index.ts` - Run the full orchestrated pipeline

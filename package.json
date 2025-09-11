@@ -5,13 +5,13 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "init-db": "node --env-file=.env src/db/index.ts",
+    "init-db": "node --env-file=.env.test src/db/index.ts",
     "cron": "node --env-file=.env src/cron/index.ts",
-    "extract": "node --env-file=.env src/extract/index.ts",
-    "transform-clean": "node --env-file=.env src/transform/clean/index.ts",
-    "transform-enhance": "node --env-file=.env src/transform/enhance/index.ts",
-    "transform-prefills": "node --env-file=.env src/transform/prefills/index.ts",
-    "load": "node --env-file=.env src/load/index.ts"
+    "extract": "node --env-file=.env.test src/extract/index.ts",
+    "transform-clean": "node --env-file=.env.test src/transform/clean/index.ts",
+    "transform-enhance": "node --env-file=.env.test src/transform/enhance/index.ts",
+    "transform-prefills": "node --env-file=.env.test src/transform/prefills/index.ts",
+    "load": "node --env-file=.env.test src/load/index.ts"
   },
   "keywords": [],
   "author": "",

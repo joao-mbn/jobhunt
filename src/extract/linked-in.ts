@@ -3,14 +3,19 @@ import type { LinkedInData } from "../types/definitions/source.ts";
 import type { Scraper } from "./types.ts";
 
 export class LinkedInScraper implements Scraper {
-  async fetchJobs(): Promise<RawJob[]> {
-    const url = process.env.RSS_ENDPOINT;
-    if (!url) {
-      throw new Error("RSS_ENDPOINT is not set");
-    }
+  private readonly url: string;
 
+  constructor() {
+    const url = process.env.LINKEDIN_ENDPOINT;
+    if (!url) {
+      throw new Error("LINKEDIN_ENDPOINT is not set");
+    }
+    this.url = url;
+  }
+
+  async fetchJobs(): Promise<RawJob[]> {
     try {
-      const response = await fetch(url, {
+      const response = await fetch(this.url, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });

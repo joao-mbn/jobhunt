@@ -1,54 +1,59 @@
 import { chromium, type Browser, type Page } from "@playwright/test";
 import type { RawJob } from "../types/definitions/job.ts";
-import { retryWithBackoff } from "../utils/promise.ts";
 import type { Scraper } from "./types.ts";
 
 export class LevelsScraper implements Scraper {
-  jobsUrl =
-    "https://www.levels.fyi/jobs/title/software-engineer/location/greater-vancouver?postedAfterTimeType=days&postedAfterValue=1&standardLevels=entry%2Cmid_staff%2Cprincipal&workArrangements=remote%2Chybrid";
+  private readonly url: string;
 
-  fetchJobs(): Promise<RawJob[]> {
+  constructor() {
+    const url = process.env.LEVELS_ENDPOINT;
+    if (!url) {
+      throw new Error("LEVELS_ENDPOINT is not set");
+    }
+    this.url = url;
+  }
+
+  async fetchJobs(): Promise<RawJob[]> {
     console.log("🔍 Starting levels job scraping...");
 
-    return retryWithBackoff(async () => {
-      let browser: Browser | undefined = undefined;
-      try {
-        browser = await chromium.launch({ headless: false });
+    let browser: Browser | undefined = undefined;
+    const rawJobs: RawJob[] = [];
+    try {
+      browser = await chromium.launch({ headless: false });
 
-        const page = await browser.newPage();
+      const page = await browser.newPage();
 
-        await page.setExtraHTTPHeaders({
-          "User-Agent":
-            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
-        });
+      await page.setExtraHTTPHeaders({
+        "User-Agent":
+          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
+      });
 
-        await page.setViewportSize({ width: 1920, height: 1080 });
+      await page.setViewportSize({ width: 1920, height: 1080 });
 
-        await page.goto(this.jobsUrl);
-        await page.getByRole("button", { name: "Close" }).first().click();
-        await this.setupCurrency(page);
+      await page.goto(this.url);
+      await page.getByRole("button", { name: "Close" }).first().click();
+      await this.setupCurrency(page);
 
-        console.log("🔍 Looking for job links...");
-        let offset = 0;
-        const rawJobs: RawJob[] = [];
+      console.log("🔍 Looking for job links...");
+      let offset = 0;
 
-        while (offset < 100 /* safety break */) {
-          await page.goto(`${this.jobsUrl}&offset=${offset}`);
-          const rawJobsForPage = await this.extractJobsOnPage(page);
-          if (rawJobsForPage.length === 0) {
-            break;
-          }
-          rawJobs.push(...rawJobsForPage);
-
-          // There are 5 companies per page, but there might be more jobs because a company might have multiple jobs
-          offset += 5;
+      while (offset < 100 /* safety break */) {
+        await page.goto(`${this.url}&offset=${offset}`);
+        const rawJobsForPage = await this.extractJobsOnPage(page);
+        if (rawJobsForPage.length === 0) {
+          break;
         }
+        rawJobs.push(...rawJobsForPage);
 
-        return rawJobs;
-      } finally {
-        await browser?.close();
+        // There are 5 companies per page, but there might be more jobs because a company might have multiple jobs
+        offset += 5;
       }
-    });
+    } catch (error) {
+      console.error("Error fetching jobs:", error);
+    } finally {
+      await browser?.close();
+      return rawJobs; /* returns partial results if there are errors */
+    }
   }
 
   private async extractJobsOnPage(page: Page) {

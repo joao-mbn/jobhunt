@@ -69,7 +69,25 @@ Create a file `data/my-resume.json` with your current resume information. There 
 1. Create a new Google Sheet
 2. Share it with your service account email (with Editor permissions)
 3. Copy the spreadsheet ID from the URL
-4. Keep that spreadsheet ID to put in the `.env` file for later on
+4. Keep that spreadsheet ID and the sheet name to put in the `.env` file for later on
+
+### rss.app Setup
+
+Getting jobs from linkedin uses a `rss.app` URL. You can setup yours here: [RSS APP](https://rss.app/new-rss-feed/linkedin).
+
+This is the one I used, but it's geared for my needs:
+
+```txt
+https://www.linkedin.com/jobs/search/?f_E=2%2C3%2C4&f_TPR=r3600&f_WT=2%2C3&geoId=90009553&keywords=(%22full%20stack%22%20OR%20%22full-stack%22%20OR%20%22fullstack%22%20OR%20%22software%20engineer%22%20OR%20%22backend%22%20OR%20%22frontend%22)%20AND%20(React%20OR%20%22Next.js%22%20OR%20Node%20OR%20Vue%20OR%20Golang%20OR%20GO%20OR%20%22C%23%22%20OR%20%22C%20Sharp%22%20OR%20%22SQL%22%20OR%20Express%20OR%20Postgres%20OR%20Postgresql%20OR%20GraphQL)&origin=JOB_SEARCH_PAGE_SEARCH_BUTTON&refresh=true&sortBy=R&spellCorrectionEnabled=true
+```
+
+If you want to optimize for yours, I recommend learning about linkedin boolean search and how to tweak the different query parameters.
+
+After you've configured yours, paste in the `LINKEDIN_ENDPOINT` in the `.env` file below.
+
+### Levels Setup
+
+Go to [Levels Job Page](https://www.levels.fyi/jobs), play with the filters and copy the URL and paste it in the `LEVELS_ENDPOINT` in the `.env` file below.
 
 ### (optional) Local AI All-in-one Setup
 
@@ -91,8 +109,8 @@ Create a `.env` file in the root directory:
 # Google Gemini AI
 GEMINI_API_KEY=your_gemini_api_key_here
 
-# RSS Feed
-RSS_ENDPOINT=https://your-rss-feed-url.com/feed
+# Scrapers
+LINKEDIN_ENDPOINT=https://your-rss-feed-url.com/feed
 
 # Google Sheets
 GOOGLE_SPREADSHEET_ID=your_spreadsheet_id_here

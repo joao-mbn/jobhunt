@@ -1,5 +1,6 @@
 import { chromium, type Browser, type Page } from "@playwright/test";
 import type { RawJob } from "../types/definitions/job.ts";
+import type { LevelsData } from "../types/definitions/source.ts";
 import { USER_AGENT } from "../utils/constants.ts";
 import type { Scraper } from "./types.ts";
 
@@ -76,18 +77,20 @@ export class LevelsScraper implements Scraper {
       const content = page.locator('div[class*="job-details-about_markdownText"]');
       const description = (await content.count()) > 0 ? await content.textContent() : null;
 
+      const details: Record<string, unknown> = {
+        title,
+        headerDetails,
+        applyUrl,
+        compensation,
+        description,
+      } satisfies LevelsData;
+
       rawJobs.push({
         source: "levels",
         name: title,
         jobId,
         url: `https://www.levels.fyi/jobs?jobId=${jobId}`,
-        details: {
-          title,
-          headerDetails,
-          applyUrl,
-          compensation,
-          description,
-        },
+        details,
       });
     }
 

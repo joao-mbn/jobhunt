@@ -1,6 +1,7 @@
 import { chromium, type Browser, type Page } from "@playwright/test";
 import { load } from "cheerio";
 import type { RawJob } from "../types/definitions/job.ts";
+import type { BuiltInData } from "../types/definitions/source.ts";
 import { USER_AGENT } from "../utils/constants.ts";
 import type { Scraper } from "./types.ts";
 
@@ -79,20 +80,21 @@ export class BuiltInScraper implements Scraper {
       )
     ).join(", ");
 
+    const details: Record<string, unknown> = {
+      title,
+      company,
+      location,
+      workArrengement,
+      seniorityLevel,
+      datePublished,
+      description,
+      topSkills,
+    } satisfies BuiltInData;
     const rawJobs: RawJob = {
       name: title,
       jobId: jobToScrape.jobId,
       url: jobToScrape.url,
-      details: {
-        title,
-        company,
-        location,
-        workArrengement,
-        seniorityLevel,
-        datePublished,
-        description,
-        topSkills,
-      },
+      details,
       source: "builtin",
     };
     return rawJobs;

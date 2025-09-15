@@ -20,11 +20,20 @@ export interface LinkedInData {
 }
 
 export interface LevelsData {
-  jobId: string;
   title: string;
   headerDetails: string;
   description: string;
   applyUrl: string;
   compensation: string;
+}
+
+export interface BuiltInData {
+  title: string;
   company: string;
+  location: string;
+  workArrengement: string;
+  seniorityLevel: string;
+  datePublished: string;
+  description: string;
+  topSkills: string;
 }

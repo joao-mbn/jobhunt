@@ -1,4 +1,5 @@
 import { db } from "../db/database.ts";
+import { builtInScraper } from "./built-in.ts";
 import { insertRawJobs, queryJobIds } from "./db.ts";
 import { levelsScraper } from "./levels.ts";
 import { linkedInScraper } from "./linked-in.ts";
@@ -7,7 +8,7 @@ export async function main() {
   try {
     // Step 1: Fetch jobs from scrapers
     console.log("📡 Fetching jobs from scrapers...");
-    const scrapers = [levelsScraper, linkedInScraper];
+    const scrapers = [builtInScraper, levelsScraper, linkedInScraper];
     const extractedJobs = (await Promise.all(scrapers.map((s) => s.fetchJobs()))).flat();
 
     if (extractedJobs.length === 0) {

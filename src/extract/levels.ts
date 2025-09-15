@@ -1,5 +1,6 @@
 import { chromium, type Browser, type Page } from "@playwright/test";
 import type { RawJob } from "../types/definitions/job.ts";
+import { USER_AGENT } from "../utils/constants.ts";
 import type { Scraper } from "./types.ts";
 
 export class LevelsScraper implements Scraper {
@@ -20,14 +21,8 @@ export class LevelsScraper implements Scraper {
     const rawJobs: RawJob[] = [];
     try {
       browser = await chromium.launch();
-
       const page = await browser.newPage();
-
-      await page.setExtraHTTPHeaders({
-        "User-Agent":
-          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
-      });
-
+      await page.setExtraHTTPHeaders({ "User-Agent": USER_AGENT });
       await page.setViewportSize({ width: 1920, height: 1080 });
 
       await page.goto(this.url);

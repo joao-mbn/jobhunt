@@ -10,7 +10,7 @@ export interface Job extends BaseRecord {
   url: string;
   failCount?: number;
   details: Record<string, unknown>;
-  source: "linkedin" | "levels";
+  source: "linkedin" | "levels" | "builtin";
 }
 
 export interface RawJob extends Job {}

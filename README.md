@@ -89,6 +89,10 @@ After you've configured yours, paste in the `LINKEDIN_ENDPOINT` in the `.env` fi
 
 Go to [Levels Job Page](https://www.levels.fyi/jobs), play with the filters and copy the URL and paste it in the `LEVELS_ENDPOINT` in the `.env` file below.
 
+### Built-in Vancouver Setup
+
+Go to [Built-in Vancouver Page](https://builtinvancouver.org/jobs/), play with the filters and copy the URL and paste it in the `BUILTIN_ENDPOINT` in the `.env` file below.
+
 ### (optional) Local AI All-in-one Setup
 
 Use this if you want to run local models instead of resorting to Gemini API. If you don't have

@@ -117,5 +117,4 @@ class Database {
   }
 }
 
-// Export a singleton instance
 export const db = new Database();

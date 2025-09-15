@@ -36,5 +36,4 @@ export class LinkedInCleaner implements Cleaner {
   }
 }
 
-// Export singleton instance
 export const linkedInCleaner = new LinkedInCleaner();

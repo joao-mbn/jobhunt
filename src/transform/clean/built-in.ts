@@ -1,18 +1,22 @@
 import type { RawJob } from "../../types/definitions/job.ts";
-import type { LevelsData } from "../../types/definitions/source.ts";
+import type { BuiltInData } from "../../types/definitions/source.ts";
 import { extractInfoWithAI } from "./ai.ts";
 import type { Cleaner, CleanResult } from "./types.ts";
 
-export class LevelsCleaner implements Cleaner {
+export class BuiltInCleaner implements Cleaner {
   async clean(rawJobs: RawJob[]): Promise<CleanResult[]> {
     const promises = rawJobs.map(async (rawJob) => {
-      const jobDetails = rawJob.details as unknown as LevelsData;
+      const jobDetails = rawJob.details as unknown as BuiltInData;
 
       const jobDescription = [
         jobDetails.title,
-        jobDetails.headerDetails,
-        jobDetails.compensation,
+        jobDetails.company,
+        jobDetails.location,
+        jobDetails.workArrengement,
+        jobDetails.seniorityLevel,
+        jobDetails.datePublished,
         jobDetails.description,
+        jobDetails.topSkills,
       ]
         .filter(Boolean)
         .join("\n\n");
@@ -30,6 +34,14 @@ export class LevelsCleaner implements Cleaner {
             ...rawJob,
             ...extractedInfo,
             jobDescription,
+            yearsOfExperienceRequired:
+              !extractedInfo.yearsOfExperienceRequired || extractedInfo.yearsOfExperienceRequired === "Not specified"
+                ? jobDetails.seniorityLevel
+                : extractedInfo.yearsOfExperienceRequired,
+            hardSkillsRequired:
+              !extractedInfo.hardSkillsRequired || extractedInfo.hardSkillsRequired === "Not specified"
+                ? jobDetails.topSkills
+                : extractedInfo.hardSkillsRequired,
           },
         };
       } catch (error) {
@@ -42,4 +54,4 @@ export class LevelsCleaner implements Cleaner {
   }
 }
 
-export const levelsCleaner = new LevelsCleaner();
+export const builtInCleaner = new BuiltInCleaner();

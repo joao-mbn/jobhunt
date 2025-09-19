@@ -1,40 +1,40 @@
 <mxfile host="65bd71144e">
     <diagram id="CsKHAWagfNyfL_v6ooAr" name="Page-1">
-        <mxGraphModel dx="1076" dy="590" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="1413" dy="871" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
                 <mxCell id="4" value="" style="edgeStyle=none;html=1;verticalAlign=middle;" parent="1" source="2" target="3" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="2" value="" style="verticalLabelPosition=bottom;html=1;verticalAlign=middle;align=center;strokeColor=none;fillColor=#00BEF2;shape=mxgraph.azure.scheduler;pointerEvents=1;" parent="1" vertex="1">
+                <mxCell id="2" value="" style="verticalLabelPosition=bottom;html=1;verticalAlign=middle;align=center;shape=mxgraph.azure.scheduler;pointerEvents=1;" parent="1" vertex="1">
                     <mxGeometry x="110" y="200" width="60" height="70" as="geometry"/>
                 </mxCell>
                 <mxCell id="6" value="" style="edgeStyle=none;html=1;verticalAlign=middle;" parent="1" source="3" target="5" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="3" value="Pulls data from the feeds" style="whiteSpace=wrap;html=1;verticalAlign=middle;fillColor=#00BEF2;strokeColor=none;" parent="1" vertex="1">
+                <mxCell id="3" value="Pulls data from the feeds" style="whiteSpace=wrap;html=1;verticalAlign=middle;" parent="1" vertex="1">
                     <mxGeometry x="220" y="205" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="5" value="Load onto de database as raw data" style="whiteSpace=wrap;html=1;verticalAlign=middle;fillColor=#00BEF2;strokeColor=none;" parent="1" vertex="1">
+                <mxCell id="5" value="Load onto de database as raw data if new" style="whiteSpace=wrap;html=1;verticalAlign=middle;" parent="1" vertex="1">
                     <mxGeometry x="420" y="205" width="120" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="9" value="" style="edgeStyle=none;html=1;verticalAlign=middle;" parent="1" source="7" target="8" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="7" value="" style="verticalLabelPosition=bottom;html=1;verticalAlign=middle;align=center;strokeColor=none;fillColor=#00BEF2;shape=mxgraph.azure.scheduler;pointerEvents=1;" parent="1" vertex="1">
+                <mxCell id="7" value="" style="verticalLabelPosition=bottom;html=1;verticalAlign=middle;align=center;shape=mxgraph.azure.scheduler;pointerEvents=1;" parent="1" vertex="1">
                     <mxGeometry x="110" y="355" width="60" height="70" as="geometry"/>
                 </mxCell>
                 <mxCell id="11" value="" style="edgeStyle=none;html=1;verticalAlign=middle;" parent="1" source="8" target="10" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="8" value="Pulls the oldest raw data in the database, where fail count &amp;lt;= 3" style="whiteSpace=wrap;html=1;verticalAlign=middle;fillColor=#00BEF2;strokeColor=none;" parent="1" vertex="1">
+                <mxCell id="8" value="Pulls raw jobs whose fail count is below the threshold" style="whiteSpace=wrap;html=1;verticalAlign=middle;" parent="1" vertex="1">
                     <mxGeometry x="220" y="360" width="120" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="13" value="" style="edgeStyle=none;html=1;verticalAlign=middle;" parent="1" source="10" target="12" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="10" value="try parse the data" style="whiteSpace=wrap;html=1;verticalAlign=middle;fillColor=#00BEF2;strokeColor=none;" parent="1" vertex="1">
+                <mxCell id="10" value="try parse the data" style="whiteSpace=wrap;html=1;verticalAlign=middle;" parent="1" vertex="1">
                     <mxGeometry x="420" y="360" width="120" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="15" value="" style="edgeStyle=none;html=1;" parent="1" source="12" target="14" edge="1">
@@ -43,28 +43,28 @@
                 <mxCell id="43" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="12" target="28" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="12" value="success" style="rhombus;whiteSpace=wrap;html=1;verticalAlign=middle;fillColor=#00BEF2;strokeColor=none;align=center;" parent="1" vertex="1">
+                <mxCell id="12" value="success" style="rhombus;whiteSpace=wrap;html=1;verticalAlign=middle;align=center;" parent="1" vertex="1">
                     <mxGeometry x="640" y="350" width="80" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="14" value="deletes data from raw, adds to cleaned" style="whiteSpace=wrap;html=1;fillColor=#00BEF2;strokeColor=none;" parent="1" vertex="1">
+                <mxCell id="14" value="deletes data from raw, adds to cleaned" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="790" y="360" width="120" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="16" value="" style="edgeStyle=none;html=1;verticalAlign=middle;" parent="1" source="17" target="19" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="17" value="" style="verticalLabelPosition=bottom;html=1;verticalAlign=middle;align=center;strokeColor=none;fillColor=#00BEF2;shape=mxgraph.azure.scheduler;pointerEvents=1;" parent="1" vertex="1">
+                <mxCell id="17" value="" style="verticalLabelPosition=bottom;html=1;verticalAlign=middle;align=center;shape=mxgraph.azure.scheduler;pointerEvents=1;" parent="1" vertex="1">
                     <mxGeometry x="110" y="589" width="60" height="70" as="geometry"/>
                 </mxCell>
                 <mxCell id="18" value="" style="edgeStyle=none;html=1;verticalAlign=middle;" parent="1" source="19" target="21" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="19" value="Pulls cleaned data from the database where fail count &amp;lt;= 3" style="whiteSpace=wrap;html=1;verticalAlign=middle;fillColor=#00BEF2;strokeColor=none;" parent="1" vertex="1">
+                <mxCell id="19" value="Pulls cleaned jobs whose fail count is below the threshold" style="whiteSpace=wrap;html=1;verticalAlign=middle;" parent="1" vertex="1">
                     <mxGeometry x="220" y="594" width="120" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="31" style="edgeStyle=none;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="21" target="23" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="21" value="try adding insighs to it" style="whiteSpace=wrap;html=1;verticalAlign=middle;fillColor=#00BEF2;strokeColor=none;" parent="1" vertex="1">
+                <mxCell id="21" value="try adding insighs to it" style="whiteSpace=wrap;html=1;verticalAlign=middle;" parent="1" vertex="1">
                     <mxGeometry x="420" y="594" width="120" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="32" style="edgeStyle=none;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="23" target="24" edge="1">
@@ -73,31 +73,31 @@
                 <mxCell id="45" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="23" target="44" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="23" value="success" style="rhombus;whiteSpace=wrap;html=1;verticalAlign=middle;fillColor=#00BEF2;strokeColor=none;align=center;" parent="1" vertex="1">
+                <mxCell id="23" value="success" style="rhombus;whiteSpace=wrap;html=1;verticalAlign=middle;align=center;" parent="1" vertex="1">
                     <mxGeometry x="640" y="584" width="80" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="24" value="deletes data from cleaned, adds to enhanced" style="whiteSpace=wrap;html=1;fillColor=#00BEF2;strokeColor=none;" parent="1" vertex="1">
+                <mxCell id="24" value="deletes data from cleaned, adds to enhanced" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="790" y="594" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="28" value="increase fail count on raw table" style="whiteSpace=wrap;html=1;fillColor=#00BEF2;strokeColor=none;" parent="1" vertex="1">
+                <mxCell id="28" value="increase fail count on raw table" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="790" y="450" width="120" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="33" value="" style="edgeStyle=none;html=1;verticalAlign=middle;" parent="1" source="34" target="36" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="34" value="" style="verticalLabelPosition=bottom;html=1;verticalAlign=middle;align=center;strokeColor=none;fillColor=#00BEF2;shape=mxgraph.azure.scheduler;pointerEvents=1;" parent="1" vertex="1">
+                <mxCell id="34" value="" style="verticalLabelPosition=bottom;html=1;verticalAlign=middle;align=center;shape=mxgraph.azure.scheduler;pointerEvents=1;" parent="1" vertex="1">
                     <mxGeometry x="110" y="835" width="60" height="70" as="geometry"/>
                 </mxCell>
                 <mxCell id="35" value="" style="edgeStyle=none;html=1;verticalAlign=middle;" parent="1" source="36" target="38" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="36" value="Pulls enhanced data from the database where score &amp;gt;= min_score" style="whiteSpace=wrap;html=1;verticalAlign=middle;fillColor=#00BEF2;strokeColor=none;" parent="1" vertex="1">
-                    <mxGeometry x="220" y="840" width="120" height="60" as="geometry"/>
+                <mxCell id="36" value="Pulls enhanced jobs whose fail count is below the threshold and relevance score is above minimum" style="whiteSpace=wrap;html=1;verticalAlign=middle;" parent="1" vertex="1">
+                    <mxGeometry x="220" y="825" width="120" height="90" as="geometry"/>
                 </mxCell>
                 <mxCell id="37" style="edgeStyle=none;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="38" target="40" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="38" value="try generate pre-fills for it" style="whiteSpace=wrap;html=1;verticalAlign=middle;fillColor=#00BEF2;strokeColor=none;" parent="1" vertex="1">
+                <mxCell id="38" value="try generate pre-fills for it" style="whiteSpace=wrap;html=1;verticalAlign=middle;" parent="1" vertex="1">
                     <mxGeometry x="420" y="840" width="120" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="39" style="edgeStyle=none;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="40" target="41" edge="1">
@@ -106,68 +106,70 @@
                 <mxCell id="47" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="40" target="46" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="40" value="success" style="rhombus;whiteSpace=wrap;html=1;verticalAlign=middle;fillColor=#00BEF2;strokeColor=none;align=center;" parent="1" vertex="1">
+                <mxCell id="40" value="success" style="rhombus;whiteSpace=wrap;html=1;verticalAlign=middle;align=center;" parent="1" vertex="1">
                     <mxGeometry x="640" y="830" width="80" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="41" value="adds data to pre-fills" style="whiteSpace=wrap;html=1;fillColor=#00BEF2;strokeColor=none;" parent="1" vertex="1">
+                <mxCell id="41" value="adds data to pre-fills" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="790" y="840" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="44" value="increase fail count on cleaned table" style="whiteSpace=wrap;html=1;fillColor=#00BEF2;strokeColor=none;" parent="1" vertex="1">
+                <mxCell id="44" value="increase fail count on cleaned table" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="790" y="699" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="46" value="increase fail count on enhanced table" style="whiteSpace=wrap;html=1;fillColor=#00BEF2;strokeColor=none;" parent="1" vertex="1">
+                <mxCell id="46" value="increase fail count on enhanced table" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="790" y="940" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="48" value="" style="edgeStyle=none;html=1;verticalAlign=middle;" parent="1" source="49" target="51" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="49" value="" style="verticalLabelPosition=bottom;html=1;verticalAlign=middle;align=center;strokeColor=none;fillColor=#00BEF2;shape=mxgraph.azure.scheduler;pointerEvents=1;" parent="1" vertex="1">
-                    <mxGeometry x="110" y="1075" width="60" height="70" as="geometry"/>
-                </mxCell>
-                <mxCell id="51" value="Cleans up tables with fail count &amp;gt;= 3, or with score too low, if they're too old" style="whiteSpace=wrap;html=1;verticalAlign=middle;fillColor=#00BEF2;strokeColor=none;" parent="1" vertex="1">
-                    <mxGeometry x="220" y="1080" width="120" height="60" as="geometry"/>
+                <mxCell id="48" value="" style="edgeStyle=none;html=1;verticalAlign=middle;" parent="1" source="49" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="220" y="1110" as="targetPoint"/>
+                    </mxGeometry>
                 </mxCell>
                 <mxCell id="59" value="" style="edgeStyle=none;html=1;verticalAlign=middle;" parent="1" source="60" target="61" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="60" value="" style="verticalLabelPosition=bottom;html=1;verticalAlign=middle;align=center;strokeColor=none;fillColor=#00BEF2;shape=mxgraph.azure.scheduler;pointerEvents=1;" parent="1" vertex="1">
-                    <mxGeometry x="110" y="1220" width="60" height="70" as="geometry"/>
+                <mxCell id="60" value="" style="verticalLabelPosition=bottom;html=1;verticalAlign=middle;align=center;shape=mxgraph.azure.scheduler;pointerEvents=1;" parent="1" vertex="1">
+                    <mxGeometry x="110" y="1065" width="60" height="70" as="geometry"/>
                 </mxCell>
-                <mxCell id="65" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="61" target="64" edge="1">
+                <mxCell id="75" value="" style="edgeStyle=none;html=1;" edge="1" parent="1" source="61" target="74">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="61" value="Loads enhanced data with their pre-fills to google sheets, when they're above a certain score" style="whiteSpace=wrap;html=1;verticalAlign=middle;fillColor=#00BEF2;strokeColor=none;" parent="1" vertex="1">
-                    <mxGeometry x="220" y="1220" width="120" height="75" as="geometry"/>
+                <mxCell id="61" value="Pulls enhanced jobs that have pre-fills" style="whiteSpace=wrap;html=1;verticalAlign=middle;" parent="1" vertex="1">
+                    <mxGeometry x="220" y="1062.5" width="120" height="75" as="geometry"/>
                 </mxCell>
-                <mxCell id="62" value="update enhanced record with already updated flag" style="whiteSpace=wrap;html=1;fillColor=#00BEF2;strokeColor=none;" parent="1" vertex="1">
-                    <mxGeometry x="570" y="1227.5" width="120" height="60" as="geometry"/>
+                <mxCell id="62" value="update enhanced record with already updated flag" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="790" y="1070" width="120" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="66" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="64" target="62" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="64" value="success" style="rhombus;whiteSpace=wrap;html=1;verticalAlign=middle;fillColor=#00BEF2;strokeColor=none;align=center;" parent="1" vertex="1">
-                    <mxGeometry x="410" y="1217.5" width="80" height="80" as="geometry"/>
+                <mxCell id="64" value="success" style="rhombus;whiteSpace=wrap;html=1;verticalAlign=middle;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="640" y="1060" width="80" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="67" value="Yes" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
-                    <mxGeometry x="490" y="1227.5" width="60" height="30" as="geometry"/>
+                <mxCell id="67" value="Yes" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="720" y="1065" width="60" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="68" value="Yes" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                <mxCell id="68" value="Yes" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
                     <mxGeometry x="720" y="835" width="60" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="69" value="Yes" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                <mxCell id="69" value="Yes" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
                     <mxGeometry x="720" y="589" width="60" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="70" value="Yes" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                <mxCell id="70" value="Yes" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
                     <mxGeometry x="720" y="355" width="60" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="71" value="No" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                <mxCell id="71" value="No" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
                     <mxGeometry x="720" y="450" width="60" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="72" value="No" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                <mxCell id="72" value="No" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
                     <mxGeometry x="720" y="699" width="60" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="73" value="No" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                <mxCell id="73" value="No" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
                     <mxGeometry x="720" y="940" width="60" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="76" value="" style="edgeStyle=none;html=1;" edge="1" parent="1" source="74" target="64">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="74" value="try load to google sheets" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="420" y="1070" width="120" height="60" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>

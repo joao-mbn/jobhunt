@@ -24,8 +24,6 @@ This is an ETL (Extract, Transform, Load) pipeline for job postings from differe
 
 The system operates as a series of scheduled cron jobs that process data in small batches, behaving like a queue system. This approach mitigates memory spikes and avoids rate limiting issues, especially with AI services, by spreading the workload over time instead of processing everything at once.
 
-Periodic cleanup jobs also run to eliminate junk data that either has no value to the job hunter (such as low-scoring jobs or failed processing attempts) or has already been successfully uploaded to Google Sheets, keeping the database small.
-
 ## Prerequisites
 
 - **Node.js v24+**: Required for native TypeScript support, experimental `node:sqlite` module, and built-in `.env` file reading capabilities

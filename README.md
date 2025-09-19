@@ -4,7 +4,9 @@ This project is an automated job hunting assistant that continuously monitors mu
 
 The application is built to be highly extensive and customizable, where module interoperability can be easily achieved and scaled independently. That being said, I've found scraping to be more art than science, so far, to the extent that it's highly skewed for finding software developer jobs, although the rest of the application would work for whatever kind of jobs are fed, given that the data structures would be respected.
 
-## 🎯 What It Does
+Currently, the sources are LinkedIn, BuiltIn Vancouver and Levels.fyi. The AI used is a mix of different Gemini models and Local AI default text model.
+
+## What It Does
 
 This is an ETL (Extract, Transform, Load) pipeline for job postings from different sources. Here's what happens at each stage:
 
@@ -24,13 +26,13 @@ The system operates as a series of scheduled cron jobs that process data in smal
 
 Periodic cleanup jobs also run to eliminate junk data that either has no value to the job hunter (such as low-scoring jobs or failed processing attempts) or has already been successfully uploaded to Google Sheets, keeping the database small.
 
-## 📋 Prerequisites
+## Prerequisites
 
 - **Node.js v24+**: Required for native TypeScript support, experimental `node:sqlite` module, and built-in `.env` file reading capabilities
 - **Package Manager**: This project uses `pnpm` by default, but `yarn` and `npm` are also supported. If using an alternative package manager, delete the `pnpm-lock.yaml` file to avoid conflicts. For the rest of the docs, `pnpm` will be used, but the analogous from `yarn` or `npm` should work.
 - **Docker** (optional): Required only if you want to use Local AI (see setup below).
 
-## ⚙️ Setup
+## Setup
 
 ### Clone and Install Dependencies
 
@@ -115,6 +117,8 @@ GEMINI_API_KEY=your_gemini_api_key_here
 
 # Scrapers
 LINKEDIN_ENDPOINT=https://your-rss-feed-url.com/feed
+LEVELS_ENDPOINT="https://www.levels.fyi/jobs/your-params
+BUILTIN_ENDPOINT=https://builtinvancouver.org/jobs/your-params
 
 # Google Sheets
 GOOGLE_SPREADSHEET_ID=your_spreadsheet_id_here
@@ -125,7 +129,7 @@ GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour private key here\n-----END
 DB_PATH=./data/jobhunt.db
 ```
 
-## 🎮 Usage
+## Usage
 
 Run `pnpm run cron` to start the entire application with the multiple cron jobs.
 

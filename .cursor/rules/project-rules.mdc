@@ -6,7 +6,7 @@ alwaysApply: true
 
 # Job Hunt Automation - Cursor Rules
 
-> **📖 For detailed project information, setup instructions, and architecture details, see the [README.md](../../README.md#job-hunt-automation)**
+> **For detailed project information, setup instructions, and architecture details, see the [README.md](../../README.md#job-hunt-automation)**
 
 ## Quick Reference
 
@@ -25,7 +25,7 @@ alwaysApply: true
 
 ### Code Organization
 
-> **📖 See [README.md - Folder Structure](../../README.md#folder-structure) for detailed folder structure and conventions**
+> **See [README.md - Folder Structure](../../README.md#folder-structure) for detailed folder structure and conventions**
 
 - Each major folder contains an `index.ts` with a `main()` function
 - Modules can run independently or as part of the orchestrated pipeline
@@ -47,7 +47,7 @@ alwaysApply: true
 
 ## Development Workflow
 
-> **📖 See [README.md - Setup](../../README.md#️-setup) for detailed setup, environment configuration, and testing instructions**
+> **See [README.md - Setup](../../README.md#setup) for detailed setup, environment configuration, and testing instructions**
 
 ### Quick Commands
 
@@ -58,7 +58,7 @@ alwaysApply: true
 
 ## Common Development Tasks
 
-> **📖 See [README.md - Usage](../../README.md#-usage) for detailed development patterns and troubleshooting**
+> **See [README.md - Usage](../../README.md#usage) for detailed development patterns and troubleshooting**
 
 ### Key File Locations
 
@@ -69,17 +69,18 @@ alwaysApply: true
 
 ## Best Practices
 
-> **📖 See [README.md](../../README.md#job-hunt-automation) for detailed best practices and troubleshooting**
+> **See [README.md](../../README.md#job-hunt-automation) for detailed best practices and troubleshooting**
 
 ### Key Principles
 
 - **Performance**: Batch processing, proper indexing, regular cleanup
 - **Error Handling**: Fail count tracking, graceful degradation, circuit breakers
 - **Monitoring**: Success rates, API usage, database health, data freshness
+- **Documentation**: Avoid emojis in comments, documentation, and code - keep it professional and clean
 
 ## Troubleshooting
 
-> **📖 See [README.md](../../README.md#-usage) for detailed troubleshooting and common issues**
+> **See [README.md](../../README.md#usage) for detailed troubleshooting and common issues**
 
 ### Quick Debug Commands
 
@@ -98,7 +99,7 @@ alwaysApply: true
 
 ## Integration Points
 
-> **📖 See [README.md](../../README.md#️-setup) for detailed integration setup and configuration**
+> **See [README.md](../../README.md#setup) for detailed integration setup and configuration**
 
 - **AI Services**: Gemini API (cloud) or Local AI (Docker)
 - **External APIs**: Google Sheets, RSS feeds, LinkedIn

@@ -11,8 +11,8 @@ export function fromDBBaseRecordToBaseRecord(record: DBBaseRecord): BaseRecord {
 }
 
 export function fromDBRawJobToRawJob(job: DBRawJob): RawJob {
-  const source = ["linkedin", "levels", "builtin"].includes(job.source)
-    ? (job.source as "linkedin" | "levels" | "builtin")
+  const source = ["linkedin", "levels", "builtin", "indeed"].includes(job.source)
+    ? (job.source as "linkedin" | "levels" | "builtin" | "indeed")
     : undefined;
   return {
     ...fromDBBaseRecordToBaseRecord(job),

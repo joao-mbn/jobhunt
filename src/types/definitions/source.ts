@@ -37,3 +37,14 @@ export interface BuiltInData {
   description: string;
   topSkills: string;
 }
+
+export interface IndeedData {
+  title: string;
+  company: string;
+  insights: Record<string, string>;
+  description: string;
+  workArrangement: string;
+  compensation: string;
+  jobType: string;
+  location: string;
+}

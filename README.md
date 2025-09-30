@@ -115,7 +115,7 @@ GEMINI_API_KEY=your_gemini_api_key_here
 
 # Scrapers
 LINKEDIN_ENDPOINT=https://your-rss-feed-url.com/feed
-LEVELS_ENDPOINT="https://www.levels.fyi/jobs/your-params
+LEVELS_ENDPOINT=https://www.levels.fyi/jobs/your-params
 BUILTIN_ENDPOINT=https://builtinvancouver.org/jobs/your-params
 
 # Google Sheets

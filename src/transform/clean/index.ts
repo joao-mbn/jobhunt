@@ -2,6 +2,7 @@ import { db } from "../../db/database.ts";
 import { transformBySource } from "../utils.ts";
 import { builtInCleaner } from "./built-in.ts";
 import { deleteCleanedRawJobs, insertNewCleanJobs, queryRawJobs, updateFailedCleaning } from "./db.ts";
+import { indeedCleaner } from "./indeed.ts";
 import { levelsCleaner } from "./levels.ts";
 import { linkedInCleaner } from "./linked-in.ts";
 import type { CleanResultFailure, CleanResultSuccess } from "./types.ts";
@@ -19,6 +20,7 @@ export async function main() {
       linkedin: linkedInCleaner.clean,
       levels: levelsCleaner.clean,
       builtin: builtInCleaner.clean,
+      indeed: indeedCleaner.clean,
     });
 
     const successfulResults = cleanResults.filter((result): result is CleanResultSuccess => result.success);

@@ -54,10 +54,6 @@ export class IndeedScraper implements Scraper {
               throw new Error("Cannot handle verification required");
             }
 
-            await page.waitForURL(
-              `${this.url}&vjk=${anchor.getAttribute("data-jk")}`,
-            );
-
             const link = await anchor.getAttribute("data-jk");
             if (!link) {
               continue;

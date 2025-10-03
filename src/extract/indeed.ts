@@ -81,9 +81,9 @@ export class IndeedScraper implements Scraper {
       return rawJobs;
     } catch (error) {
       console.error("Error fetching jobs:", error);
+      return rawJobs;
     } finally {
       await browser?.close();
-      return rawJobs; /* returns partial results if there are errors */
     }
   }
 

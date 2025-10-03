@@ -44,11 +44,12 @@ export class LevelsScraper implements Scraper {
         // There are 5 companies per page, but there might be more jobs because a company might have multiple jobs
         offset += 5;
       }
+      return rawJobs;
     } catch (error) {
       console.error("Error fetching jobs:", error);
+      return rawJobs; /* returns partial results if there are errors */
     } finally {
       await browser?.close();
-      return rawJobs; /* returns partial results if there are errors */
     }
   }
 

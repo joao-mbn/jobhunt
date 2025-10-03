@@ -42,11 +42,12 @@ export class BuiltInScraper implements Scraper {
       console.log(
         `✅ Built-in scraper completed - found ${rawJobs.length} total job URLs`,
       );
+      return rawJobs; /* returns partial results if there are errors */
     } catch (error) {
       console.error("Error fetching jobs:", error);
+      return rawJobs; /* returns partial results if there are errors */
     } finally {
       await browser?.close();
-      return rawJobs; /* returns partial results if there are errors */
     }
   }
 
@@ -188,12 +189,8 @@ export class BuiltInScraper implements Scraper {
   }
 
   private getBaseUrl(): string {
-    try {
-      const url = new URL(this.url);
-      return `${url.protocol}//${url.host}`;
-    } catch (error) {
-      throw new Error(`Invalid URL format: ${this.url}`);
-    }
+    const url = new URL(this.url);
+    return `${url.protocol}//${url.host}`;
   }
 }
 

@@ -4,6 +4,5 @@
     "source.fixAll": "explicit",
     "source.organizeImports": "explicit"
   },
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "prettier.requireConfig": true
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
 }

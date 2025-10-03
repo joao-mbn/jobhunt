@@ -15,7 +15,8 @@
     "transform-enhance": "node --env-file=.env.test src/transform/enhance/index.ts",
     "transform-prefills": "node --env-file=.env.test src/transform/prefills/index.ts",
     "load": "node --env-file=.env.test src/load/index.ts",
-    "format": "node node_modules/prettier/bin/prettier.cjs . --write"
+    "format": "node node_modules/prettier/bin/prettier.cjs . --write",
+    "lint": "eslint --ext .ts,.js,.json --fix"
   },
   "keywords": [],
   "author": "",

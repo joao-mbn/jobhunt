@@ -4,7 +4,7 @@ This project is an automated job hunting assistant that continuously monitors mu
 
 The application is built to be highly extensive and customizable, where module interoperability can be easily achieved and scaled independently. That being said, I've found scraping to be more art than science, so far, to the extent that it's highly skewed for finding software developer jobs, although the rest of the application would work for whatever kind of jobs are fed, given that the data structures would be respected.
 
-Currently, the sources are LinkedIn, BuiltIn Vancouver and Levels.fyi. The AI used is a mix of different Gemini models and Local AI default text model.
+Currently, the sources are LinkedIn, Indeed, BuiltIn Vancouver and Levels.fyi. The AI used is a mix of different Gemini models and Local AI default text model.
 
 ## What It Does
 

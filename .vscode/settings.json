@@ -3,10 +3,7 @@
   "editor.codeActionsOnSave": {
     "source.fixAll": "explicit",
     "source.organizeImports": "explicit"
-  }
-  /* "deno.enable": true,
-  "editor.defaultFormatter": "denoland.vscode-deno",
-  "[typescript]": {
-    "editor.defaultFormatter": "denoland.vscode-deno"
-  } */
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "prettier.requireConfig": true,
 }

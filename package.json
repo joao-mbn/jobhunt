@@ -4,6 +4,9 @@
   "description": "",
   "main": "index.js",
   "type": "module",
+  "engines": {
+    "node": ">=24.0.0"
+  },
   "scripts": {
     "init-db": "node --env-file=.env.test src/db/index.ts",
     "cron": "node --env-file=.env src/cron/index.ts",
@@ -11,15 +14,24 @@
     "transform-clean": "node --env-file=.env.test src/transform/clean/index.ts",
     "transform-enhance": "node --env-file=.env.test src/transform/enhance/index.ts",
     "transform-prefills": "node --env-file=.env.test src/transform/prefills/index.ts",
-    "load": "node --env-file=.env.test src/load/index.ts"
+    "load": "node --env-file=.env.test src/load/index.ts",
+    "format": "node node_modules/prettier/bin/prettier.cjs . --write"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.13.1",
   "devDependencies": {
+    "@eslint/css": "^0.11.1",
+    "@eslint/js": "^9.36.0",
+    "@eslint/json": "^0.13.2",
     "@types/node": "^24.3.0",
-    "typescript": "^5.9.2"
+    "eslint": "^9.36.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^16.4.0",
+    "prettier": "3.6.2",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.45.0"
   },
   "dependencies": {
     "@google/genai": "^1.16.0",

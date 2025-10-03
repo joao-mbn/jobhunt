@@ -14,7 +14,9 @@ export function queryCleanJobs() {
       LIMIT 5
     `);
 
-  const dbCleanJobs = cleanJobsResult.filter(isDBCleanJob) as unknown as DBCleanJob[];
+  const dbCleanJobs = cleanJobsResult.filter(
+    isDBCleanJob,
+  ) as unknown as DBCleanJob[];
   const cleanJobs = dbCleanJobs.map(fromDBCleanJobToCleanJob);
   return cleanJobs;
 }
@@ -27,29 +29,35 @@ export function updateFailedEnhancement(failedResults: EnhanceResultFailure[]) {
     `UPDATE clean_jobs
          SET fail_count = fail_count + 1
          WHERE job_id IN (${placeholders})`,
-    ...jobIds
+    ...jobIds,
   );
 }
 
-export function deleteEnhancedCleanJobs(successfulResults: EnhanceResultSuccess[]) {
+export function deleteEnhancedCleanJobs(
+  successfulResults: EnhanceResultSuccess[],
+) {
   db.query(
     `DELETE FROM clean_jobs
          WHERE job_id IN (${successfulResults.map(() => "?").join(",")})`,
-    ...successfulResults.map(({ jobId }) => jobId)
+    ...successfulResults.map(({ jobId }) => jobId),
   );
 }
 
-export function insertNewEnhancedJobs(successfulResults: EnhanceResultSuccess[]) {
+export function insertNewEnhancedJobs(
+  successfulResults: EnhanceResultSuccess[],
+) {
   // make sure that the enhanced jobs are not already in the database
   const existingEnhancedJobs = db.query(
     `SELECT job_id FROM enhanced_jobs
          WHERE job_id IN (${successfulResults.map(() => "?").join(",")})`,
-    ...successfulResults.map(({ jobId }) => jobId)
+    ...successfulResults.map(({ jobId }) => jobId),
   );
   console.log(`Found ${existingEnhancedJobs.length} existing enhanced jobs`);
 
   const newEnhancedJobs = successfulResults
-    .filter(({ jobId }) => !existingEnhancedJobs.some((j) => j.job_id === jobId))
+    .filter(
+      ({ jobId }) => !existingEnhancedJobs.some((j) => j.job_id === jobId),
+    )
     .map(({ job }) => job);
   if (newEnhancedJobs.length === 0) {
     return;

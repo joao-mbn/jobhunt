@@ -60,7 +60,9 @@ export class LevelsScraper implements Scraper {
     for (const jobLink of jobLinks) {
       await jobLink.click();
       const jobId = (await jobLink.getAttribute("href")).split("jobId=")[1];
-      const headerContainer = page.locator('section[class*="job-details-header"]').first();
+      const headerContainer = page
+        .locator('section[class*="job-details-header"]')
+        .first();
       const title = await headerContainer.locator("h1").first().textContent();
       const headerDetails = await headerContainer
         .locator('p[class*="job-details-header_detailsRow"]')
@@ -71,11 +73,19 @@ export class LevelsScraper implements Scraper {
         .first()
         .getAttribute("href");
 
-      const compensationElement = headerContainer.locator('div[class*="job-details-header_compensationRow"]').first();
-      const compensation = (await compensationElement.count()) > 0 ? await compensationElement.textContent() : null;
+      const compensationElement = headerContainer
+        .locator('div[class*="job-details-header_compensationRow"]')
+        .first();
+      const compensation =
+        (await compensationElement.count()) > 0
+          ? await compensationElement.textContent()
+          : null;
 
-      const content = page.locator('div[class*="job-details-about_markdownText"]');
-      const description = (await content.count()) > 0 ? await content.textContent() : null;
+      const content = page.locator(
+        'div[class*="job-details-about_markdownText"]',
+      );
+      const description =
+        (await content.count()) > 0 ? await content.textContent() : null;
 
       const details: Record<string, unknown> = {
         title,
@@ -99,11 +109,22 @@ export class LevelsScraper implements Scraper {
 
   private async setupCurrency(page: Page) {
     await page.locator('button[class*="currencyButton"]').click();
-    await page.locator("button").filter({ hasText: "Canadian Dollar" }).first().click();
+    await page
+      .locator("button")
+      .filter({ hasText: "Canadian Dollar" })
+      .first()
+      .click();
 
     await page.locator('button[class*="currencyButton"]').click();
-    await page.locator('button[role="tab"]').filter({ hasText: "Annual" }).click();
-    await page.locator('ul[class*="currency-locale-selector"] button').filter({ hasText: "Annual" }).first().click();
+    await page
+      .locator('button[role="tab"]')
+      .filter({ hasText: "Annual" })
+      .click();
+    await page
+      .locator('ul[class*="currency-locale-selector"] button')
+      .filter({ hasText: "Annual" })
+      .first()
+      .click();
   }
 }
 

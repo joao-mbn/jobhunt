@@ -26,7 +26,10 @@ export class BuiltInCleaner implements Cleaner {
       }
 
       try {
-        const extractedInfo = await extractInfoWithAI(jobDescription, rawJob.jobId);
+        const extractedInfo = await extractInfoWithAI(
+          jobDescription,
+          rawJob.jobId,
+        );
         return {
           success: true,
           jobId: rawJob.jobId,
@@ -35,11 +38,13 @@ export class BuiltInCleaner implements Cleaner {
             ...extractedInfo,
             jobDescription,
             yearsOfExperienceRequired:
-              !extractedInfo.yearsOfExperienceRequired || extractedInfo.yearsOfExperienceRequired === "Not specified"
+              !extractedInfo.yearsOfExperienceRequired ||
+              extractedInfo.yearsOfExperienceRequired === "Not specified"
                 ? jobDetails.seniorityLevel
                 : extractedInfo.yearsOfExperienceRequired,
             hardSkillsRequired:
-              !extractedInfo.hardSkillsRequired || extractedInfo.hardSkillsRequired === "Not specified"
+              !extractedInfo.hardSkillsRequired ||
+              extractedInfo.hardSkillsRequired === "Not specified"
                 ? jobDetails.topSkills
                 : extractedInfo.hardSkillsRequired,
           },

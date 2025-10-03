@@ -1,7 +1,12 @@
 import { db } from "../../db/database.ts";
 import { transformBySource } from "../utils.ts";
 import { builtInCleaner } from "./built-in.ts";
-import { deleteCleanedRawJobs, insertNewCleanJobs, queryRawJobs, updateFailedCleaning } from "./db.ts";
+import {
+  deleteCleanedRawJobs,
+  insertNewCleanJobs,
+  queryRawJobs,
+  updateFailedCleaning,
+} from "./db.ts";
 import { indeedCleaner } from "./indeed.ts";
 import { levelsCleaner } from "./levels.ts";
 import { linkedInCleaner } from "./linked-in.ts";
@@ -23,14 +28,22 @@ export async function main() {
       indeed: indeedCleaner.clean,
     });
 
-    const successfulResults = cleanResults.filter((result): result is CleanResultSuccess => result.success);
-    const failedResults = cleanResults.filter((result): result is CleanResultFailure => !result.success);
-    console.log(`Cleaning completed: ${successfulResults.length} successful, ${failedResults.length} failed`);
+    const successfulResults = cleanResults.filter(
+      (result): result is CleanResultSuccess => result.success,
+    );
+    const failedResults = cleanResults.filter(
+      (result): result is CleanResultFailure => !result.success,
+    );
+    console.log(
+      `Cleaning completed: ${successfulResults.length} successful, ${failedResults.length} failed`,
+    );
 
     await db.withTransaction(async () => {
       // Step 3: Update the fail_count for the failed jobs
       if (failedResults.length > 0) {
-        console.log(`Updating fail_count for ${failedResults.length} failed jobs...`);
+        console.log(
+          `Updating fail_count for ${failedResults.length} failed jobs...`,
+        );
         updateFailedCleaning(failedResults);
       }
 

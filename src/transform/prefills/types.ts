@@ -14,4 +14,7 @@ export interface PrefillsResultFailure {
   prefills: null;
 }
 
-export type AIGeneratedPrefillsInfo = Omit<Prefills, keyof BaseRecord | "enhancedJobId">;
+export type AIGeneratedPrefillsInfo = Omit<
+  Prefills,
+  keyof BaseRecord | "enhancedJobId"
+>;

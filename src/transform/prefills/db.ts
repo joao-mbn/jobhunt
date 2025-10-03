@@ -20,7 +20,9 @@ export function queryEnhancedJobsWithoutPrefills() {
       LIMIT 5
     `);
 
-  const dbEnhancedJobs = enhancedJobsResult.filter(isDBEnhancedJob) as unknown as DBEnhancedJob[];
+  const dbEnhancedJobs = enhancedJobsResult.filter(
+    isDBEnhancedJob,
+  ) as unknown as DBEnhancedJob[];
   const enhancedJobs = dbEnhancedJobs.map(fromDBEnhancedJobToEnhancedJob);
   return enhancedJobs;
 }
@@ -33,7 +35,7 @@ export function updateFailedPrefills(failedResults: PrefillsResultFailure[]) {
     `UPDATE enhanced_jobs
          SET fail_count = fail_count + 1
          WHERE job_id IN (${placeholders})`,
-    ...jobIds
+    ...jobIds,
   );
 }
 
@@ -42,12 +44,15 @@ export function insertNewPrefills(successfulResults: PrefillsResultSuccess[]) {
   const existingPrefills = db.query(
     `SELECT enhanced_job_id FROM prefills
          WHERE enhanced_job_id IN (${successfulResults.map(() => "?").join(",")})`,
-    ...successfulResults.map(({ enhancedJobId }) => enhancedJobId)
+    ...successfulResults.map(({ enhancedJobId }) => enhancedJobId),
   );
   console.log(`Found ${existingPrefills.length} existing prefills`);
 
   const newPrefills = successfulResults
-    .filter(({ enhancedJobId }) => !existingPrefills.some((p) => p.enhanced_job_id === enhancedJobId))
+    .filter(
+      ({ enhancedJobId }) =>
+        !existingPrefills.some((p) => p.enhanced_job_id === enhancedJobId),
+    )
     .map(({ prefills }) => prefills);
 
   if (newPrefills.length === 0) {

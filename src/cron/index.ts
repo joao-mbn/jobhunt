@@ -25,7 +25,7 @@ function main() {
       console.log("🔄 Running cron job for extraction at", context.date);
       extract();
     },
-    { name: "extract" }
+    { name: "extract" },
   );
 
   cron.schedule(
@@ -34,7 +34,7 @@ function main() {
       console.log("🔄 Running cron job for cleaning at", context.date);
       clean();
     },
-    { name: "clean" }
+    { name: "clean" },
   );
 
   cron.schedule(
@@ -43,7 +43,7 @@ function main() {
       console.log("🔄 Running cron job for enhancement at", context.date);
       enhance();
     },
-    { name: "enhance" }
+    { name: "enhance" },
   );
 
   cron.schedule(
@@ -52,7 +52,7 @@ function main() {
       console.log("🔄 Running cron job for prefills at", context.date);
       prefills();
     },
-    { name: "prefills" }
+    { name: "prefills" },
   );
 
   cron.schedule(
@@ -61,7 +61,7 @@ function main() {
       console.log("🔄 Running cron job for loading at", context.date);
       load();
     },
-    { name: "load" }
+    { name: "load" },
   );
 }
 

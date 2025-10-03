@@ -1,5 +1,9 @@
 import { existsSync, mkdirSync } from "fs";
-import type { DatabaseSyncOptions, SQLInputValue, SQLOutputValue } from "node:sqlite";
+import type {
+  DatabaseSyncOptions,
+  SQLInputValue,
+  SQLOutputValue,
+} from "node:sqlite";
 import { DatabaseSync } from "node:sqlite";
 import { join } from "path";
 
@@ -65,7 +69,10 @@ class Database {
     }
   }
 
-  query(sql: string, ...params: SQLInputValue[]): Record<string, SQLOutputValue>[] {
+  query(
+    sql: string,
+    ...params: SQLInputValue[]
+  ): Record<string, SQLOutputValue>[] {
     const db = this.getDatabase();
     try {
       return db.prepare(sql).all(...params);
@@ -75,7 +82,11 @@ class Database {
     }
   }
 
-  insert(table: string, columns: string[], paramsArray: SQLInputValue[][]): void {
+  insert(
+    table: string,
+    columns: string[],
+    paramsArray: SQLInputValue[][],
+  ): void {
     if (paramsArray.length === 0) return;
 
     const db = this.getDatabase();

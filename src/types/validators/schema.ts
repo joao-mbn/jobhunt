@@ -1,4 +1,11 @@
-import type { DBBaseRecord, DBCleanJob, DBEnhancedJob, DBJob, DBPrefills, DBRawJob } from "../definitions/schema.ts";
+import type {
+  DBBaseRecord,
+  DBCleanJob,
+  DBEnhancedJob,
+  DBJob,
+  DBPrefills,
+  DBRawJob,
+} from "../definitions/schema.ts";
 import { hasOptionalFields, hasRequiredFields } from "./has-fields.ts";
 
 export function isDBBaseRecord(record: unknown): record is DBBaseRecord {

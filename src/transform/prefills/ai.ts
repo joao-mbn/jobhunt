@@ -56,20 +56,37 @@ Return ONLY a JSON object with this exact structure:
 - It should demonstrate clear value proposition for this specific role
 `;
 
-export async function generatePrefillsWithAI(enhancedJob: EnhancedJob): Promise<AIGeneratedPrefillsInfo> {
+export async function generatePrefillsWithAI(
+  enhancedJob: EnhancedJob,
+): Promise<AIGeneratedPrefillsInfo> {
   const resume = getResume();
 
   const prompt = COVER_LETTER_PROMPT.replace(
     "{{resumeData}}",
-    resume ? JSON.stringify(resume, null, 2) : "Not specified"
+    resume ? JSON.stringify(resume, null, 2) : "Not specified",
   )
     .replace("{{company}}", enhancedJob.company || "Not specified")
     .replace("{{role}}", enhancedJob.role || "Not specified")
-    .replace("{{yearsOfExperienceRequired}}", enhancedJob.yearsOfExperienceRequired || "Not specified")
-    .replace("{{hardSkillsRequired}}", enhancedJob.hardSkillsRequired || "Not specified")
-    .replace("{{jobDescription}}", enhancedJob.jobDescription || "Not specified")
-    .replace("{{relevanceScore}}", enhancedJob.relevanceScore?.toString() || "0")
-    .replace("{{relevanceReason}}", enhancedJob.relevanceReason || "Not specified");
+    .replace(
+      "{{yearsOfExperienceRequired}}",
+      enhancedJob.yearsOfExperienceRequired || "Not specified",
+    )
+    .replace(
+      "{{hardSkillsRequired}}",
+      enhancedJob.hardSkillsRequired || "Not specified",
+    )
+    .replace(
+      "{{jobDescription}}",
+      enhancedJob.jobDescription || "Not specified",
+    )
+    .replace(
+      "{{relevanceScore}}",
+      enhancedJob.relevanceScore?.toString() || "0",
+    )
+    .replace(
+      "{{relevanceReason}}",
+      enhancedJob.relevanceReason || "Not specified",
+    );
 
   try {
     const { response } = (await attemptPromptSequentially(ais, {
@@ -80,22 +97,29 @@ export async function generatePrefillsWithAI(enhancedJob: EnhancedJob): Promise<
 
     return response;
   } catch (error) {
-    console.error(`Failed to generate prefills for job ${enhancedJob.jobId} with AI:`, error);
+    console.error(
+      `Failed to generate prefills for job ${enhancedJob.jobId} with AI:`,
+      error,
+    );
     // Return default values if AI generation fails
     return {
-      coverLetter: "AI cover letter generation failed. Please write a custom cover letter for this position.",
+      coverLetter:
+        "AI cover letter generation failed. Please write a custom cover letter for this position.",
     };
   }
 }
 
-function isAIPrefillsInfo(response: unknown): response is AIGeneratedPrefillsInfo {
+function isAIPrefillsInfo(
+  response: unknown,
+): response is AIGeneratedPrefillsInfo {
   if (typeof response !== "object" || response === null) {
     return false;
   }
 
-  const optionalFields: Partial<Record<keyof AIGeneratedPrefillsInfo, string>> = {
-    coverLetter: "string",
-  };
+  const optionalFields: Partial<Record<keyof AIGeneratedPrefillsInfo, string>> =
+    {
+      coverLetter: "string",
+    };
 
   return hasOptionalFields(response, optionalFields);
 }

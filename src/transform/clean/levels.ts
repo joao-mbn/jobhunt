@@ -22,7 +22,10 @@ export class LevelsCleaner implements Cleaner {
       }
 
       try {
-        const extractedInfo = await extractInfoWithAI(jobDescription, rawJob.jobId);
+        const extractedInfo = await extractInfoWithAI(
+          jobDescription,
+          rawJob.jobId,
+        );
         return {
           success: true,
           jobId: rawJob.jobId,

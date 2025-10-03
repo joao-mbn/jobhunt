@@ -16,7 +16,9 @@ export class IndeedCleaner implements Cleaner {
         jobDetails.compensation,
         jobDetails.jobType,
         jobDetails.description,
-        ...Object.entries(jobDetails.insights).map(([key, value]) => `${key}: ${value}`),
+        ...Object.entries(jobDetails.insights).map(
+          ([key, value]) => `${key}: ${value}`,
+        ),
       ]
         .filter(Boolean)
         .join("\n\n");
@@ -26,7 +28,10 @@ export class IndeedCleaner implements Cleaner {
       }
 
       try {
-        const extractedInfo = await extractInfoWithAI(jobDescription, rawJob.jobId);
+        const extractedInfo = await extractInfoWithAI(
+          jobDescription,
+          rawJob.jobId,
+        );
         return {
           success: true,
           jobId: rawJob.jobId,
@@ -34,10 +39,18 @@ export class IndeedCleaner implements Cleaner {
             ...rawJob,
             ...extractedInfo,
             jobDescription,
-            workArrangement: extractedInfo.workArrangement || jobDetails.workArrangement || "Not specified",
-            compensation: extractedInfo.compensation || jobDetails.compensation || "Not specified",
-            company: extractedInfo.company || jobDetails.company || "Not specified",
-            location: extractedInfo.location || jobDetails.location || "Not specified",
+            workArrangement:
+              extractedInfo.workArrangement ||
+              jobDetails.workArrangement ||
+              "Not specified",
+            compensation:
+              extractedInfo.compensation ||
+              jobDetails.compensation ||
+              "Not specified",
+            company:
+              extractedInfo.company || jobDetails.company || "Not specified",
+            location:
+              extractedInfo.location || jobDetails.location || "Not specified",
             role: extractedInfo.role || jobDetails.title || "Not specified",
           },
         };

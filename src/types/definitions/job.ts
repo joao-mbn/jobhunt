@@ -39,4 +39,5 @@ export interface Prefills extends BaseRecord {
   coverLetter?: string;
 }
 
-export type EnhancedJobWithPrefills = Pick<Prefills, "coverLetter"> & EnhancedJob;
+export type EnhancedJobWithPrefills = Pick<Prefills, "coverLetter"> &
+  EnhancedJob;

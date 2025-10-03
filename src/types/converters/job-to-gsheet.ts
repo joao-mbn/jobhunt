@@ -8,8 +8,12 @@ export const GSHEET_JOB_MAPPER: {
   gsheetColumn: string;
   gsheetIndex: number;
   jobField: keyofEnhancedJobWithPrefills;
-  convertToJobFunction?: (value: string) => EnhancedJobWithPrefills[keyofEnhancedJobWithPrefills];
-  convertToGsheetFunction?: (value: EnhancedJobWithPrefills[keyofEnhancedJobWithPrefills]) => string;
+  convertToJobFunction?: (
+    value: string,
+  ) => EnhancedJobWithPrefills[keyofEnhancedJobWithPrefills];
+  convertToGsheetFunction?: (
+    value: EnhancedJobWithPrefills[keyofEnhancedJobWithPrefills],
+  ) => string;
 }[] = [
   {
     gsheetColumn: "Date",
@@ -36,10 +40,22 @@ export const GSHEET_JOB_MAPPER: {
     jobField: "workArrangement",
   },
   { gsheetColumn: "Role", gsheetIndex: 8, jobField: "role" },
-  { gsheetColumn: "Estimated Compensation", gsheetIndex: 9, jobField: "compensation" },
+  {
+    gsheetColumn: "Estimated Compensation",
+    gsheetIndex: 9,
+    jobField: "compensation",
+  },
   { gsheetColumn: "Content", gsheetIndex: 10, jobField: "jobDescription" },
-  { gsheetColumn: "Years of Experience Required", gsheetIndex: 11, jobField: "yearsOfExperienceRequired" },
-  { gsheetColumn: "Hard Skills Required", gsheetIndex: 12, jobField: "hardSkillsRequired" },
+  {
+    gsheetColumn: "Years of Experience Required",
+    gsheetIndex: 11,
+    jobField: "yearsOfExperienceRequired",
+  },
+  {
+    gsheetColumn: "Hard Skills Required",
+    gsheetIndex: 12,
+    jobField: "hardSkillsRequired",
+  },
   {
     gsheetColumn: "Relevance Score",
     gsheetIndex: 13,
@@ -47,26 +63,39 @@ export const GSHEET_JOB_MAPPER: {
     convertToJobFunction: (value: string) => Number(value),
     convertToGsheetFunction: (value: number) => String(value),
   },
-  { gsheetColumn: "Relevance Reason", gsheetIndex: 14, jobField: "relevanceReason" },
-  { gsheetColumn: "Recommendation", gsheetIndex: 15, jobField: "recommendation" },
+  {
+    gsheetColumn: "Relevance Reason",
+    gsheetIndex: 14,
+    jobField: "relevanceReason",
+  },
+  {
+    gsheetColumn: "Recommendation",
+    gsheetIndex: 15,
+    jobField: "recommendation",
+  },
   { gsheetColumn: "Cover Letter", gsheetIndex: 16, jobField: "coverLetter" },
 ];
 
-export function enhancedJobWithPrefillsToGsheetRow(job: EnhancedJobWithPrefills): GSheetRow {
+export function enhancedJobWithPrefillsToGsheetRow(
+  job: EnhancedJobWithPrefills,
+): GSheetRow {
   return GSHEET_JOB_MAPPER.map((mapper) => {
     const { jobField, convertToGsheetFunction } = mapper;
     return convertToGsheetFunction?.(job[jobField]) ?? String(job[jobField]);
   });
 }
 
-export function gsheetRowToEnhancedJobWithPrefills(row: GSheetRow): EnhancedJobWithPrefills {
+export function gsheetRowToEnhancedJobWithPrefills(
+  row: GSheetRow,
+): EnhancedJobWithPrefills {
   return row.reduce((acc, curr, i) => {
     const map = GSHEET_JOB_MAPPER.find((mapper) => mapper.gsheetIndex === i);
     if (!map) {
       return acc;
     }
     const { jobField, convertToJobFunction } = map;
-    (acc as unknown as Record<string, unknown>)[jobField] = convertToJobFunction?.(curr) ?? curr;
+    (acc as unknown as Record<string, unknown>)[jobField] =
+      convertToJobFunction?.(curr) ?? curr;
     return acc;
   }, {} as EnhancedJobWithPrefills);
 }

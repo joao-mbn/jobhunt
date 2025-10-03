@@ -1,6 +1,18 @@
 import { fromDateStringSafely } from "../../utils/date.ts";
-import type { BaseRecord, CleanJob, EnhancedJob, Prefills, RawJob } from "../definitions/job.ts";
-import type { DBBaseRecord, DBCleanJob, DBEnhancedJob, DBPrefills, DBRawJob } from "../definitions/schema.ts";
+import type {
+  BaseRecord,
+  CleanJob,
+  EnhancedJob,
+  Prefills,
+  RawJob,
+} from "../definitions/job.ts";
+import type {
+  DBBaseRecord,
+  DBCleanJob,
+  DBEnhancedJob,
+  DBPrefills,
+  DBRawJob,
+} from "../definitions/schema.ts";
 
 export function fromDBBaseRecordToBaseRecord(record: DBBaseRecord): BaseRecord {
   return {
@@ -11,7 +23,9 @@ export function fromDBBaseRecordToBaseRecord(record: DBBaseRecord): BaseRecord {
 }
 
 export function fromDBRawJobToRawJob(job: DBRawJob): RawJob {
-  const source = ["linkedin", "levels", "builtin", "indeed"].includes(job.source)
+  const source = ["linkedin", "levels", "builtin", "indeed"].includes(
+    job.source,
+  )
     ? (job.source as "linkedin" | "levels" | "builtin" | "indeed")
     : undefined;
   return {
@@ -26,8 +40,17 @@ export function fromDBRawJobToRawJob(job: DBRawJob): RawJob {
 }
 
 export function fromDBCleanJobToCleanJob(job: DBCleanJob): CleanJob {
-  const workArrangement = ["Remote", "Hybrid", "On-Site", "Not specified"].includes(job.work_arrangement)
-    ? (job.work_arrangement as "Remote" | "Hybrid" | "On-Site" | "Not specified")
+  const workArrangement = [
+    "Remote",
+    "Hybrid",
+    "On-Site",
+    "Not specified",
+  ].includes(job.work_arrangement)
+    ? (job.work_arrangement as
+        | "Remote"
+        | "Hybrid"
+        | "On-Site"
+        | "Not specified")
     : "Not specified";
 
   return {
@@ -44,8 +67,12 @@ export function fromDBCleanJobToCleanJob(job: DBCleanJob): CleanJob {
   };
 }
 
-export function fromDBEnhancedJobToEnhancedJob(job: DBEnhancedJob): EnhancedJob {
-  const recommendation = ["Apply", "Consider", "Skip"].includes(job.recommendation)
+export function fromDBEnhancedJobToEnhancedJob(
+  job: DBEnhancedJob,
+): EnhancedJob {
+  const recommendation = ["Apply", "Consider", "Skip"].includes(
+    job.recommendation,
+  )
     ? (job.recommendation as "Apply" | "Consider" | "Skip")
     : undefined;
 

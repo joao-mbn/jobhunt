@@ -14,4 +14,7 @@ export interface EnhanceResultFailure {
   job: null;
 }
 
-export type AIGeneratedEnhancedJobInfo = Omit<EnhancedJob, keyof CleanJob | "uploadedToSheet">;
+export type AIGeneratedEnhancedJobInfo = Omit<
+  EnhancedJob,
+  keyof CleanJob | "uploadedToSheet"
+>;

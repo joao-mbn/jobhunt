@@ -1,4 +1,8 @@
-import { gemini2_0FlashLiteAIClient, gemini2_5FlashLiteAIClient, gemini2_5ProAIClient } from "./gemini.ts";
+import {
+  gemini2_0FlashLiteAIClient,
+  gemini2_5FlashLiteAIClient,
+  gemini2_5ProAIClient,
+} from "./gemini.ts";
 import { localAIClient } from "./local-ai.ts";
 import type { AIClient, PromptRequest } from "./types.ts";
 
@@ -6,7 +10,10 @@ import type { AIClient, PromptRequest } from "./types.ts";
  * Attempts to generate content using each AI client in sequence, until one succeeds.
  * If all fail, throws an error.
  */
-export async function attemptPromptSequentially(ais: AIClient[], request: PromptRequest) {
+export async function attemptPromptSequentially(
+  ais: AIClient[],
+  request: PromptRequest,
+) {
   for (const ai of ais) {
     try {
       const rawResponse = await ai.generateContent(request.prompt);
@@ -24,10 +31,17 @@ export async function attemptPromptSequentially(ais: AIClient[], request: Prompt
       }
       return { response: json, request };
     } catch (error) {
-      if (error != null && typeof error === "object" && "status" in error && error.status === 429) {
+      if (
+        error != null &&
+        typeof error === "object" &&
+        "status" in error &&
+        error.status === 429
+      ) {
         console.error(`Rate limit exceeded on ${ai.name}`);
       } else {
-        console.error(`Error generating content for job ${request.key} with ${ai.name}: ${error}`);
+        console.error(
+          `Error generating content for job ${request.key} with ${ai.name}: ${error}`,
+        );
       }
     }
   }
@@ -35,4 +49,9 @@ export async function attemptPromptSequentially(ais: AIClient[], request: Prompt
   throw new Error("No AI client was able to generate content");
 }
 
-export const ais = [gemini2_5ProAIClient, gemini2_5FlashLiteAIClient, gemini2_0FlashLiteAIClient, localAIClient];
+export const ais = [
+  gemini2_5ProAIClient,
+  gemini2_5FlashLiteAIClient,
+  gemini2_0FlashLiteAIClient,
+  localAIClient,
+];

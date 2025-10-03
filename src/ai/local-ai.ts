@@ -30,17 +30,22 @@ export class LocalAIClient implements AIClient {
         temperature: LOCAL_AI_CONFIG.temperature,
       };
 
-      const response = await fetch(`${LOCAL_AI_CONFIG.baseUrl}/chat/completions`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${LOCAL_AI_CONFIG.baseUrl}/chat/completions`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
         },
-        body: JSON.stringify(requestBody),
-      });
+      );
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`Local AI API error: ${response.status} - ${errorText}`);
+        throw new Error(
+          `Local AI API error: ${response.status} - ${errorText}`,
+        );
       }
 
       const data = (await response.json()) as {
@@ -58,7 +63,8 @@ export class LocalAIClient implements AIClient {
       return data.choices[0].message.content;
     } catch (error) {
       console.error("❌ Error generating content with Local AI:", error);
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
       throw new Error(`Failed to generate content: ${errorMessage}`);
     }
   }

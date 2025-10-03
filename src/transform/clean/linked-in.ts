@@ -14,7 +14,10 @@ export class LinkedInCleaner implements Cleaner {
       }
 
       try {
-        const extractedInfo = await extractInfoWithAI(jobDescription, rawJob.jobId);
+        const extractedInfo = await extractInfoWithAI(
+          jobDescription,
+          rawJob.jobId,
+        );
         const publishedDate = fromDateStringSafely(jobDetails.date_published);
         return {
           success: true,

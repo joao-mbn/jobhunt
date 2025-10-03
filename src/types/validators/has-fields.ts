@@ -1,4 +1,7 @@
-export function hasRequiredFields(job: unknown, requiredFields: Record<string, string>): boolean {
+export function hasRequiredFields(
+  job: unknown,
+  requiredFields: Record<string, string>,
+): boolean {
   if (typeof job !== "object" || job === null) {
     return false;
   }
@@ -20,7 +23,10 @@ export function hasRequiredFields(job: unknown, requiredFields: Record<string, s
   return true;
 }
 
-export function hasOptionalFields(job: unknown, optionalFields: Record<string, string>): boolean {
+export function hasOptionalFields(
+  job: unknown,
+  optionalFields: Record<string, string>,
+): boolean {
   if (typeof job !== "object" || job === null) {
     return false;
   }

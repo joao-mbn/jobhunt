@@ -64,20 +64,28 @@ Return ONLY a JSON object with this exact structure:
 - Pay attention to location preferences, work arrangement preferences, and career goals from the resume
 `;
 
-export async function enhanceJobWithAI(job: CleanJob): Promise<AIGeneratedEnhancedJobInfo> {
+export async function enhanceJobWithAI(
+  job: CleanJob,
+): Promise<AIGeneratedEnhancedJobInfo> {
   const resume = getResume();
 
   const prompt = JOB_ENHANCEMENT_PROMPT.replace(
     "{{resumeData}}",
-    resume ? JSON.stringify(resume, null, 2) : "Not specified"
+    resume ? JSON.stringify(resume, null, 2) : "Not specified",
   )
     .replace("{{company}}", job.company || "Not specified")
     .replace("{{role}}", job.role || "Not specified")
     .replace("{{location}}", job.location || "Not specified")
     .replace("{{workArrangement}}", job.workArrangement || "Not specified")
     .replace("{{compensation}}", job.compensation || "Not specified")
-    .replace("{{yearsOfExperienceRequired}}", job.yearsOfExperienceRequired || "Not specified")
-    .replace("{{hardSkillsRequired}}", job.hardSkillsRequired || "Not specified")
+    .replace(
+      "{{yearsOfExperienceRequired}}",
+      job.yearsOfExperienceRequired || "Not specified",
+    )
+    .replace(
+      "{{hardSkillsRequired}}",
+      job.hardSkillsRequired || "Not specified",
+    )
     .replace("{{jobDescription}}", job.jobDescription || "Not specified");
 
   try {
@@ -99,12 +107,16 @@ export async function enhanceJobWithAI(job: CleanJob): Promise<AIGeneratedEnhanc
   }
 }
 
-function isAIEnhancedJobInfo(response: unknown): response is AIGeneratedEnhancedJobInfo {
+function isAIEnhancedJobInfo(
+  response: unknown,
+): response is AIGeneratedEnhancedJobInfo {
   if (typeof response !== "object" || response === null) {
     return false;
   }
 
-  const optionalFields: Partial<Record<keyof AIGeneratedEnhancedJobInfo, string>> = {
+  const optionalFields: Partial<
+    Record<keyof AIGeneratedEnhancedJobInfo, string>
+  > = {
     relevanceScore: "number",
     relevanceReason: "string",
     recommendation: "string",

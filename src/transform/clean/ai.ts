@@ -43,15 +43,25 @@ Return ONLY a JSON object with this exact structure:
 - Be conservative - only extract information that is clearly stated
 `;
 
-export async function extractInfoWithAI(jobDescription: string, jobId: string): Promise<AIGeneratedCleanJobInfo> {
-  const prompt = JOB_INFO_EXTRACTION_PROMPT.replace("{{jobDescription}}", jobDescription);
+export async function extractInfoWithAI(
+  jobDescription: string,
+  jobId: string,
+): Promise<AIGeneratedCleanJobInfo> {
+  const prompt = JOB_INFO_EXTRACTION_PROMPT.replace(
+    "{{jobDescription}}",
+    jobDescription,
+  );
 
   try {
     const { response } = (await attemptPromptSequentially(ais, {
       prompt,
       key: jobId,
       options: { asJson: true, validateJson: isAIExtractedInfo },
-    })) as { response: Omit<AIGeneratedCleanJobInfo, "publishedDate"> & { publishedDate?: string } };
+    })) as {
+      response: Omit<AIGeneratedCleanJobInfo, "publishedDate"> & {
+        publishedDate?: string;
+      };
+    };
 
     return {
       ...response,
@@ -63,23 +73,27 @@ export async function extractInfoWithAI(jobDescription: string, jobId: string): 
   }
 }
 
-function isAIExtractedInfo(
-  response: unknown
-): response is Omit<AIGeneratedCleanJobInfo, "publishedDate"> & { publishedDate?: string } {
+function isAIExtractedInfo(response: unknown): response is Omit<
+  AIGeneratedCleanJobInfo,
+  "publishedDate"
+> & {
+  publishedDate?: string;
+} {
   if (typeof response !== "object" || response === null) {
     return false;
   }
 
-  const optionalFields: Partial<Record<keyof AIGeneratedCleanJobInfo, string>> = {
-    workArrangement: "string",
-    compensation: "string",
-    company: "string",
-    location: "string",
-    role: "string",
-    publishedDate: "string",
-    yearsOfExperienceRequired: "string",
-    hardSkillsRequired: "string",
-  };
+  const optionalFields: Partial<Record<keyof AIGeneratedCleanJobInfo, string>> =
+    {
+      workArrangement: "string",
+      compensation: "string",
+      company: "string",
+      location: "string",
+      role: "string",
+      publishedDate: "string",
+      yearsOfExperienceRequired: "string",
+      hardSkillsRequired: "string",
+    };
 
   return hasOptionalFields(response, optionalFields);
 }

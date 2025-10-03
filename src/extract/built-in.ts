@@ -39,7 +39,9 @@ export class BuiltInScraper implements Scraper {
         rawJobs.push(rawJobsForPage);
       }
 
-      console.log(`✅ Built-in scraper completed - found ${rawJobs.length} total job URLs`);
+      console.log(
+        `✅ Built-in scraper completed - found ${rawJobs.length} total job URLs`,
+      );
     } catch (error) {
       console.error("Error fetching jobs:", error);
     } finally {
@@ -48,35 +50,61 @@ export class BuiltInScraper implements Scraper {
     }
   }
 
-  private async extractJobOnPage(page: Page, jobToScrape: Pick<RawJob, "url" | "jobId">): Promise<RawJob> {
+  private async extractJobOnPage(
+    page: Page,
+    jobToScrape: Pick<RawJob, "url" | "jobId">,
+  ): Promise<RawJob> {
     await page.goto(jobToScrape.url);
 
     const header = page.locator('div[data-id="job-card"]').first();
     const title = await header.locator("h1").first().textContent();
-    const company = await header.locator("h2[data-id='company-title']").first().textContent();
+    const company = await header
+      .locator("h2[data-id='company-title']")
+      .first()
+      .textContent();
     let location = await header
       .locator("div.d-flex.align-items-start.gap-sm:has(i.fa-location-dot)")
       .first()
       .textContent();
     location = location?.trim().split(" in ")[1] || location?.trim();
     const workArrengement = (
-      await header.locator("div.d-flex.align-items-start.gap-sm:has(i.fa-house-building)").first().textContent()
+      await header
+        .locator("div.d-flex.align-items-start.gap-sm:has(i.fa-house-building)")
+        .first()
+        .textContent()
     ).trim();
     const seniorityLevel = (
-      await header.locator("div.d-flex.align-items-start.gap-sm:has(i.fa-trophy)").first().textContent()
+      await header
+        .locator("div.d-flex.align-items-start.gap-sm:has(i.fa-trophy)")
+        .first()
+        .textContent()
     ).trim();
     const datePublished = (
-      await header.locator("div.d-flex.flex-column.flex-md-row.d-md-inline-flex:has(i.fa-clock)").first().textContent()
+      await header
+        .locator(
+          "div.d-flex.flex-column.flex-md-row.d-md-inline-flex:has(i.fa-clock)",
+        )
+        .first()
+        .textContent()
     ).trim();
-    const description = await page.locator("div[id*=job-post-body-]").first().textContent();
+    const description = await page
+      .locator("div[id*=job-post-body-]")
+      .first()
+      .textContent();
     const topSkillsContainer = page
-      .locator("div.bg-white.rounded-3.p-md.p-lg-lg.mb-sm.mb-lg-md.full-size:has(h2)")
+      .locator(
+        "div.bg-white.rounded-3.p-md.p-lg-lg.mb-sm.mb-lg-md.full-size:has(h2)",
+      )
       .first();
     const topSkills = (
       await Promise.all(
         (
-          await topSkillsContainer.locator("div.py-xs.px-sm.d-inline-block.rounded-3.fs-sm.text-nowrap.border").all()
-        ).map((skill) => skill.textContent())
+          await topSkillsContainer
+            .locator(
+              "div.py-xs.px-sm.d-inline-block.rounded-3.fs-sm.text-nowrap.border",
+            )
+            .all()
+        ).map((skill) => skill.textContent()),
       )
     ).join(", ");
 
@@ -106,7 +134,10 @@ export class BuiltInScraper implements Scraper {
 
     try {
       for (let page = 1; page <= 10; page++) {
-        const pageUrl = page === 1 ? this.url : `${this.url}&handler=SearchResults&page=${page}`;
+        const pageUrl =
+          page === 1
+            ? this.url
+            : `${this.url}&handler=SearchResults&page=${page}`;
         console.log(`📄 Fetching page ${page}...`);
 
         const response = await fetch(pageUrl, {
@@ -115,7 +146,9 @@ export class BuiltInScraper implements Scraper {
         });
 
         if (!response.ok) {
-          console.log(`Error fetching page with status ${response.status} on page ${page}: ${response.statusText}`);
+          console.log(
+            `Error fetching page with status ${response.status} on page ${page}: ${response.statusText}`,
+          );
           continue;
         }
 

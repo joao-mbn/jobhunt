@@ -34,7 +34,9 @@ export function queryEnhancedJobsWithPrefills(): EnhancedJobWithPrefills[] {
     });
   }
 
-  console.log(`📊 Found ${enhancedJobsWithPrefills.length} enhanced jobs with prefills ready for upload`);
+  console.log(
+    `📊 Found ${enhancedJobsWithPrefills.length} enhanced jobs with prefills ready for upload`,
+  );
   return enhancedJobsWithPrefills;
 }
 
@@ -45,6 +47,6 @@ export function markJobsAsUploaded(jobIds: string[]): void {
     `UPDATE enhanced_jobs
      SET uploaded_to_sheet = 1
      WHERE job_id IN (${placeholders})`,
-    ...jobIds
+    ...jobIds,
   );
 }

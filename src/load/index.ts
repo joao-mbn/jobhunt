@@ -18,18 +18,24 @@ export async function main(): Promise<void> {
     const existingJobIds = await getExistingJobIds();
 
     // Step 3: Filter out jobs that are already uploaded
-    const newJobsToUpload = newJobsWithPrefills.filter((job) => !existingJobIds.has(job.jobId));
+    const newJobsToUpload = newJobsWithPrefills.filter(
+      (job) => !existingJobIds.has(job.jobId),
+    );
     if (newJobsToUpload.length === 0) {
       console.log("📝 All jobs are already uploaded to Google Sheets");
       return;
     }
 
     // Step 4: Convert to JobItem format for upload
-    const jobsForUpload = newJobsToUpload.map(enhancedJobWithPrefillsToGsheetRow);
+    const jobsForUpload = newJobsToUpload.map(
+      enhancedJobWithPrefillsToGsheetRow,
+    );
 
     // Step 5: Upload to Google Sheets
     await uploadToGoogleSheet(jobsForUpload);
-    console.log(`✅ Successfully loaded ${newJobsToUpload.length} jobs to Google Sheets`);
+    console.log(
+      `✅ Successfully loaded ${newJobsToUpload.length} jobs to Google Sheets`,
+    );
 
     // Step 6: Mark jobs as uploaded to prevent duplicates
     const jobIds = newJobsToUpload.map((job) => job.jobId);

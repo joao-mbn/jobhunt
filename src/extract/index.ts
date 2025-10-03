@@ -9,8 +9,15 @@ export async function main() {
   try {
     // Step 1: Fetch jobs from scrapers
     console.log("📡 Fetching jobs from scrapers...");
-    const scrapers = [indeedScraper, builtInScraper, linkedInScraper, levelsScraper];
-    const extractedJobs = (await Promise.all(scrapers.map((s) => s.fetchJobs()))).flat();
+    const scrapers = [
+      indeedScraper,
+      builtInScraper,
+      linkedInScraper,
+      levelsScraper,
+    ];
+    const extractedJobs = (
+      await Promise.all(scrapers.map((s) => s.fetchJobs()))
+    ).flat();
 
     if (extractedJobs.length === 0) {
       console.log("❌ No jobs found");
@@ -21,7 +28,9 @@ export async function main() {
     // Step 2: Filter out jobs that are already in the database
     console.log("🔍 Filtering out jobs that are already in the database...");
     const existingJobs = queryJobIds();
-    const newJobs = extractedJobs.filter((job) => !existingJobs.some((j) => j.job_id === job.jobId));
+    const newJobs = extractedJobs.filter(
+      (job) => !existingJobs.some((j) => j.job_id === job.jobId),
+    );
     if (newJobs.length === 0) {
       console.log("❌ No jobs to store");
       return;

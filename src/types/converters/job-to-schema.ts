@@ -1,6 +1,18 @@
 import { toDateStringSafely } from "../../utils/date.ts";
-import type { BaseRecord, CleanJob, EnhancedJob, Prefills, RawJob } from "../definitions/job.ts";
-import type { DBBaseRecord, DBCleanJob, DBEnhancedJob, DBPrefills, DBRawJob } from "../definitions/schema.ts";
+import type {
+  BaseRecord,
+  CleanJob,
+  EnhancedJob,
+  Prefills,
+  RawJob,
+} from "../definitions/job.ts";
+import type {
+  DBBaseRecord,
+  DBCleanJob,
+  DBEnhancedJob,
+  DBPrefills,
+  DBRawJob,
+} from "../definitions/schema.ts";
 
 export function fromBaseRecordToDBBaseRecord(record: BaseRecord): DBBaseRecord {
   return {
@@ -37,7 +49,9 @@ export function fromCleanJobToDBCleanJob(job: CleanJob): DBCleanJob {
   };
 }
 
-export function fromEnhancedJobToDBEnhancedJob(job: EnhancedJob): DBEnhancedJob {
+export function fromEnhancedJobToDBEnhancedJob(
+  job: EnhancedJob,
+): DBEnhancedJob {
   return {
     ...fromCleanJobToDBCleanJob(job),
     relevance_score: job.relevanceScore,

@@ -1,12 +1,15 @@
 import { google, sheets_v4 } from "googleapis";
-import { GSHEET_JOB_MAPPER, gsheetRowToEnhancedJobWithPrefills } from "../types/converters/job-to-gsheet.ts";
+import {
+  GSHEET_JOB_MAPPER,
+  gsheetRowToEnhancedJobWithPrefills,
+} from "../types/converters/job-to-gsheet.ts";
 import type { GSheetRow } from "../types/definitions/gsheet.ts";
 
 const COLUMN_WIDTH = 100;
 const ROW_HEIGHT = 21;
-const GSHEET_HEADERS = GSHEET_JOB_MAPPER.toSorted((a, b) => a.gsheetIndex - b.gsheetIndex).map(
-  (mapper) => mapper.gsheetColumn
-);
+const GSHEET_HEADERS = GSHEET_JOB_MAPPER.toSorted(
+  (a, b) => a.gsheetIndex - b.gsheetIndex,
+).map((mapper) => mapper.gsheetColumn);
 
 function connectToGoogleSheets() {
   const spreadsheetId = process.env.GOOGLE_SPREADSHEET_ID!;
@@ -17,7 +20,9 @@ function connectToGoogleSheets() {
   };
 
   const isSheetsOnEnv =
-    process.env.GOOGLE_SPREADSHEET_ID && process.env.GOOGLE_CLIENT_EMAIL && process.env.GOOGLE_PRIVATE_KEY;
+    process.env.GOOGLE_SPREADSHEET_ID &&
+    process.env.GOOGLE_CLIENT_EMAIL &&
+    process.env.GOOGLE_PRIVATE_KEY;
 
   if (!isSheetsOnEnv) {
     throw new Error("Google Sheets environment variables are not set");
@@ -31,9 +36,15 @@ function connectToGoogleSheets() {
   return { sheets, spreadsheetId, sheetName };
 }
 
-async function getSheetId(sheets: sheets_v4.Sheets, spreadsheetId: string, sheetName: string): Promise<number> {
+async function getSheetId(
+  sheets: sheets_v4.Sheets,
+  spreadsheetId: string,
+  sheetName: string,
+): Promise<number> {
   const response = await sheets.spreadsheets.get({ spreadsheetId });
-  const sheet = response.data.sheets?.find((s: sheets_v4.Schema$Sheet) => s.properties?.title === sheetName);
+  const sheet = response.data.sheets?.find(
+    (s: sheets_v4.Schema$Sheet) => s.properties?.title === sheetName,
+  );
   return sheet?.properties?.sheetId ?? 0;
 }
 
@@ -47,7 +58,10 @@ export async function getExistingJobIds(): Promise<Set<string>> {
       range: sheetName,
     });
 
-    const jobs = existingDataResponse.data.values?.map(gsheetRowToEnhancedJobWithPrefills) ?? [];
+    const jobs =
+      existingDataResponse.data.values?.map(
+        gsheetRowToEnhancedJobWithPrefills,
+      ) ?? [];
     return new Set(jobs.map((job) => job.jobId));
   } catch (error) {
     console.error("❌ Error checking existing job IDs:", error);
@@ -89,9 +103,17 @@ export async function uploadToGoogleSheet(jobs: GSheetRow[]): Promise<void> {
         },
       });
     }
-    console.log(`Successfully appended ${jobs.length} job records to Google Sheet`);
+    console.log(
+      `Successfully appended ${jobs.length} job records to Google Sheet`,
+    );
 
-    await setSheetFormatting(sheets, spreadsheetId, sheetName, existingRows.length, jobs.length + existingRows.length);
+    await setSheetFormatting(
+      sheets,
+      spreadsheetId,
+      sheetName,
+      existingRows.length,
+      jobs.length + existingRows.length,
+    );
   } catch (error) {
     console.error("Error uploading to Google Sheet:", error);
     throw error;
@@ -103,7 +125,7 @@ async function setSheetFormatting(
   spreadsheetId: string,
   sheetName: string,
   startRow: number,
-  endRow: number
+  endRow: number,
 ): Promise<void> {
   try {
     const sheetId = await getSheetId(sheets, spreadsheetId, sheetName);
@@ -154,7 +176,7 @@ async function setSheetFormatting(
           },
           fields: "userEnteredFormat.wrapStrategy",
         },
-      }
+      },
     );
 
     await sheets.spreadsheets.batchUpdate({
@@ -166,6 +188,9 @@ async function setSheetFormatting(
 
     console.log(`✅ Applied formatting to rows ${startRow}-${endRow}`);
   } catch (error) {
-    console.error("⚠️ Error applying formatting (continuing without it):", error);
+    console.error(
+      "⚠️ Error applying formatting (continuing without it):",
+      error,
+    );
   }
 }

@@ -27,7 +27,7 @@ export function updateFailedCleaning(failedResults: CleanResultFailure[]) {
     `UPDATE raw_jobs
          SET fail_count = fail_count + 1
          WHERE job_id IN (${placeholders})`,
-    ...jobIds
+    ...jobIds,
   );
 }
 
@@ -35,7 +35,7 @@ export function deleteCleanedRawJobs(successfulResults: CleanResultSuccess[]) {
   db.query(
     `DELETE FROM raw_jobs
          WHERE job_id IN (${successfulResults.map(() => "?").join(",")})`,
-    ...successfulResults.map(({ jobId }) => jobId)
+    ...successfulResults.map(({ jobId }) => jobId),
   );
 }
 
@@ -44,7 +44,7 @@ export function insertNewCleanJobs(successfulResults: CleanResultSuccess[]) {
   const existingCleanJobs = db.query(
     `SELECT job_id FROM clean_jobs
          WHERE job_id IN (${successfulResults.map(() => "?").join(",")})`,
-    ...successfulResults.map(({ jobId }) => jobId)
+    ...successfulResults.map(({ jobId }) => jobId),
   );
   console.log(`Found ${existingCleanJobs.length} existing clean jobs`);
 
@@ -56,7 +56,12 @@ export function insertNewCleanJobs(successfulResults: CleanResultSuccess[]) {
   }
 
   const newCleanDBJobs = newCleanJobs.map(fromCleanJobToDBCleanJob);
-  const { columns, rows } = objectsToColumnsAndRows(newCleanDBJobs, ["id", "created_at", "updated_at", "fail_count"]);
+  const { columns, rows } = objectsToColumnsAndRows(newCleanDBJobs, [
+    "id",
+    "created_at",
+    "updated_at",
+    "fail_count",
+  ]);
 
   db.insert("clean_jobs", columns, rows);
 }

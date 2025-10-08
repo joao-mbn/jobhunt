@@ -19,11 +19,6 @@ export function insertRawJobs(jobs: RawJob[]) {
   }
 
   const rawJobsDB = jobs.map(fromRawJobToDBRawJob);
-  const { columns, rows } = objectsToColumnsAndRows(rawJobsDB, [
-    "id",
-    "created_at",
-    "updated_at",
-    "fail_count",
-  ]);
+  const { columns, rows } = objectsToColumnsAndRows(rawJobsDB);
   db.insert("raw_jobs", columns, rows);
 }

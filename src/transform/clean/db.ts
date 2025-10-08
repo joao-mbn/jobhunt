@@ -56,12 +56,7 @@ export function insertNewCleanJobs(successfulResults: CleanResultSuccess[]) {
   }
 
   const newCleanDBJobs = newCleanJobs.map(fromCleanJobToDBCleanJob);
-  const { columns, rows } = objectsToColumnsAndRows(newCleanDBJobs, [
-    "id",
-    "created_at",
-    "updated_at",
-    "fail_count",
-  ]);
+  const { columns, rows } = objectsToColumnsAndRows(newCleanDBJobs);
 
   db.insert("clean_jobs", columns, rows);
 }

@@ -10,3 +10,7 @@ export function objectsToColumnsAndRows<T extends object>(
   );
   return { columns, rows };
 }
+
+export function buildPlaceholders(values: unknown[]) {
+  return `(${values.map(() => "?").join(",")})`;
+}

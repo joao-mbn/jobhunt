@@ -1,5 +1,5 @@
 import { db } from "../../db/database.ts";
-import { objectsToColumnsAndRows } from "../../db/utils.ts";
+import { buildPlaceholders, objectsToColumnsAndRows } from "../../db/utils.ts";
 import { fromCleanJobToDBCleanJob } from "../../types/converters/job-to-schema.ts";
 import { fromDBRawJobToRawJob } from "../../types/converters/schema-to-job.ts";
 import type { DBRawJob } from "../../types/definitions/schema.ts";
@@ -21,12 +21,11 @@ export function queryRawJobs() {
 
 export function updateFailedCleaning(failedResults: CleanResultFailure[]) {
   const jobIds = failedResults.map((result) => result.jobId);
-  const placeholders = jobIds.map(() => "?").join(",");
 
   db.query(
     `UPDATE raw_jobs
          SET fail_count = fail_count + 1
-         WHERE job_id IN (${placeholders})`,
+         WHERE job_id IN ${buildPlaceholders(jobIds)}`,
     ...jobIds,
   );
 }
@@ -34,7 +33,7 @@ export function updateFailedCleaning(failedResults: CleanResultFailure[]) {
 export function deleteCleanedRawJobs(successfulResults: CleanResultSuccess[]) {
   db.query(
     `DELETE FROM raw_jobs
-         WHERE job_id IN (${successfulResults.map(() => "?").join(",")})`,
+         WHERE job_id IN ${buildPlaceholders(successfulResults)}`,
     ...successfulResults.map(({ jobId }) => jobId),
   );
 }
@@ -43,7 +42,7 @@ export function insertNewCleanJobs(successfulResults: CleanResultSuccess[]) {
   // make sure that the clean jobs are not already in the database
   const existingCleanJobs = db.query(
     `SELECT job_id FROM clean_jobs
-         WHERE job_id IN (${successfulResults.map(() => "?").join(",")})`,
+         WHERE job_id IN ${buildPlaceholders(successfulResults)}`,
     ...successfulResults.map(({ jobId }) => jobId),
   );
   console.log(`Found ${existingCleanJobs.length} existing clean jobs`);

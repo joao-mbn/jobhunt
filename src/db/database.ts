@@ -6,6 +6,7 @@ import type {
 } from "node:sqlite";
 import { DatabaseSync } from "node:sqlite";
 import { join } from "path";
+import { buildPlaceholders } from "./utils.ts";
 
 class Database {
   private database: DatabaseSync | null = null;
@@ -93,7 +94,7 @@ class Database {
     try {
       const insert = db.prepare(`
         INSERT INTO ${table} (${columns.join(", ")})
-        VALUES (${Array(columns.length).fill("?").join(", ")});
+        VALUES ${buildPlaceholders(columns)};
       `);
       for (const params of paramsArray) {
         insert.run(...params);

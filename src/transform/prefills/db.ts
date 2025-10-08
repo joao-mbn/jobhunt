@@ -1,5 +1,5 @@
 import { db } from "../../db/database.ts";
-import { objectsToColumnsAndRows } from "../../db/utils.ts";
+import { buildPlaceholders, objectsToColumnsAndRows } from "../../db/utils.ts";
 import { fromPrefillsToDBPrefills } from "../../types/converters/job-to-schema.ts";
 import { fromDBEnhancedJobToEnhancedJob } from "../../types/converters/schema-to-job.ts";
 import type { DBEnhancedJob } from "../../types/definitions/schema.ts";
@@ -29,12 +29,11 @@ export function queryEnhancedJobsWithoutPrefills() {
 
 export function updateFailedPrefills(failedResults: PrefillsResultFailure[]) {
   const jobIds = failedResults.map((result) => result.enhancedJobId);
-  const placeholders = jobIds.map(() => "?").join(",");
 
   db.query(
     `UPDATE enhanced_jobs
          SET fail_count = fail_count + 1
-         WHERE job_id IN (${placeholders})`,
+         WHERE job_id IN ${buildPlaceholders(jobIds)}`,
     ...jobIds,
   );
 }
@@ -43,7 +42,7 @@ export function insertNewPrefills(successfulResults: PrefillsResultSuccess[]) {
   // Make sure that the prefills are not already in the database
   const existingPrefills = db.query(
     `SELECT enhanced_job_id FROM prefills
-         WHERE enhanced_job_id IN (${successfulResults.map(() => "?").join(",")})`,
+         WHERE enhanced_job_id IN ${buildPlaceholders(successfulResults)}`,
     ...successfulResults.map(({ enhancedJobId }) => enhancedJobId),
   );
   console.log(`Found ${existingPrefills.length} existing prefills`);

@@ -1,4 +1,5 @@
 import { db } from "../db/database.ts";
+import { buildPlaceholders } from "../db/utils.ts";
 import { fromDBEnhancedJobToEnhancedJob } from "../types/converters/schema-to-job.ts";
 import type { EnhancedJobWithPrefills } from "../types/definitions/job.ts";
 import { isDBEnhancedJob } from "../types/validators/schema.ts";
@@ -41,12 +42,10 @@ export function queryEnhancedJobsWithPrefills(): EnhancedJobWithPrefills[] {
 }
 
 export function markJobsAsUploaded(jobIds: string[]): void {
-  const placeholders = jobIds.map(() => "?").join(",");
-
   db.query(
     `UPDATE enhanced_jobs
      SET uploaded_to_sheet = 1
-     WHERE job_id IN (${placeholders})`,
+     WHERE job_id IN ${buildPlaceholders(jobIds)}`,
     ...jobIds,
   );
 }

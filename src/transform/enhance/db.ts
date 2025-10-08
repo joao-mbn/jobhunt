@@ -1,5 +1,5 @@
 import { db } from "../../db/database.ts";
-import { objectsToColumnsAndRows } from "../../db/utils.ts";
+import { buildPlaceholders, objectsToColumnsAndRows } from "../../db/utils.ts";
 import { fromEnhancedJobToDBEnhancedJob } from "../../types/converters/job-to-schema.ts";
 import { fromDBCleanJobToCleanJob } from "../../types/converters/schema-to-job.ts";
 import type { DBCleanJob } from "../../types/definitions/schema.ts";
@@ -23,12 +23,11 @@ export function queryCleanJobs() {
 
 export function updateFailedEnhancement(failedResults: EnhanceResultFailure[]) {
   const jobIds = failedResults.map((result) => result.jobId);
-  const placeholders = jobIds.map(() => "?").join(",");
 
   db.query(
     `UPDATE clean_jobs
          SET fail_count = fail_count + 1
-         WHERE job_id IN (${placeholders})`,
+         WHERE job_id IN ${buildPlaceholders(jobIds)}`,
     ...jobIds,
   );
 }
@@ -38,7 +37,7 @@ export function deleteEnhancedCleanJobs(
 ) {
   db.query(
     `DELETE FROM clean_jobs
-         WHERE job_id IN (${successfulResults.map(() => "?").join(",")})`,
+         WHERE job_id IN ${buildPlaceholders(successfulResults)}`,
     ...successfulResults.map(({ jobId }) => jobId),
   );
 }
@@ -49,7 +48,7 @@ export function insertNewEnhancedJobs(
   // make sure that the enhanced jobs are not already in the database
   const existingEnhancedJobs = db.query(
     `SELECT job_id FROM enhanced_jobs
-         WHERE job_id IN (${successfulResults.map(() => "?").join(",")})`,
+         WHERE job_id IN ${buildPlaceholders(successfulResults)}`,
     ...successfulResults.map(({ jobId }) => jobId),
   );
   console.log(`Found ${existingEnhancedJobs.length} existing enhanced jobs`);

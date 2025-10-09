@@ -1,20 +1,18 @@
 import { db } from "../db/database.ts";
-import { builtInScraper } from "./built-in.ts";
 import { insertRawJobs, queryJobIds } from "./db.ts";
-import { indeedScraper } from "./indeed.ts";
-import { levelsScraper } from "./levels.ts";
-import { linkedInScraper } from "./linked-in.ts";
+import {
+  BuiltInScraper,
+  IndeedScraper,
+  LevelsScraper,
+  LinkedInScraper,
+  type Scraper,
+} from "./scrapers/index.ts";
 
 export async function main() {
   try {
     // Step 1: Fetch jobs from scrapers
     console.log("📡 Fetching jobs from scrapers...");
-    const scrapers = [
-      indeedScraper,
-      builtInScraper,
-      linkedInScraper,
-      levelsScraper,
-    ];
+    const scrapers = createScrapers();
     const extractedJobs = (
       await Promise.all(scrapers.map((s) => s.fetchJobs()))
     ).flat();
@@ -49,6 +47,15 @@ export async function main() {
   } finally {
     db.disconnect();
   }
+}
+
+export function createScrapers(): Scraper[] {
+  return [
+    new IndeedScraper(process.env.INDEED_ENDPOINT),
+    new BuiltInScraper(process.env.BUILTIN_ENDPOINT),
+    new LinkedInScraper(process.env.LINKEDIN_ENDPOINT),
+    new LevelsScraper(process.env.LEVELS_ENDPOINT),
+  ];
 }
 
 // Run the scraper

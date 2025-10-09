@@ -1,14 +1,13 @@
-import type { RawJob } from "../types/definitions/job.ts";
-import type { LinkedInData } from "../types/definitions/source.ts";
+import type { RawJob } from "../../types/definitions/job.ts";
+import type { LinkedInData } from "../../types/definitions/source.ts";
 import type { Scraper } from "./types.ts";
 
 export class LinkedInScraper implements Scraper {
   private readonly url: string;
 
-  constructor() {
-    const url = process.env.LINKEDIN_ENDPOINT;
+  constructor(url: string) {
     if (!url) {
-      throw new Error("LINKEDIN_ENDPOINT is not set");
+      throw new Error("URL is required for LinkedInScraper");
     }
     this.url = url;
   }
@@ -38,5 +37,3 @@ export class LinkedInScraper implements Scraper {
     }
   }
 }
-
-export const linkedInScraper = new LinkedInScraper();

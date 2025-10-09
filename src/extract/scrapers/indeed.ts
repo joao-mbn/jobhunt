@@ -1,16 +1,15 @@
 import { chromium, type Browser, type Page } from "@playwright/test";
-import type { RawJob } from "../types/definitions/job.ts";
-import type { IndeedData } from "../types/definitions/source.ts";
-import { USER_AGENT } from "../utils/constants.ts";
+import type { RawJob } from "../../types/definitions/job.ts";
+import type { IndeedData } from "../../types/definitions/source.ts";
+import { USER_AGENT } from "../../utils/constants.ts";
 import type { Scraper } from "./types.ts";
 
 export class IndeedScraper implements Scraper {
   private readonly url: string;
 
-  constructor() {
-    const url = process.env.INDEED_ENDPOINT;
+  constructor(url: string) {
     if (!url) {
-      throw new Error("INDEED_ENDPOINT is not set");
+      throw new Error("URL is required for IndeedScraper");
     }
     this.url = url;
   }
@@ -181,5 +180,3 @@ export class IndeedScraper implements Scraper {
     return rawJob;
   }
 }
-
-export const indeedScraper = new IndeedScraper();

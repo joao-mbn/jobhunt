@@ -1,17 +1,16 @@
 import { chromium, type Browser, type Page } from "@playwright/test";
 import { load } from "cheerio";
-import type { RawJob } from "../types/definitions/job.ts";
-import type { BuiltInData } from "../types/definitions/source.ts";
-import { USER_AGENT } from "../utils/constants.ts";
+import type { RawJob } from "../../types/definitions/job.ts";
+import type { BuiltInData } from "../../types/definitions/source.ts";
+import { USER_AGENT } from "../../utils/constants.ts";
 import type { Scraper } from "./types.ts";
 
 export class BuiltInScraper implements Scraper {
   private readonly url: string;
 
-  constructor() {
-    const url = process.env.BUILTIN_ENDPOINT;
+  constructor(url: string) {
     if (!url) {
-      throw new Error("BUILTIN_ENDPOINT is not set");
+      throw new Error("URL is required for BuiltInScraper");
     }
     this.url = url;
   }
@@ -193,5 +192,3 @@ export class BuiltInScraper implements Scraper {
     return `${url.protocol}//${url.host}`;
   }
 }
-
-export const builtInScraper = new BuiltInScraper();

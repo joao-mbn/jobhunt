@@ -1,16 +1,15 @@
 import { chromium, type Browser, type Page } from "@playwright/test";
-import type { RawJob } from "../types/definitions/job.ts";
-import type { LevelsData } from "../types/definitions/source.ts";
-import { USER_AGENT } from "../utils/constants.ts";
+import type { RawJob } from "../../types/definitions/job.ts";
+import type { LevelsData } from "../../types/definitions/source.ts";
+import { USER_AGENT } from "../../utils/constants.ts";
 import type { Scraper } from "./types.ts";
 
 export class LevelsScraper implements Scraper {
   private readonly url: string;
 
-  constructor() {
-    const url = process.env.LEVELS_ENDPOINT;
+  constructor(url: string) {
     if (!url) {
-      throw new Error("LEVELS_ENDPOINT is not set");
+      throw new Error("URL is required for LevelsScraper");
     }
     this.url = url;
   }
@@ -128,5 +127,3 @@ export class LevelsScraper implements Scraper {
       .click();
   }
 }
-
-export const levelsScraper = new LevelsScraper();

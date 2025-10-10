@@ -10,9 +10,9 @@ export interface LinkedInData {
     id: string;
     url: string;
     title: string;
-    content_text: string;
-    content_html: string;
-    date_published: string;
+    content_text?: string;
+    content_html?: string;
+    date_published?: string;
   }[];
 }
 

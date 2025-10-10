@@ -4,7 +4,7 @@ import type {
   LevelsData,
   LinkedInData,
 } from "../definitions/source.ts";
-import { hasRequiredFields } from "./has-fields.ts";
+import { hasOptionalFields, hasRequiredFields } from "./has-fields.ts";
 
 export function isLinkedInDataItem(
   item: unknown,
@@ -17,11 +17,17 @@ export function isLinkedInDataItem(
     id: "string",
     url: "string",
     title: "string",
+  };
+  if (!hasRequiredFields(item, requiredFields)) {
+    return false;
+  }
+
+  const optionalFields = {
     content_text: "string",
     content_html: "string",
     date_published: "string",
   };
-  return hasRequiredFields(item, requiredFields);
+  return hasOptionalFields(item, optionalFields);
 }
 
 export function isLevelsData(data: unknown): data is LevelsData {

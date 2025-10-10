@@ -26,7 +26,7 @@ export class LinkedInScraper implements Scraper {
       const data = (await response.json()) as LinkedInData;
       return data.items.map((item) => ({
         name: item.title,
-        jobId: item.url.split("view/")[1] ?? item.id,
+        jobId: `linkedin-${item.url.split("view/")[1] ?? item.id}`,
         url: item.url,
         details: item,
         source: "linkedin",

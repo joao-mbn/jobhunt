@@ -12,10 +12,7 @@ export interface LinkedInData {
     title: string;
     content_text: string;
     content_html: string;
-    image?: string;
     date_published: string;
-    authors: { name: string }[];
-    attachments?: { url: string }[];
   }[];
 }
 

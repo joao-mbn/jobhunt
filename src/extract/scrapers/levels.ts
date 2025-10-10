@@ -79,13 +79,13 @@ export class LevelsScraper implements Scraper {
       const compensation =
         (await compensationElement.count()) > 0
           ? await compensationElement.textContent()
-          : null;
+          : "";
 
       const content = page.locator(
         'div[class*="job-details-about_markdownText"]',
       );
       const description =
-        (await content.count()) > 0 ? await content.textContent() : null;
+        (await content.count()) > 0 ? await content.textContent() : "";
 
       const details: Record<string, unknown> = {
         title,
@@ -98,7 +98,7 @@ export class LevelsScraper implements Scraper {
       rawJobs.push({
         source: "levels",
         name: title,
-        jobId,
+        jobId: `levels-${jobId}`,
         url: `https://www.levels.fyi/jobs?jobId=${jobId}`,
         details,
       });

@@ -1,9 +1,9 @@
-import { db } from "../db/database.ts";
+import type { Database } from "../db/database.ts";
 import { objectsToColumnsAndRows } from "../db/utils.ts";
 import { fromRawJobToDBRawJob } from "../types/converters/job-to-schema.ts";
 import type { RawJob } from "../types/definitions/job.ts";
 
-export function queryJobIds() {
+export function queryJobIds(db: Database) {
   return db.query(`
     SELECT job_id FROM raw_jobs
     UNION
@@ -13,7 +13,7 @@ export function queryJobIds() {
   `);
 }
 
-export function insertRawJobs(jobs: RawJob[]) {
+export function insertRawJobs(db: Database, jobs: RawJob[]) {
   if (jobs.length === 0) {
     return;
   }

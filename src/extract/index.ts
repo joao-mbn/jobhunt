@@ -1,4 +1,4 @@
-import { db } from "../db/database.ts";
+import { Database, db } from "../db/database.ts";
 import { insertRawJobs, queryJobIds } from "./db.ts";
 import {
   BuiltInScraper,
@@ -8,13 +8,15 @@ import {
   type Scraper,
 } from "./scrapers/index.ts";
 
-export async function main() {
+export async function main(
+  _db: Database = db,
+  _scrapers: Scraper[] = createScrapers(),
+) {
   try {
     // Step 1: Fetch jobs from scrapers
     console.log("📡 Fetching jobs from scrapers...");
-    const scrapers = createScrapers();
     const extractedJobs = (
-      await Promise.all(scrapers.map((s) => s.fetchJobs()))
+      await Promise.all(_scrapers.map((s) => s.fetchJobs()))
     ).flat();
 
     if (extractedJobs.length === 0) {
@@ -25,7 +27,7 @@ export async function main() {
 
     // Step 2: Filter out jobs that are already in the database
     console.log("🔍 Filtering out jobs that are already in the database...");
-    const existingJobs = queryJobIds();
+    const existingJobs = queryJobIds(_db);
     const newJobs = extractedJobs.filter(
       (job) => !existingJobs.some((j) => j.job_id === job.jobId),
     );
@@ -37,15 +39,15 @@ export async function main() {
 
     // Step 3: Store jobs in the database
     console.log("📤 Storing jobs in the database...");
-    await db.withTransaction(async () => {
-      insertRawJobs(newJobs);
+    await _db.withTransaction(async () => {
+      insertRawJobs(_db, newJobs);
     });
     console.log("🎉 Jobs stored in the database successfully!");
   } catch (error) {
     console.error("❌ Error in levels scraper:", error);
     process.exitCode = 1;
   } finally {
-    db.disconnect();
+    _db.disconnect();
   }
 }
 

@@ -8,18 +8,19 @@ import { DatabaseSync } from "node:sqlite";
 import { join } from "path";
 import { buildPlaceholders } from "./utils.ts";
 
-class Database {
+export class Database {
   private database: DatabaseSync | null = null;
   private dbPath: string;
   private config: DatabaseSyncOptions;
 
-  constructor(config?: DatabaseSyncOptions) {
+  constructor(config?: DatabaseSyncOptions, path?: string) {
     this.config = { timeout: 5000, ...config };
-    if (!process.env.DB_PATH) {
+
+    this.dbPath = path || process.env.DB_PATH;
+    if (!this.dbPath) {
       throw new Error("DB_PATH is not set");
     }
 
-    this.dbPath = process.env.DB_PATH;
     this.ensureDataDirectory();
   }
 

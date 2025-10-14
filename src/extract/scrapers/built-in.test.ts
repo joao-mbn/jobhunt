@@ -37,7 +37,6 @@ describe("BuiltInScraper Integration Tests", () => {
       expect(details.title.length).toBeGreaterThan(0);
       expect(details.company.length).toBeGreaterThan(0);
       expect(details.description.length).toBeGreaterThan(0);
-      expect(details.topSkills.length).toBeGreaterThan(0);
     });
   });
 

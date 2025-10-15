@@ -39,9 +39,8 @@ export async function main(
 
     // Step 3: Store jobs in the database
     console.log("📤 Storing jobs in the database...");
-    await _db.withTransaction(async () => {
-      insertRawJobs(_db, newJobs);
-    });
+    insertRawJobs(_db, newJobs);
+
     console.log("🎉 Jobs stored in the database successfully!");
   } catch (error) {
     console.error("❌ Error in levels scraper:", error);

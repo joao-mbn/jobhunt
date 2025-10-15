@@ -32,7 +32,7 @@ export class Database {
   }
 
   connect(): DatabaseSync {
-    if (this.database && this.database.isOpen) {
+    if (this.isConnected) {
       return this.database;
     }
 
@@ -47,15 +47,14 @@ export class Database {
   }
 
   disconnect(): void {
-    if (this.database && this.database.isOpen) {
+    if (this.isConnected) {
       this.database.close();
-      this.database = null;
       console.log("Database connection closed");
     }
   }
 
   getDatabase(): DatabaseSync {
-    if (!this.database || !this.database.isOpen) {
+    if (!this.isConnected) {
       return this.connect();
     }
     return this.database;
@@ -122,11 +121,8 @@ export class Database {
     this.commitTransaction();
   }
 
-  /**
-   * Disposes of the database connection (for use with try-with-resources pattern)
-   */
-  [Symbol.dispose](): void {
-    this.disconnect();
+  get isConnected(): boolean {
+    return this.database?.isOpen ?? false;
   }
 }
 

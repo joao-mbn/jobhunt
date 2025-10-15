@@ -1,9 +1,6 @@
-import { randomUUID } from "crypto";
-import { existsSync, unlinkSync } from "fs";
-import { join } from "path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { Database } from "../db/database.ts";
-import { main as initDbSchema } from "../db/index.ts";
+import type { Database } from "../db/database.ts";
+import { setupDb, teardownDb } from "../db/test-utils.ts";
 import type { RawJob } from "../types/definitions/job.ts";
 import { insertRawJobs, queryJobIds } from "./db.ts";
 
@@ -11,22 +8,13 @@ let testDb: Database;
 let testDbPath: string;
 
 beforeEach(async () => {
-  const testId = randomUUID();
-  testDbPath = join(process.cwd(), "data", `test-${testId}.db`);
-
-  testDb = new Database({}, testDbPath);
-
-  await initDbSchema(testDb);
+  const setup = await setupDb();
+  testDb = setup.db;
+  testDbPath = setup.dbPath;
 });
 
 afterEach(() => {
-  if (testDb) {
-    testDb.disconnect();
-  }
-
-  if (existsSync(testDbPath)) {
-    unlinkSync(testDbPath);
-  }
+  teardownDb(testDb, testDbPath);
 });
 
 describe("queryJobIds", () => {

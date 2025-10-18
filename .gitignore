@@ -23,6 +23,9 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 .cache
 *.tsbuildinfo
 
+# cursor
+.cursor/plans
+
 # secrets
 TODO/*
 TASKS.md

@@ -17,7 +17,7 @@ export async function main() {
     console.log("Starting data cleaning process...");
 
     // Step 1: Get the raw jobs
-    const rawJobs = queryRawJobs();
+    const rawJobs = queryRawJobs(db);
     console.log(`Found ${rawJobs.length} valid raw jobs to process`);
 
     // Step 2: Clean the raw jobs
@@ -44,16 +44,22 @@ export async function main() {
         console.log(
           `Updating fail_count for ${failedResults.length} failed jobs...`,
         );
-        updateFailedCleaning(failedResults);
+        updateFailedCleaning(
+          db,
+          failedResults.map((result) => result.jobId),
+        );
       }
 
       // Step 4: Insert the successful results and delete the raw jobs
       if (successfulResults.length > 0) {
         console.log(`Inserting ${successfulResults.length} new clean jobs...`);
-        insertNewCleanJobs(successfulResults);
+        insertNewCleanJobs(db, successfulResults);
 
         console.log(`Deleting ${successfulResults.length} raw jobs...`);
-        deleteCleanedRawJobs(successfulResults);
+        deleteCleanedRawJobs(
+          db,
+          successfulResults.map((result) => result.jobId),
+        );
       }
 
       console.log("Data cleaning process completed successfully");

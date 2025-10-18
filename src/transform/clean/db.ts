@@ -1,15 +1,16 @@
-import { db } from "../../db/database.ts";
+import type { Database } from "../../db/database.ts";
 import { buildPlaceholders, objectsToColumnsAndRows } from "../../db/utils.ts";
 import { fromCleanJobToDBCleanJob } from "../../types/converters/job-to-schema.ts";
 import { fromDBRawJobToRawJob } from "../../types/converters/schema-to-job.ts";
 import type { DBRawJob } from "../../types/definitions/schema.ts";
 import { isDBRawJob } from "../../types/validators/schema.ts";
-import type { CleanResultFailure, CleanResultSuccess } from "./types.ts";
+import { MAX_FAIL_COUNT } from "../../utils/constants.ts";
+import type { CleanResultSuccess } from "./types.ts";
 
-export function queryRawJobs() {
+export function queryRawJobs(db: Database) {
   const rawJobsResult = db.query(`
       SELECT * FROM raw_jobs
-      WHERE fail_count <= 3
+      WHERE fail_count <= ${MAX_FAIL_COUNT}
       ORDER BY created_at ASC
       LIMIT 5
     `);
@@ -19,27 +20,27 @@ export function queryRawJobs() {
   return rawJobs;
 }
 
-export function updateFailedCleaning(failedResults: CleanResultFailure[]) {
-  const jobIds = failedResults.map((result) => result.jobId);
-
+export function updateFailedCleaning(db: Database, failedJobIds: string[]) {
   db.query(
     `UPDATE raw_jobs
          SET fail_count = fail_count + 1
-         WHERE job_id IN ${buildPlaceholders(jobIds)}`,
-    ...jobIds,
+         WHERE job_id IN ${buildPlaceholders(failedJobIds)}`,
+    ...failedJobIds,
   );
 }
 
-export function deleteCleanedRawJobs(successfulResults: CleanResultSuccess[]) {
+export function deleteCleanedRawJobs(db: Database, successfulJobIds: string[]) {
   db.query(
     `DELETE FROM raw_jobs
-         WHERE job_id IN ${buildPlaceholders(successfulResults)}`,
-    ...successfulResults.map(({ jobId }) => jobId),
+         WHERE job_id IN ${buildPlaceholders(successfulJobIds)}`,
+    ...successfulJobIds,
   );
 }
 
-export function insertNewCleanJobs(successfulResults: CleanResultSuccess[]) {
-  // make sure that the clean jobs are not already in the database
+export function insertNewCleanJobs(
+  db: Database,
+  successfulResults: CleanResultSuccess[],
+) {
   const existingCleanJobs = db.query(
     `SELECT job_id FROM clean_jobs
          WHERE job_id IN ${buildPlaceholders(successfulResults)}`,

@@ -3,6 +3,7 @@ import type { LinkedInData } from "../../types/definitions/source.ts";
 import { fromDateStringSafely } from "../../utils/date.ts";
 import { extractInfoWithAI } from "./ai.ts";
 import type { Cleaner, CleanResult } from "./types.ts";
+import { createCleanResultSuccess } from "./utils.ts";
 
 export class LinkedInCleaner implements Cleaner {
   async clean(rawJobs: RawJob[]): Promise<CleanResult[]> {
@@ -19,16 +20,12 @@ export class LinkedInCleaner implements Cleaner {
           rawJob.jobId,
         );
         const publishedDate = fromDateStringSafely(jobDetails.date_published);
-        return {
-          success: true,
-          jobId: rawJob.jobId,
-          job: {
-            ...rawJob,
-            ...extractedInfo,
-            publishedDate: publishedDate ?? extractedInfo.publishedDate,
-            jobDescription,
-          },
-        };
+        return createCleanResultSuccess({
+          ...rawJob,
+          ...extractedInfo,
+          publishedDate: publishedDate ?? extractedInfo.publishedDate,
+          jobDescription,
+        });
       } catch (error) {
         console.error(`Failed to clean job ${rawJob.jobId}:`, error);
         return { success: false, jobId: rawJob.jobId, job: null };

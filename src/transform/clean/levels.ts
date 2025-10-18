@@ -2,6 +2,7 @@ import type { RawJob } from "../../types/definitions/job.ts";
 import type { LevelsData } from "../../types/definitions/source.ts";
 import { extractInfoWithAI } from "./ai.ts";
 import type { Cleaner, CleanResult } from "./types.ts";
+import { createCleanResultSuccess } from "./utils.ts";
 
 export class LevelsCleaner implements Cleaner {
   async clean(rawJobs: RawJob[]): Promise<CleanResult[]> {
@@ -26,15 +27,11 @@ export class LevelsCleaner implements Cleaner {
           jobDescription,
           rawJob.jobId,
         );
-        return {
-          success: true,
-          jobId: rawJob.jobId,
-          job: {
-            ...rawJob,
-            ...extractedInfo,
-            jobDescription,
-          },
-        };
+        return createCleanResultSuccess({
+          ...rawJob,
+          ...extractedInfo,
+          jobDescription,
+        });
       } catch (error) {
         console.error(`Failed to clean job ${rawJob.jobId}:`, error);
         return { success: false, jobId: rawJob.jobId, job: null };

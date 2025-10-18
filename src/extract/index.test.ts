@@ -1,13 +1,10 @@
 import { afterEach, beforeEach, expect, it } from "vitest";
 import type { Database } from "../db/database.ts";
 import { setupDb, teardownDb } from "../db/test-utils.ts";
+import { generateRawJobs } from "../utils/test-utils.ts";
 import { insertRawJobs } from "./db.ts";
 import { main } from "./index.ts";
-import {
-  ErrorThrowingScraper,
-  generateJobs,
-  HappyScraper,
-} from "./scrapers/mock.ts";
+import { ErrorThrowingScraper, HappyScraper } from "./scrapers/mock.ts";
 
 let testDb: Database;
 let testDbPath: string;
@@ -23,8 +20,8 @@ afterEach(() => {
 });
 
 it("should successfully extract and store new jobs", async () => {
-  const scraper1 = new HappyScraper(generateJobs(1, "linkedin"));
-  const scraper2 = new HappyScraper(generateJobs(2, "builtin"));
+  const scraper1 = new HappyScraper(generateRawJobs(1, "linkedin"));
+  const scraper2 = new HappyScraper(generateRawJobs(2, "builtin"));
   const scrapers = [scraper1, scraper2];
 
   await main(testDb, scrapers);
@@ -37,7 +34,7 @@ it("should successfully extract and store new jobs", async () => {
 });
 
 it("should add database-generated properties during insertion", async () => {
-  const jobs = generateJobs(1, "linkedin");
+  const jobs = generateRawJobs(1, "linkedin");
   const job = jobs[0];
 
   expect(job.id).toBeUndefined();
@@ -59,15 +56,15 @@ it("should add database-generated properties during insertion", async () => {
 });
 
 it("should filter out jobs already in the database", async () => {
-  const existingJobs = generateJobs(2, "linkedin");
-  const existingJobs2 = generateJobs(1, "builtin");
+  const existingJobs = generateRawJobs(2, "linkedin");
+  const existingJobs2 = generateRawJobs(1, "builtin");
 
   insertRawJobs(testDb, [...existingJobs, ...existingJobs2]);
 
   const initialResult = testDb.query("SELECT job_id FROM raw_jobs");
   expect(initialResult).toHaveLength(3);
 
-  const newJobs = generateJobs(2, "levels");
+  const newJobs = generateRawJobs(2, "levels");
   const mixedJobs = [...existingJobs, ...newJobs];
 
   const scraper = new HappyScraper(mixedJobs);
@@ -86,8 +83,8 @@ it("should filter out jobs already in the database", async () => {
 });
 
 it("should handle multiple scrapers with varying results", async () => {
-  const scraper1 = new HappyScraper(generateJobs(5, "linkedin"));
-  const scraper2 = new HappyScraper(generateJobs(3, "builtin"));
+  const scraper1 = new HappyScraper(generateRawJobs(5, "linkedin"));
+  const scraper2 = new HappyScraper(generateRawJobs(3, "builtin"));
   const scraper3 = new HappyScraper([]);
   const scrapers = [scraper1, scraper2, scraper3];
 
@@ -108,7 +105,7 @@ it("should handle multiple scrapers with varying results", async () => {
 });
 
 it("should handle scrapers returning all duplicate jobs", async () => {
-  const existingJobs = generateJobs(2, "linkedin");
+  const existingJobs = generateRawJobs(2, "linkedin");
   insertRawJobs(testDb, existingJobs);
 
   const initialResult = testDb.query("SELECT job_id FROM raw_jobs");
@@ -138,7 +135,7 @@ it("should handle empty results from all scrapers", async () => {
 });
 
 it("should handle large batch of jobs", async () => {
-  const scraper = new HappyScraper(generateJobs(500, "linkedin"));
+  const scraper = new HappyScraper(generateRawJobs(500, "linkedin"));
 
   await main(testDb, [scraper]);
 
@@ -155,7 +152,7 @@ it("should disconnect database when scraper throws error", async () => {
 });
 
 it("should stop inserting jobs after first constraint violation", async () => {
-  const jobs = generateJobs(3, "linkedin");
+  const jobs = generateRawJobs(3, "linkedin");
 
   delete jobs[1].jobId;
 

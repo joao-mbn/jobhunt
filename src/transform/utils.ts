@@ -1,5 +1,8 @@
 import type { Job } from "../types/definitions/job.ts";
-import type { TransformResultSuccess } from "./types.ts";
+import type {
+  TransformResultFailure,
+  TransformResultSuccess,
+} from "./types.ts";
 
 export async function transformBySource<T extends Job, Z>(
   jobs: T[],
@@ -35,5 +38,15 @@ export function createTransformResultSuccess<T extends Job>(
     success: true,
     jobId: job.jobId,
     job,
+  };
+}
+
+export function createTransformResultFailure<T extends Job>(
+  job: T,
+): TransformResultFailure {
+  return {
+    success: false,
+    jobId: job.jobId,
+    job: null,
   };
 }

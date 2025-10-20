@@ -1,5 +1,5 @@
 import { Database, db } from "../../db/database.ts";
-import type { CleanJob } from "../../types/definitions/job.ts";
+import type { CleanJob, Job } from "../../types/definitions/job.ts";
 import type {
   TransformResultFailure,
   TransformResultSuccess,
@@ -82,7 +82,7 @@ export async function main(
   }
 }
 
-export function createCleaners(): Record<string, Cleaner> {
+export function createCleaners(): Record<Job["source"], Cleaner> {
   return {
     linkedin: new LinkedInCleaner(),
     levels: new LevelsCleaner(),

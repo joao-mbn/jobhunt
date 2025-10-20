@@ -2,7 +2,10 @@ import type { CleanJob, RawJob } from "../../../types/definitions/job.ts";
 import type { LinkedInData } from "../../../types/definitions/source.ts";
 import { fromDateStringSafely } from "../../../utils/date.ts";
 import type { TransformResult } from "../../types.ts";
-import { createTransformResultSuccess } from "../../utils.ts";
+import {
+  createTransformResultFailure,
+  createTransformResultSuccess,
+} from "../../utils.ts";
 import { extractInfoWithAI } from "../ai.ts";
 import type { Cleaner } from "./types.ts";
 
@@ -12,7 +15,7 @@ export class LinkedInCleaner implements Cleaner {
       const jobDetails = rawJob.details as LinkedInData["items"][0];
       const jobDescription = jobDetails.content_text;
       if (!jobDescription) {
-        return { success: false, jobId: rawJob.jobId, job: null };
+        return createTransformResultFailure(rawJob);
       }
 
       try {
@@ -29,7 +32,7 @@ export class LinkedInCleaner implements Cleaner {
         });
       } catch (error) {
         console.error(`Failed to clean job ${rawJob.jobId}:`, error);
-        return { success: false, jobId: rawJob.jobId, job: null };
+        return createTransformResultFailure(rawJob);
       }
     });
 

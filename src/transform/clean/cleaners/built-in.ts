@@ -1,7 +1,10 @@
 import type { CleanJob, RawJob } from "../../../types/definitions/job.ts";
 import type { BuiltInData } from "../../../types/definitions/source.ts";
 import type { TransformResult } from "../../types.ts";
-import { createTransformResultSuccess } from "../../utils.ts";
+import {
+  createTransformResultFailure,
+  createTransformResultSuccess,
+} from "../../utils.ts";
 import { extractInfoWithAI } from "../ai.ts";
 import type { Cleaner } from "./types.ts";
 
@@ -24,7 +27,7 @@ export class BuiltInCleaner implements Cleaner {
         .join("\n\n");
 
       if (!jobDescription) {
-        return { success: false, jobId: rawJob.jobId, job: null };
+        return createTransformResultFailure(rawJob);
       }
 
       try {
@@ -49,7 +52,7 @@ export class BuiltInCleaner implements Cleaner {
         });
       } catch (error) {
         console.error(`Failed to clean job ${rawJob.jobId}:`, error);
-        return { success: false, jobId: rawJob.jobId, job: null };
+        return createTransformResultFailure(rawJob);
       }
     });
 

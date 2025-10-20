@@ -1,4 +1,5 @@
 import { db } from "../../db/database.ts";
+import { createTransformResultFailure } from "../utils.ts";
 import { generatePrefillsWithAI } from "./ai.ts";
 import {
   insertNewPrefills,
@@ -37,7 +38,7 @@ export async function main() {
           enhancedJob.yearsOfExperienceRequired
         )
       ) {
-        return { success: false, jobId: enhancedJob.jobId, job: null };
+        return createTransformResultFailure(enhancedJob);
       }
 
       try {
@@ -49,11 +50,7 @@ export async function main() {
           `Failed to generate prefills for enhanced job ${enhancedJob.jobId}:`,
           error,
         );
-        return {
-          success: false,
-          enhancedJobId: enhancedJob.jobId,
-          prefills: null,
-        };
+        return createTransformResultFailure(enhancedJob);
       }
     });
     const prefillsResults = (await Promise.all(promises)) as PrefillsResult[];

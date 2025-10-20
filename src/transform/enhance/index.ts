@@ -5,6 +5,10 @@ import type {
   TransformResultFailure,
   TransformResultSuccess,
 } from "../types.ts";
+import {
+  createTransformResultFailure,
+  createTransformResultSuccess,
+} from "../utils.ts";
 import { enhanceJobWithAI } from "./ai.ts";
 import {
   deleteEnhancedCleanJobs,
@@ -27,7 +31,7 @@ export async function main() {
         !cleanJob.jobDescription &&
         !(cleanJob.hardSkillsRequired && cleanJob.yearsOfExperienceRequired)
       ) {
-        return { success: false, jobId: cleanJob.jobId, job: null };
+        return createTransformResultFailure(cleanJob);
       }
 
       try {
@@ -37,10 +41,10 @@ export async function main() {
           ...enhancedInfo,
           uploadedToSheet: false,
         };
-        return { success: true, jobId: cleanJob.jobId, job: enhancedJob };
+        return createTransformResultSuccess(enhancedJob);
       } catch (error) {
         console.error(`Failed to enhance job ${cleanJob.jobId}:`, error);
-        return { success: false, jobId: cleanJob.jobId, job: null };
+        return createTransformResultFailure(cleanJob);
       }
     });
     const enhanceResults = (await Promise.all(

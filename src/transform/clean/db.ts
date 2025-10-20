@@ -2,10 +2,11 @@ import type { Database } from "../../db/database.ts";
 import { buildPlaceholders, objectsToColumnsAndRows } from "../../db/utils.ts";
 import { fromCleanJobToDBCleanJob } from "../../types/converters/job-to-schema.ts";
 import { fromDBRawJobToRawJob } from "../../types/converters/schema-to-job.ts";
+import type { CleanJob } from "../../types/definitions/job.ts";
 import type { DBRawJob } from "../../types/definitions/schema.ts";
 import { isDBRawJob } from "../../types/validators/schema.ts";
 import { MAX_FAIL_COUNT } from "../../utils/constants.ts";
-import type { CleanResultSuccess } from "./types.ts";
+import type { TransformResultSuccess } from "../types.ts";
 
 export function queryRawJobs(db: Database) {
   const rawJobsResult = db.query(`
@@ -39,7 +40,7 @@ export function deleteCleanedRawJobs(db: Database, successfulJobIds: string[]) {
 
 export function insertNewCleanJobs(
   db: Database,
-  successfulResults: CleanResultSuccess[],
+  successfulResults: TransformResultSuccess<CleanJob>[],
 ) {
   const existingCleanJobs = db.query(
     `SELECT job_id FROM clean_jobs

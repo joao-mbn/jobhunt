@@ -1,11 +1,12 @@
-import type { RawJob } from "../../types/definitions/job.ts";
+import type { CleanJob, RawJob } from "../../types/definitions/job.ts";
 import type { IndeedData } from "../../types/definitions/source.ts";
+import type { TransformResult } from "../types.ts";
+import { createTransformResultSuccess } from "../utils.ts";
 import { extractInfoWithAI } from "./ai.ts";
-import type { Cleaner, CleanResult } from "./types.ts";
-import { createCleanResultSuccess } from "./utils.ts";
+import type { Cleaner } from "./types.ts";
 
 export class IndeedCleaner implements Cleaner {
-  async clean(rawJobs: RawJob[]): Promise<CleanResult[]> {
+  async clean(rawJobs: RawJob[]): Promise<TransformResult<CleanJob>[]> {
     const promises = rawJobs.map(async (rawJob) => {
       const jobDetails = rawJob.details as unknown as IndeedData;
 
@@ -33,7 +34,7 @@ export class IndeedCleaner implements Cleaner {
           jobDescription,
           rawJob.jobId,
         );
-        return createCleanResultSuccess({
+        return createTransformResultSuccess({
           ...rawJob,
           ...extractedInfo,
           jobDescription,
@@ -60,7 +61,7 @@ export class IndeedCleaner implements Cleaner {
       }
     });
 
-    return Promise.all(promises) as Promise<CleanResult[]>;
+    return Promise.all(promises) as Promise<TransformResult<CleanJob>[]>;
   }
 }
 

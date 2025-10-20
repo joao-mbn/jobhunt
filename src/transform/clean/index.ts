@@ -1,16 +1,22 @@
 import { db } from "../../db/database.ts";
+import type { CleanJob } from "../../types/definitions/job.ts";
+import type {
+  TransformResultFailure,
+  TransformResultSuccess,
+} from "../types.ts";
 import { transformBySource } from "../utils.ts";
-import { builtInCleaner } from "./built-in.ts";
+import {
+  builtInCleaner,
+  indeedCleaner,
+  levelsCleaner,
+  linkedInCleaner,
+} from "./cleaners/index.ts";
 import {
   deleteCleanedRawJobs,
   insertNewCleanJobs,
   queryRawJobs,
   updateFailedCleaning,
 } from "./db.ts";
-import { indeedCleaner } from "./indeed.ts";
-import { levelsCleaner } from "./levels.ts";
-import { linkedInCleaner } from "./linked-in.ts";
-import type { CleanResultFailure, CleanResultSuccess } from "./types.ts";
 
 export async function main() {
   try {
@@ -29,10 +35,10 @@ export async function main() {
     });
 
     const successfulResults = cleanResults.filter(
-      (result): result is CleanResultSuccess => result.success,
+      (result): result is TransformResultSuccess<CleanJob> => result.success,
     );
     const failedResults = cleanResults.filter(
-      (result): result is CleanResultFailure => !result.success,
+      (result): result is TransformResultFailure => !result.success,
     );
     console.log(
       `Cleaning completed: ${successfulResults.length} successful, ${failedResults.length} failed`,

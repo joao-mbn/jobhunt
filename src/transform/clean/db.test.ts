@@ -6,13 +6,13 @@ import { fromDBCleanJobToCleanJob } from "../../types/converters/schema-to-job.t
 import type { DBCleanJob } from "../../types/definitions/schema.ts";
 import { isDBCleanJob } from "../../types/validators/schema.ts";
 import { generateCleanJobs, generateRawJobs } from "../../utils/test-utils.ts";
+import { createTransformResultSuccess } from "../utils.ts";
 import {
   deleteCleanedRawJobs,
   insertNewCleanJobs,
   queryRawJobs,
   updateFailedCleaning,
 } from "./db.ts";
-import { createCleanResultSuccess } from "./utils.ts";
 
 let testDb: Database;
 let testDbPath: string;
@@ -202,7 +202,7 @@ describe("insertNewCleanJobs", () => {
 
   it("should insert all new clean jobs", () => {
     const cleanJobs = generateCleanJobs(2, "linkedin");
-    const successfulResults = cleanJobs.map(createCleanResultSuccess);
+    const successfulResults = cleanJobs.map(createTransformResultSuccess);
 
     insertNewCleanJobs(testDb, successfulResults);
 
@@ -219,11 +219,13 @@ describe("insertNewCleanJobs", () => {
     const newCleanJob = generateCleanJobs(1, "linkedin")[0];
     newCleanJob.jobId = "linkedin-2";
 
-    insertNewCleanJobs(testDb, [createCleanResultSuccess(existingCleanJob)]);
+    insertNewCleanJobs(testDb, [
+      createTransformResultSuccess(existingCleanJob),
+    ]);
 
     const successfulResults = [
-      createCleanResultSuccess(existingCleanJob),
-      createCleanResultSuccess(newCleanJob),
+      createTransformResultSuccess(existingCleanJob),
+      createTransformResultSuccess(newCleanJob),
     ];
 
     insertNewCleanJobs(testDb, successfulResults);
@@ -238,7 +240,7 @@ describe("insertNewCleanJobs", () => {
 
   it("should correctly insert all properties and add database-generated fields", () => {
     const cleanJob = generateCleanJobs(1, "linkedin")[0];
-    const successfulResult = createCleanResultSuccess(cleanJob);
+    const successfulResult = createTransformResultSuccess(cleanJob);
 
     expect(cleanJob.id).toBeUndefined();
     expect(cleanJob.createdAt).toBeUndefined();

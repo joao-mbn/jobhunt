@@ -1,12 +1,16 @@
-import { db } from "../../db/database.ts";
+import type { Database } from "../../db/database.ts";
 import { buildPlaceholders, objectsToColumnsAndRows } from "../../db/utils.ts";
 import { fromEnhancedJobToDBEnhancedJob } from "../../types/converters/job-to-schema.ts";
 import { fromDBCleanJobToCleanJob } from "../../types/converters/schema-to-job.ts";
+import type { CleanJob, EnhancedJob } from "../../types/definitions/job.ts";
 import type { DBCleanJob } from "../../types/definitions/schema.ts";
 import { isDBCleanJob } from "../../types/validators/schema.ts";
-import type { EnhanceResultFailure, EnhanceResultSuccess } from "./types.ts";
+import type {
+  TransformResultFailure,
+  TransformResultSuccess,
+} from "../types.ts";
 
-export function queryCleanJobs() {
+export function queryCleanJobs(db: Database) {
   const cleanJobsResult = db.query(`
       SELECT * FROM clean_jobs
       WHERE fail_count <= 3
@@ -21,7 +25,10 @@ export function queryCleanJobs() {
   return cleanJobs;
 }
 
-export function updateFailedEnhancement(failedResults: EnhanceResultFailure[]) {
+export function updateFailedEnhancement(
+  db: Database,
+  failedResults: TransformResultFailure[],
+) {
   const jobIds = failedResults.map((result) => result.jobId);
 
   db.query(
@@ -33,7 +40,8 @@ export function updateFailedEnhancement(failedResults: EnhanceResultFailure[]) {
 }
 
 export function deleteEnhancedCleanJobs(
-  successfulResults: EnhanceResultSuccess[],
+  db: Database,
+  successfulResults: TransformResultSuccess<CleanJob>[],
 ) {
   db.query(
     `DELETE FROM clean_jobs
@@ -43,7 +51,8 @@ export function deleteEnhancedCleanJobs(
 }
 
 export function insertNewEnhancedJobs(
-  successfulResults: EnhanceResultSuccess[],
+  db: Database,
+  successfulResults: TransformResultSuccess<EnhancedJob>[],
 ) {
   // make sure that the enhanced jobs are not already in the database
   const existingEnhancedJobs = db.query(

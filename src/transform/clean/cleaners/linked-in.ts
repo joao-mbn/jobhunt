@@ -1,12 +1,13 @@
-import type { RawJob } from "../../types/definitions/job.ts";
+import type { CleanJob, RawJob } from "../../types/definitions/job.ts";
 import type { LinkedInData } from "../../types/definitions/source.ts";
 import { fromDateStringSafely } from "../../utils/date.ts";
+import type { TransformResult } from "../types.ts";
+import { createTransformResultSuccess } from "../utils.ts";
 import { extractInfoWithAI } from "./ai.ts";
-import type { Cleaner, CleanResult } from "./types.ts";
-import { createCleanResultSuccess } from "./utils.ts";
+import type { Cleaner } from "./types.ts";
 
 export class LinkedInCleaner implements Cleaner {
-  async clean(rawJobs: RawJob[]): Promise<CleanResult[]> {
+  async clean(rawJobs: RawJob[]): Promise<TransformResult<CleanJob>[]> {
     const promises = rawJobs.map(async (rawJob) => {
       const jobDetails = rawJob.details as LinkedInData["items"][0];
       const jobDescription = jobDetails.content_text;
@@ -20,7 +21,7 @@ export class LinkedInCleaner implements Cleaner {
           rawJob.jobId,
         );
         const publishedDate = fromDateStringSafely(jobDetails.date_published);
-        return createCleanResultSuccess({
+        return createTransformResultSuccess({
           ...rawJob,
           ...extractedInfo,
           publishedDate: publishedDate ?? extractedInfo.publishedDate,
@@ -32,7 +33,7 @@ export class LinkedInCleaner implements Cleaner {
       }
     });
 
-    return Promise.all(promises) as Promise<CleanResult[]>;
+    return Promise.all(promises) as Promise<TransformResult<CleanJob>[]>;
   }
 }
 

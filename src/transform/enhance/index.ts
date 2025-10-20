@@ -1,4 +1,10 @@
 import { db } from "../../db/database.ts";
+import type { EnhancedJob } from "../../types/definitions/job.ts";
+import type {
+  TransformResult,
+  TransformResultFailure,
+  TransformResultSuccess,
+} from "../types.ts";
 import { enhanceJobWithAI } from "./ai.ts";
 import {
   deleteEnhancedCleanJobs,
@@ -6,18 +12,13 @@ import {
   queryCleanJobs,
   updateFailedEnhancement,
 } from "./db.ts";
-import type {
-  EnhanceResult,
-  EnhanceResultFailure,
-  EnhanceResultSuccess,
-} from "./types.ts";
 
 export async function main() {
   try {
     console.log("Starting data enhancement process...");
 
     // Step 1: Get the clean jobs
-    const cleanJobs = queryCleanJobs();
+    const cleanJobs = queryCleanJobs(db);
     console.log(`Found ${cleanJobs.length} valid clean jobs to process`);
 
     // Step 2: Enhance the clean jobs
@@ -42,13 +43,15 @@ export async function main() {
         return { success: false, jobId: cleanJob.jobId, job: null };
       }
     });
-    const enhanceResults = (await Promise.all(promises)) as EnhanceResult[];
+    const enhanceResults = (await Promise.all(
+      promises,
+    )) as TransformResult<EnhancedJob>[];
 
     const successfulResults = enhanceResults.filter(
-      (result): result is EnhanceResultSuccess => result.success,
+      (result): result is TransformResultSuccess<EnhancedJob> => result.success,
     );
     const failedResults = enhanceResults.filter(
-      (result): result is EnhanceResultFailure => !result.success,
+      (result): result is TransformResultFailure => !result.success,
     );
     console.log(
       `Enhancement completed: ${successfulResults.length} successful, ${failedResults.length} failed`,
@@ -60,7 +63,7 @@ export async function main() {
         console.log(
           `Updating fail_count for ${failedResults.length} failed jobs...`,
         );
-        updateFailedEnhancement(failedResults);
+        updateFailedEnhancement(db, failedResults);
       }
 
       // Step 4: Insert the successful results and delete the clean jobs
@@ -68,10 +71,10 @@ export async function main() {
         console.log(
           `Inserting ${successfulResults.length} new enhanced jobs...`,
         );
-        insertNewEnhancedJobs(successfulResults);
+        insertNewEnhancedJobs(db, successfulResults);
 
         console.log(`Deleting ${successfulResults.length} clean jobs...`);
-        deleteEnhancedCleanJobs(successfulResults);
+        deleteEnhancedCleanJobs(db, successfulResults);
       }
 
       console.log("Data enhancement process completed successfully");

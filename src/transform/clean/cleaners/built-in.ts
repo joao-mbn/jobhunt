@@ -56,5 +56,3 @@ export class BuiltInCleaner implements Cleaner {
     return Promise.all(promises) as Promise<TransformResult<CleanJob>[]>;
   }
 }
-
-export const builtInCleaner = new BuiltInCleaner();

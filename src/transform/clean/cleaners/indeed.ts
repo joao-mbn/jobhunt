@@ -64,5 +64,3 @@ export class IndeedCleaner implements Cleaner {
     return Promise.all(promises) as Promise<TransformResult<CleanJob>[]>;
   }
 }
-
-export const indeedCleaner = new IndeedCleaner();

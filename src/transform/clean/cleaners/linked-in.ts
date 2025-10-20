@@ -36,5 +36,3 @@ export class LinkedInCleaner implements Cleaner {
     return Promise.all(promises) as Promise<TransformResult<CleanJob>[]>;
   }
 }
-
-export const linkedInCleaner = new LinkedInCleaner();

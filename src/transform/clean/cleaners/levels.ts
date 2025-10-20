@@ -42,5 +42,3 @@ export class LevelsCleaner implements Cleaner {
     return Promise.all(promises) as Promise<TransformResult<CleanJob>[]>;
   }
 }
-
-export const levelsCleaner = new LevelsCleaner();

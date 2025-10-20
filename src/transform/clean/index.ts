@@ -1,4 +1,4 @@
-import { db } from "../../db/database.ts";
+import { Database, db } from "../../db/database.ts";
 import type { CleanJob } from "../../types/definitions/job.ts";
 import type {
   TransformResultFailure,
@@ -6,10 +6,11 @@ import type {
 } from "../types.ts";
 import { transformBySource } from "../utils.ts";
 import {
-  builtInCleaner,
-  indeedCleaner,
-  levelsCleaner,
-  linkedInCleaner,
+  BuiltInCleaner,
+  IndeedCleaner,
+  LevelsCleaner,
+  LinkedInCleaner,
+  type Cleaner,
 } from "./cleaners/index.ts";
 import {
   deleteCleanedRawJobs,
@@ -18,20 +19,23 @@ import {
   updateFailedCleaning,
 } from "./db.ts";
 
-export async function main() {
+export async function main(
+  _db: Database = db,
+  _cleaners: Record<string, Cleaner> = createCleaners(),
+) {
   try {
     console.log("Starting data cleaning process...");
 
     // Step 1: Get the raw jobs
-    const rawJobs = queryRawJobs(db);
+    const rawJobs = queryRawJobs(_db);
     console.log(`Found ${rawJobs.length} valid raw jobs to process`);
 
     // Step 2: Clean the raw jobs
     const cleanResults = await transformBySource(rawJobs, {
-      linkedin: linkedInCleaner.clean,
-      levels: levelsCleaner.clean,
-      builtin: builtInCleaner.clean,
-      indeed: indeedCleaner.clean,
+      linkedin: _cleaners.linkedin.clean,
+      levels: _cleaners.levels.clean,
+      builtin: _cleaners.builtin.clean,
+      indeed: _cleaners.indeed.clean,
     });
 
     const successfulResults = cleanResults.filter(
@@ -44,14 +48,14 @@ export async function main() {
       `Cleaning completed: ${successfulResults.length} successful, ${failedResults.length} failed`,
     );
 
-    await db.withTransaction(async () => {
+    await _db.withTransaction(async () => {
       // Step 3: Update the fail_count for the failed jobs
       if (failedResults.length > 0) {
         console.log(
           `Updating fail_count for ${failedResults.length} failed jobs...`,
         );
         updateFailedCleaning(
-          db,
+          _db,
           failedResults.map((result) => result.jobId),
         );
       }
@@ -59,11 +63,11 @@ export async function main() {
       // Step 4: Insert the successful results and delete the raw jobs
       if (successfulResults.length > 0) {
         console.log(`Inserting ${successfulResults.length} new clean jobs...`);
-        insertNewCleanJobs(db, successfulResults);
+        insertNewCleanJobs(_db, successfulResults);
 
         console.log(`Deleting ${successfulResults.length} raw jobs...`);
         deleteCleanedRawJobs(
-          db,
+          _db,
           successfulResults.map((result) => result.jobId),
         );
       }
@@ -74,8 +78,17 @@ export async function main() {
     console.error("Failed to clean data:", error);
     process.exitCode = 1;
   } finally {
-    db.disconnect();
+    _db.disconnect();
   }
+}
+
+export function createCleaners(): Record<string, Cleaner> {
+  return {
+    linkedin: new LinkedInCleaner(),
+    levels: new LevelsCleaner(),
+    builtin: new BuiltInCleaner(),
+    indeed: new IndeedCleaner(),
+  };
 }
 
 if (import.meta.main) {

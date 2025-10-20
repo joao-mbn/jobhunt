@@ -1,4 +1,5 @@
 import type { Job } from "../types/definitions/job.ts";
+import type { TransformResultSuccess } from "./types.ts";
 
 export async function transformBySource<T extends Job, Z>(
   jobs: T[],
@@ -25,4 +26,14 @@ function groupBySource<T extends Job>(jobs: T[]): Record<Job["source"], T[]> {
     },
     {} as Record<Job["source"], T[]>,
   );
+}
+
+export function createTransformResultSuccess<T extends Job>(
+  job: T,
+): TransformResultSuccess<T> {
+  return {
+    success: true,
+    jobId: job.jobId,
+    job,
+  };
 }

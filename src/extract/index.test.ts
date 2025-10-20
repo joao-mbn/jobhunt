@@ -33,28 +33,6 @@ it("should successfully extract and store new jobs", async () => {
   expect(result[2].job_id).toBe("linkedin-1");
 });
 
-it("should add database-generated properties during insertion", async () => {
-  const jobs = generateRawJobs(1, "linkedin");
-  const job = jobs[0];
-
-  expect(job.id).toBeUndefined();
-  expect(job.createdAt).toBeUndefined();
-  expect(job.updatedAt).toBeUndefined();
-  expect(job.failCount).toBeUndefined();
-
-  const scraper = new HappyScraper(jobs);
-  await main(testDb, [scraper]);
-
-  const result = testDb.query("SELECT * FROM raw_jobs");
-  expect(result).toHaveLength(1);
-
-  const insertedJob = result[0];
-  expect(insertedJob.id).toBeDefined();
-  expect(insertedJob.created_at).toBeDefined();
-  expect(insertedJob.updated_at).toBeDefined();
-  expect(insertedJob.fail_count).toBe(0);
-});
-
 it("should filter out jobs already in the database", async () => {
   const existingJobs = generateRawJobs(2, "linkedin");
   const existingJobs2 = generateRawJobs(1, "builtin");

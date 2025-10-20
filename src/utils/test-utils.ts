@@ -1,4 +1,8 @@
-import type { CleanJob, RawJob } from "../types/definitions/job.ts";
+import type {
+  CleanJob,
+  EnhancedJob,
+  RawJob,
+} from "../types/definitions/job.ts";
 
 /**
  * Generates RawJob objects for testing
@@ -53,4 +57,58 @@ export function generateCleanJobs(
     hardSkillsRequired: "TypeScript, Node.js, React",
     jobDescription: `This is a test job description for job ${rawJob.jobId.split("-")[1]}`,
   }));
+}
+
+/**
+ * Generates EnhancedJob objects for testing
+ * @param count - Number of jobs to generate
+ * @param source - Source for the jobs (default: "linkedin")
+ * @param uploadedToSheet - Whether jobs should be marked as uploaded to sheet (default: false)
+ * @returns Array of EnhancedJob objects
+ */
+export function generateEnhancedJobs(
+  count: number,
+  source: "linkedin" | "levels" | "builtin" | "indeed" = "linkedin",
+  uploadedToSheet: boolean = false,
+): EnhancedJob[] {
+  const cleanJobs = generateCleanJobs(count, source);
+
+  return cleanJobs.map((cleanJob, index) => {
+    // Generate realistic relevance scores (0-100)
+    const relevanceScore = Math.floor(Math.random() * 101);
+
+    // Generate recommendations based on relevance score
+    let recommendation: "Apply" | "Consider" | "Skip";
+    if (relevanceScore >= 80) {
+      recommendation = "Apply";
+    } else if (relevanceScore >= 50) {
+      recommendation = "Consider";
+    } else {
+      recommendation = "Skip";
+    }
+
+    // Generate relevance reasons based on score
+    const relevanceReasons = [
+      "Strong match with required skills and experience",
+      "Good company culture and growth opportunities",
+      "Remote work arrangement aligns with preferences",
+      "Compensation range meets expectations",
+      "Role responsibilities match career goals",
+      "Company is in a growing industry",
+      "Limited growth opportunities in this role",
+      "Skills mismatch with current experience",
+      "Compensation below market rate",
+      "Location requirements don't align",
+    ];
+
+    const relevanceReason = relevanceReasons[index % relevanceReasons.length];
+
+    return {
+      ...cleanJob,
+      relevanceScore,
+      relevanceReason,
+      recommendation,
+      uploadedToSheet,
+    };
+  });
 }

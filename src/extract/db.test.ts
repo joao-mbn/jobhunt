@@ -1,7 +1,14 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { Database } from "../db/database.ts";
 import { setupDb, teardownDb } from "../db/test-utils.ts";
-import type { RawJob } from "../types/definitions/job.ts";
+import { insertNewCleanJobs } from "../transform/clean/db.ts";
+import { insertNewEnhancedJobs } from "../transform/enhance/db.ts";
+import { createTransformResultSuccess } from "../transform/utils.ts";
+import {
+  generateCleanJobs,
+  generateEnhancedJobs,
+  generateRawJobs,
+} from "../utils/test-utils.ts";
 import { insertRawJobs, queryJobIds } from "./db.ts";
 
 let testDb: Database;
@@ -24,65 +31,54 @@ describe("queryJobIds", () => {
   });
 
   it("should return job IDs from raw_jobs table only", () => {
-    testDb.exec(`
-      INSERT INTO raw_jobs (name, job_id, url, details, source)
-      VALUES
-        ('Software Engineer', 'job-1', 'https://example.com/job1', '{}', 'linkedin'),
-        ('Data Scientist', 'job-2', 'https://example.com/job2', '{}', 'levels');
-    `);
+    const testJobs = generateRawJobs(2);
+
+    insertRawJobs(testDb, testJobs);
 
     const result = queryJobIds(testDb);
     expect(result).toHaveLength(2);
-    expect(result.map((row) => row.job_id)).toContain("job-1");
-    expect(result.map((row) => row.job_id)).toContain("job-2");
+    expect(result.map((row) => row.job_id)).toContain("linkedin-1");
+    expect(result.map((row) => row.job_id)).toContain("linkedin-2");
   });
 
   it("should return job IDs from clean_jobs table only", () => {
-    testDb.exec(`
-      INSERT INTO clean_jobs (name, job_id, url, details, source)
-      VALUES
-        ('Product Manager', 'job-3', 'https://example.com/job3', '{}', 'builtin'),
-        ('UX Designer', 'job-4', 'https://example.com/job4', '{}', 'indeed');
-    `);
+    const testJobs = generateCleanJobs(2);
+
+    const successfulResults = testJobs.map(createTransformResultSuccess);
+    insertNewCleanJobs(testDb, successfulResults);
 
     const result = queryJobIds(testDb);
     expect(result).toHaveLength(2);
-    expect(result.map((row) => row.job_id)).toContain("job-3");
-    expect(result.map((row) => row.job_id)).toContain("job-4");
+    expect(result.map((row) => row.job_id)).toContain("linkedin-1");
+    expect(result.map((row) => row.job_id)).toContain("linkedin-2");
   });
 
   it("should return job IDs from enhanced_jobs table only", () => {
-    testDb.exec(`
-      INSERT INTO enhanced_jobs (name, job_id, url, details, source)
-      VALUES
-        ('DevOps Engineer', 'job-5', 'https://example.com/job5', '{}', 'linkedin'),
-        ('ML Engineer', 'job-6', 'https://example.com/job6', '{}', 'levels');
-    `);
+    const testJobs = generateEnhancedJobs(2);
+
+    const successfulResults = testJobs.map(createTransformResultSuccess);
+    insertNewEnhancedJobs(testDb, successfulResults);
 
     const result = queryJobIds(testDb);
     expect(result).toHaveLength(2);
-    expect(result.map((row) => row.job_id)).toContain("job-5");
-    expect(result.map((row) => row.job_id)).toContain("job-6");
+    expect(result.map((row) => row.job_id)).toContain("linkedin-1");
+    expect(result.map((row) => row.job_id)).toContain("linkedin-2");
   });
 
   it("should return unique job IDs from multiple tables", () => {
-    testDb.exec(`
-      INSERT INTO raw_jobs (name, job_id, url, details, source)
-      VALUES
-        ('Job 1', 'job-1', 'https://example.com/job1', '{}', 'linkedin')
-    `);
+    const rawJob = generateRawJobs(1)[0];
+    rawJob.jobId = "job-1";
+    insertRawJobs(testDb, [rawJob]);
 
-    testDb.exec(`
-      INSERT INTO clean_jobs (name, job_id, url, details, source)
-      VALUES
-        ('Job 2', 'job-2', 'https://example.com/job2', '{}', 'levels')
-    `);
+    const cleanJob = generateCleanJobs(1)[0];
+    cleanJob.jobId = "job-2";
+    const cleanResult = createTransformResultSuccess(cleanJob);
+    insertNewCleanJobs(testDb, [cleanResult]);
 
-    testDb.exec(`
-      INSERT INTO enhanced_jobs (name, job_id, url, details, source)
-      VALUES
-        ('Job 3', 'job-3', 'https://example.com/job3', '{}', 'builtin')
-    `);
+    const enhancedJob = generateEnhancedJobs(1)[0];
+    enhancedJob.jobId = "job-3";
+    const enhancedResult = createTransformResultSuccess(enhancedJob);
+    insertNewEnhancedJobs(testDb, [enhancedResult]);
 
     const result = queryJobIds(testDb);
     expect(result).toHaveLength(3);
@@ -92,20 +88,21 @@ describe("queryJobIds", () => {
   });
 
   it("should handle duplicate job IDs across tables (UNION removes duplicates)", () => {
-    testDb.exec(`
-      INSERT INTO raw_jobs (name, job_id, url, details, source)
-      VALUES ('Job 1', 'duplicate-job', 'https://example.com/job1', '{}', 'linkedin');
-    `);
+    const duplicateJobId = "duplicate-job";
 
-    testDb.exec(`
-      INSERT INTO clean_jobs (name, job_id, url, details, source)
-      VALUES ('Job 1', 'duplicate-job', 'https://example.com/job1', '{}', 'linkedin');
-    `);
+    const rawJob = generateRawJobs(1)[0];
+    rawJob.jobId = duplicateJobId;
+    insertRawJobs(testDb, [rawJob]);
 
-    testDb.exec(`
-      INSERT INTO enhanced_jobs (name, job_id, url, details, source)
-      VALUES ('Job 1', 'duplicate-job', 'https://example.com/job1', '{}', 'linkedin');
-    `);
+    const cleanJob = generateCleanJobs(1)[0];
+    cleanJob.jobId = duplicateJobId;
+    const cleanResult = createTransformResultSuccess(cleanJob);
+    insertNewCleanJobs(testDb, [cleanResult]);
+
+    const enhancedJob = generateEnhancedJobs(1)[0];
+    enhancedJob.jobId = duplicateJobId;
+    const enhancedResult = createTransformResultSuccess(enhancedJob);
+    insertNewEnhancedJobs(testDb, [enhancedResult]);
 
     const result = queryJobIds(testDb);
     expect(result).toHaveLength(1);
@@ -122,99 +119,46 @@ describe("insertRawJobs", () => {
   });
 
   it("should insert single job successfully", () => {
-    const testJob: RawJob = {
-      name: "Software Engineer",
-      jobId: "test-job-1",
-      url: "https://example.com/job1",
-      details: { company: "Test Corp", location: "Remote" },
-      source: "linkedin",
-      failCount: 0,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-
-    insertRawJobs(testDb, [testJob]);
+    const testJobs = generateRawJobs(1);
+    insertRawJobs(testDb, testJobs);
 
     const result = testDb.query(
       "SELECT * FROM raw_jobs WHERE job_id = ?",
-      "test-job-1",
+      testJobs[0].jobId,
     );
     expect(result).toHaveLength(1);
-    expect(result[0].name).toBe("Software Engineer");
-    expect(result[0].job_id).toBe("test-job-1");
-    expect(result[0].url).toBe("https://example.com/job1");
-    expect(result[0].source).toBe("linkedin");
+    expect(result[0].name).toBe(testJobs[0].name);
+    expect(result[0].job_id).toBe(testJobs[0].jobId);
+    expect(result[0].url).toBe(testJobs[0].url);
+    expect(result[0].source).toBe(testJobs[0].source);
     expect(Number(result[0].fail_count)).toBe(0);
-    expect(JSON.parse(String(result[0].details))).toEqual({
-      company: "Test Corp",
-      location: "Remote",
-    });
+    expect(JSON.parse(String(result[0].details))).toEqual(testJobs[0].details);
   });
 
   it("should insert multiple jobs successfully", () => {
-    const testJobs: RawJob[] = [
-      {
-        name: "Software Engineer",
-        jobId: "test-job-1",
-        url: "https://example.com/job1",
-        details: { company: "Test Corp", location: "Remote" },
-        source: "linkedin",
-        failCount: 0,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        name: "Data Scientist",
-        jobId: "test-job-2",
-        url: "https://example.com/job2",
-        details: { company: "Data Corp", location: "Hybrid" },
-        source: "levels",
-        failCount: 1,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        name: "Product Manager",
-        jobId: "test-job-3",
-        url: "https://example.com/job3",
-        details: { company: "Product Corp", location: "On-Site" },
-        source: "builtin",
-        failCount: 0,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    ];
-
+    const testJobs = generateRawJobs(2);
     insertRawJobs(testDb, testJobs);
 
     const result = testDb.query("SELECT * FROM raw_jobs ORDER BY job_id");
-    expect(result).toHaveLength(3);
+    expect(result).toHaveLength(2);
 
-    expect(result[0].name).toBe("Software Engineer");
-    expect(result[0].job_id).toBe("test-job-1");
-    expect(result[0].source).toBe("linkedin");
+    expect(result[0].name).toBe(testJobs[0].name);
+    expect(result[0].job_id).toBe(testJobs[0].jobId);
+    expect(result[0].url).toBe(testJobs[0].url);
+    expect(result[0].source).toBe(testJobs[0].source);
     expect(Number(result[0].fail_count)).toBe(0);
+    expect(JSON.parse(String(result[0].details))).toEqual(testJobs[0].details);
 
-    expect(result[1].name).toBe("Data Scientist");
-    expect(result[1].job_id).toBe("test-job-2");
-    expect(result[1].source).toBe("levels");
+    expect(result[1].name).toBe(testJobs[1].name);
+    expect(result[1].job_id).toBe(testJobs[1].jobId);
+    expect(result[1].url).toBe(testJobs[1].url);
+    expect(result[1].source).toBe(testJobs[1].source);
     expect(Number(result[1].fail_count)).toBe(0);
-
-    expect(result[2].name).toBe("Product Manager");
-    expect(result[2].job_id).toBe("test-job-3");
-    expect(result[2].source).toBe("builtin");
-    expect(Number(result[2].fail_count)).toBe(0);
+    expect(JSON.parse(String(result[1].details))).toEqual(testJobs[1].details);
   });
 
   it("should throw error when trying to insert duplicate job_id", () => {
-    const testJob: RawJob = {
-      name: "Duplicate Job",
-      jobId: "duplicate-job",
-      url: "https://example.com/duplicate",
-      details: {},
-      source: "linkedin",
-    };
-
+    const testJob = generateRawJobs(1)[0];
     insertRawJobs(testDb, [testJob]);
 
     expect(() => insertRawJobs(testDb, [testJob])).toThrow();
@@ -238,21 +182,35 @@ describe("insertRawJobs", () => {
       },
     };
 
-    const testJob: RawJob = {
-      name: "Complex Job",
-      jobId: "complex-job",
-      url: "https://example.com/complex",
-      details: complexDetails,
-      source: "builtin",
-    };
+    const testJob = generateRawJobs(1)[0];
+    testJob.details = complexDetails;
 
     insertRawJobs(testDb, [testJob]);
 
     const result = testDb.query(
       "SELECT * FROM raw_jobs WHERE job_id = ?",
-      "complex-job",
+      testJob.jobId,
     );
     expect(result).toHaveLength(1);
     expect(JSON.parse(String(result[0].details))).toEqual(complexDetails);
+  });
+
+  it("should add database-generated properties during insertion", async () => {
+    const jobs = generateRawJobs(1, "linkedin");
+    const job = jobs[0];
+
+    expect(job.id).toBeUndefined();
+    expect(job.createdAt).toBeUndefined();
+    expect(job.updatedAt).toBeUndefined();
+    expect(job.failCount).toBeUndefined();
+
+    insertRawJobs(testDb, [job]);
+
+    const result = testDb.query("SELECT * FROM raw_jobs");
+    expect(result).toHaveLength(1);
+    expect(result[0].id).toBeDefined();
+    expect(result[0].created_at).toBeDefined();
+    expect(result[0].updated_at).toBeDefined();
+    expect(result[0].fail_count).toBe(0);
   });
 });

@@ -1,8 +1,8 @@
-import type { CleanJob, RawJob } from "../../types/definitions/job.ts";
-import type { IndeedData } from "../../types/definitions/source.ts";
-import type { TransformResult } from "../types.ts";
-import { createTransformResultSuccess } from "../utils.ts";
-import { extractInfoWithAI } from "./ai.ts";
+import type { CleanJob, RawJob } from "../../../types/definitions/job.ts";
+import type { IndeedData } from "../../../types/definitions/source.ts";
+import type { TransformResult } from "../../types.ts";
+import { createTransformResultSuccess } from "../../utils.ts";
+import { extractInfoWithAI } from "../ai.ts";
 import type { Cleaner } from "./types.ts";
 
 export class IndeedCleaner implements Cleaner {

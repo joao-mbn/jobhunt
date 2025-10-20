@@ -1,9 +1,9 @@
-import type { CleanJob, RawJob } from "../../types/definitions/job.ts";
-import type { LinkedInData } from "../../types/definitions/source.ts";
-import { fromDateStringSafely } from "../../utils/date.ts";
-import type { TransformResult } from "../types.ts";
-import { createTransformResultSuccess } from "../utils.ts";
-import { extractInfoWithAI } from "./ai.ts";
+import type { CleanJob, RawJob } from "../../../types/definitions/job.ts";
+import type { LinkedInData } from "../../../types/definitions/source.ts";
+import { fromDateStringSafely } from "../../../utils/date.ts";
+import type { TransformResult } from "../../types.ts";
+import { createTransformResultSuccess } from "../../utils.ts";
+import { extractInfoWithAI } from "../ai.ts";
 import type { Cleaner } from "./types.ts";
 
 export class LinkedInCleaner implements Cleaner {

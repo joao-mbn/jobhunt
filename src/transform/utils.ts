@@ -41,9 +41,7 @@ export function createTransformResultSuccess<T extends Job>(
   };
 }
 
-export function createTransformResultFailure<T extends Job>(
-  job: T,
-): TransformResultFailure {
+export function createTransformResultFailure(job: Job): TransformResultFailure {
   return {
     success: false,
     jobId: job.jobId,

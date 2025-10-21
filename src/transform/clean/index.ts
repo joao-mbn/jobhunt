@@ -21,7 +21,7 @@ import {
 
 export async function main(
   _db: Database = db,
-  _cleaners: Record<string, Cleaner> = createCleaners(),
+  _cleaners: Record<Job["source"], Cleaner> = createCleaners(),
 ) {
   try {
     console.log("Starting data cleaning process...");

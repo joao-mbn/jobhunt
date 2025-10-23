@@ -1,4 +1,5 @@
-import { ais, attemptPromptSequentially } from "../../ai/utils.ts";
+import type { AIClient } from "../../ai/types.ts";
+import { attemptPromptSequentially } from "../../ai/utils.ts";
 import { getResume } from "../../file-system/resume.ts";
 import type { EnhancedJob } from "../../types/definitions/job.ts";
 import { hasOptionalFields } from "../../types/validators/has-fields.ts";
@@ -58,6 +59,7 @@ Return ONLY a JSON object with this exact structure:
 
 export async function generatePrefillsWithAI(
   enhancedJob: EnhancedJob,
+  aiClients: AIClient[],
 ): Promise<AIGeneratedPrefillsInfo> {
   const resume = getResume();
 
@@ -89,7 +91,7 @@ export async function generatePrefillsWithAI(
     );
 
   try {
-    const { response } = (await attemptPromptSequentially(ais, {
+    const { response } = (await attemptPromptSequentially(aiClients, {
       prompt,
       key: enhancedJob.jobId,
       options: { asJson: true, validateJson: isAIPrefillsInfo },

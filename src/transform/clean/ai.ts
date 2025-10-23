@@ -1,4 +1,5 @@
-import { ais, attemptPromptSequentially } from "../../ai/utils.ts";
+import type { AIClient } from "../../ai/types.ts";
+import { attemptPromptSequentially } from "../../ai/utils.ts";
 import { hasOptionalFields } from "../../types/validators/has-fields.ts";
 import { fromDateStringSafely } from "../../utils/date.ts";
 import type { AIGeneratedCleanJobInfo } from "./types.ts";
@@ -46,6 +47,7 @@ Return ONLY a JSON object with this exact structure:
 export async function extractInfoWithAI(
   jobDescription: string,
   jobId: string,
+  aiClients: AIClient[],
 ): Promise<AIGeneratedCleanJobInfo> {
   const prompt = JOB_INFO_EXTRACTION_PROMPT.replace(
     "{{jobDescription}}",
@@ -53,7 +55,7 @@ export async function extractInfoWithAI(
   );
 
   try {
-    const { response } = (await attemptPromptSequentially(ais, {
+    const { response } = (await attemptPromptSequentially(aiClients, {
       prompt,
       key: jobId,
       options: { asJson: true, validateJson: isAIExtractedInfo },

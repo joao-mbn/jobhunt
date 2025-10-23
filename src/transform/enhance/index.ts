@@ -1,3 +1,5 @@
+import type { AIClient } from "../../ai/types.ts";
+import { ais } from "../../ai/utils.ts";
 import { db } from "../../db/database.ts";
 import type { EnhancedJob } from "../../types/definitions/job.ts";
 import type {
@@ -17,7 +19,7 @@ import {
   updateFailedEnhancement,
 } from "./db.ts";
 
-export async function main() {
+export async function main(aiClients: AIClient[] = ais) {
   try {
     console.log("Starting data enhancement process...");
 
@@ -35,7 +37,7 @@ export async function main() {
       }
 
       try {
-        const enhancedInfo = await enhanceJobWithAI(cleanJob);
+        const enhancedInfo = await enhanceJobWithAI(cleanJob, aiClients);
         const enhancedJob = {
           ...cleanJob,
           ...enhancedInfo,

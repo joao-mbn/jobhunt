@@ -36,3 +36,20 @@ export class RateLimitExceededAIClient implements AIClient {
     return Promise.reject({ status: 429 });
   }
 }
+
+export class FixedJsonContentAIClient implements AIClient {
+  name = "fixed-json-content-ai";
+  jsonContent: unknown;
+
+  constructor(jsonContent: unknown) {
+    this.jsonContent = jsonContent;
+  }
+
+  getJsonContent(): unknown {
+    return this.jsonContent;
+  }
+
+  generateContent(): Promise<string> {
+    return Promise.resolve('{"name": "John"}');
+  }
+}

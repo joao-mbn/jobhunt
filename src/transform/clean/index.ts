@@ -1,3 +1,4 @@
+import { ais } from "../../ai/utils.ts";
 import { Database, db } from "../../db/database.ts";
 import type { CleanJob, Job } from "../../types/definitions/job.ts";
 import type {
@@ -84,10 +85,10 @@ export async function main(
 
 export function createCleaners(): Record<Job["source"], Cleaner> {
   return {
-    linkedin: new LinkedInCleaner(),
-    levels: new LevelsCleaner(),
-    builtin: new BuiltInCleaner(),
-    indeed: new IndeedCleaner(),
+    linkedin: new LinkedInCleaner(ais),
+    levels: new LevelsCleaner(ais),
+    builtin: new BuiltInCleaner(ais),
+    indeed: new IndeedCleaner(ais),
   };
 }
 

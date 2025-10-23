@@ -1,3 +1,5 @@
+import type { AIClient } from "../../ai/types.ts";
+import { ais } from "../../ai/utils.ts";
 import { db } from "../../db/database.ts";
 import { createTransformResultFailure } from "../utils.ts";
 import { generatePrefillsWithAI } from "./ai.ts";
@@ -12,7 +14,7 @@ import type {
   PrefillsResultSuccess,
 } from "./types.ts";
 
-export async function main() {
+export async function main(aiClients: AIClient[] = ais) {
   try {
     console.log("Starting prefills generation process...");
 
@@ -42,7 +44,10 @@ export async function main() {
       }
 
       try {
-        const prefillsInfo = await generatePrefillsWithAI(enhancedJob);
+        const prefillsInfo = await generatePrefillsWithAI(
+          enhancedJob,
+          aiClients,
+        );
         const prefills = { enhancedJobId: enhancedJob.jobId, ...prefillsInfo };
         return { success: true, enhancedJobId: enhancedJob.jobId, prefills };
       } catch (error) {

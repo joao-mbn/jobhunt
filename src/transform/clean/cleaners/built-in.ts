@@ -1,3 +1,4 @@
+import type { AIClient } from "../../../ai/types.ts";
 import type { CleanJob, RawJob } from "../../../types/definitions/job.ts";
 import type { BuiltInData } from "../../../types/definitions/source.ts";
 import type { TransformResult } from "../../types.ts";
@@ -9,6 +10,12 @@ import { extractInfoWithAI } from "../ai.ts";
 import type { Cleaner } from "./types.ts";
 
 export class BuiltInCleaner implements Cleaner {
+  private aiClients: AIClient[];
+
+  constructor(aiClients: AIClient[]) {
+    this.aiClients = aiClients;
+  }
+
   async clean(rawJobs: RawJob[]): Promise<TransformResult<CleanJob>[]> {
     const promises = rawJobs.map(async (rawJob) => {
       const jobDetails = rawJob.details as unknown as BuiltInData;
@@ -34,6 +41,7 @@ export class BuiltInCleaner implements Cleaner {
         const extractedInfo = await extractInfoWithAI(
           jobDescription,
           rawJob.jobId,
+          this.aiClients,
         );
         return createTransformResultSuccess({
           ...rawJob,

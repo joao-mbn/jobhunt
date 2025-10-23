@@ -49,6 +49,14 @@ export async function attemptPromptSequentially(
   throw new Error("No AI client was able to generate content");
 }
 
+export function getJsonContent(response: string): unknown {
+  const jsonMatch = response.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) {
+    throw new Error("Failed to parse JSON response");
+  }
+  return JSON.parse(jsonMatch[0]);
+}
+
 export const ais = [
   gemini2_5ProAIClient,
   gemini2_5FlashLiteAIClient,

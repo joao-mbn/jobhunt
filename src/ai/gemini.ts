@@ -1,5 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 import type { AIClient } from "./types.ts";
+import { getJsonContent } from "./utils.ts";
 
 const models = {
   "gemini-2.0-flash-lite": {
@@ -38,11 +39,7 @@ export class GeminiAIClient implements AIClient {
   }
 
   getJsonContent(response: string) {
-    const jsonMatch = response.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      throw new Error("Failed to parse JSON response");
-    }
-    return JSON.parse(jsonMatch[0]);
+    return getJsonContent(response);
   }
 
   async generateContent(prompt: string) {

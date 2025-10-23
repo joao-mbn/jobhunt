@@ -1,4 +1,5 @@
 import type { AIClient } from "./types.ts";
+import { getJsonContent } from "./utils.ts";
 
 const LOCAL_AI_CONFIG = {
   model: "gpt-4",
@@ -10,11 +11,7 @@ export class LocalAIClient implements AIClient {
   name = "local-ai " + LOCAL_AI_CONFIG.model;
 
   getJsonContent(response: string): unknown {
-    const jsonMatch = response.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      throw new Error("Failed to parse JSON response");
-    }
-    return JSON.parse(jsonMatch[0]);
+    return getJsonContent(response);
   }
 
   async generateContent(prompt: string): Promise<string> {

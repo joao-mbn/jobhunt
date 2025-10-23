@@ -73,7 +73,7 @@ export async function extractInfoWithAI(
   }
 }
 
-function isAIExtractedInfo(response: unknown): response is Omit<
+export function isAIExtractedInfo(response: unknown): response is Omit<
   AIGeneratedCleanJobInfo,
   "publishedDate"
 > & {

@@ -11,7 +11,10 @@ export function hasRequiredFields(
       return false;
     }
 
-    if (type === "date" && !(job[field] instanceof Date)) {
+    if (type === "date") {
+      if (job[field] instanceof Date) {
+        continue;
+      }
       return false;
     }
 
@@ -36,7 +39,10 @@ export function hasOptionalFields(
       continue;
     }
 
-    if (type === "date" && !(job[field] instanceof Date)) {
+    if (type === "date") {
+      if (job[field] instanceof Date) {
+        continue;
+      }
       return false;
     }
 

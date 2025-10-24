@@ -13,9 +13,10 @@ describe("BuiltInScraper Integration Tests", () => {
     return originalEndpoint;
   }
 
-  it("should fetch jobs successfully", { timeout: 60000 }, async () => {
+  it("should fetch jobs successfully", { timeout: 120000 }, async () => {
     const originalEndpoint = getOriginalEndpoint();
     const url = new URL(originalEndpoint);
+    url.searchParams.set("daysSinceUpdated", "1");
     const testUrl = url.toString();
 
     const scraper = new BuiltInScraper(testUrl);

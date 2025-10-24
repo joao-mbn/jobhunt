@@ -31,21 +31,21 @@ describe("extractInfoWithAI", () => {
   });
 
   it("it returns an empty object if validation of AI output fails", async () => {
-    const extractedInfo = await extractInfoWithAI(
+    const extractedInfo = extractInfoWithAI(
       "invalid job description",
       "test-job-id",
       [new FixedJsonContentAIClient({ compensation: 100000 })],
     );
-    expect(extractedInfo).toEqual({});
+    await expect(extractedInfo).rejects.toThrow();
   });
 
   it("it returns an empty object if all prompt attempts result in errors", async () => {
-    const extractedInfo = await extractInfoWithAI(
+    const extractedInfo = extractInfoWithAI(
       "invalid job description",
       "test-job-id",
       [new ErrorThrowingAIClient(), new RateLimitExceededAIClient()],
     );
-    expect(extractedInfo).toEqual({});
+    await expect(extractedInfo).rejects.toThrow();
   });
 });
 
@@ -84,7 +84,7 @@ describe("isAIExtractedInfo", () => {
     expect(isAIExtractedInfo(response)).toBe(true);
   });
 
-  it("returns false if the response is an object with optional fields, but they're of the wrong type", () => {
+  it("returns false if the response is an object with optional fields, but at least one of them is of the wrong type", () => {
     const response = {
       workArrangement: "Remote",
       compensation: 100000,

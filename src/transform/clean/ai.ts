@@ -54,25 +54,20 @@ export async function extractInfoWithAI(
     jobDescription,
   );
 
-  try {
-    const { response } = (await attemptPromptSequentially(aiClients, {
-      prompt,
-      key: jobId,
-      options: { asJson: true, validateJson: isAIExtractedInfo },
-    })) as {
-      response: Omit<AIGeneratedCleanJobInfo, "publishedDate"> & {
-        publishedDate?: string;
-      };
+  const { response } = (await attemptPromptSequentially(aiClients, {
+    prompt,
+    key: jobId,
+    options: { asJson: true, validateJson: isAIExtractedInfo },
+  })) as {
+    response: Omit<AIGeneratedCleanJobInfo, "publishedDate"> & {
+      publishedDate?: string;
     };
+  };
 
-    return {
-      ...response,
-      publishedDate: fromDateStringSafely(response.publishedDate),
-    };
-  } catch (error) {
-    console.error(`Failed to extract job info for job ${jobId}:`, error);
-    return {};
-  }
+  return {
+    ...response,
+    publishedDate: fromDateStringSafely(response.publishedDate),
+  };
 }
 
 export function isAIExtractedInfo(response: unknown): response is Omit<

@@ -3,6 +3,12 @@ import type {
   EnhancedJob,
   RawJob,
 } from "../types/definitions/job.ts";
+import type {
+  BuiltInData,
+  IndeedData,
+  LevelsData,
+  LinkedInData,
+} from "../types/definitions/source.ts";
 
 /**
  * Generates RawJob objects for testing
@@ -17,16 +23,56 @@ export function generateRawJobs(
   const jobs: RawJob[] = [];
 
   for (let i = 0; i < count; i++) {
+    let details: Record<string, unknown>;
+    if (source === "builtin") {
+      details = {
+        title: `Test Job ${i + 1}`,
+        company: `Test Company ${i + 1}`,
+        location: "Remote",
+        workArrengement: "Remote",
+        seniorityLevel: "Mid-Level",
+        datePublished: "2025-01-01",
+        description: `This is a test job description for job ${i + 1}`,
+        topSkills: "Test Top Skills",
+      } satisfies BuiltInData;
+    } else if (source === "linkedin") {
+      details = {
+        id: `linkedin-${i + 1}`,
+        title: `Test Job ${i + 1}`,
+        url: `https://example.com/job${i + 1}`,
+        content_text: `This is a test job description for job ${i + 1}`,
+        date_published: "2025-01-01",
+        content_html: "<p>This is a test job description for job ${i + 1}</p>",
+      } satisfies LinkedInData["items"][number];
+    } else if (source === "levels") {
+      details = {
+        title: `Test Job ${i + 1}`,
+        headerDetails: "Test Header Details",
+        description: `This is a test job description for job ${i + 1}`,
+        applyUrl: "https://example.com/apply",
+        compensation: "Test Compensation",
+      } satisfies LevelsData;
+    } else if (source === "indeed") {
+      details = {
+        title: `Test Job ${i + 1}`,
+        company: `Test Company ${i + 1}`,
+        insights: {
+          "Test Insight": "Test Insight Value",
+        },
+        description: `This is a test job description for job ${i + 1}`,
+        workArrangement: "Remote",
+        compensation: "Test Compensation",
+        jobType: "Full-Time",
+        location: "Remote",
+      } satisfies IndeedData;
+    }
+
     jobs.push({
       name: `Test Job ${i + 1}`,
       jobId: `${source}-${i + 1}`,
       url: `https://example.com/job${i + 1}`,
-      details: {
-        company: `Test Company ${i + 1}`,
-        location: "Remote",
-        description: `This is a test job description for job ${i + 1}`,
-      },
       source,
+      details,
     });
   }
 

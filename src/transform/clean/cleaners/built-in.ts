@@ -1,6 +1,6 @@
 import type { AIClient } from "../../../ai/types.ts";
 import type { CleanJob, RawJob } from "../../../types/definitions/job.ts";
-import type { BuiltInData } from "../../../types/definitions/source.ts";
+import { isBuiltInData } from "../../../types/validators/source.ts";
 import type { TransformResult } from "../../types.ts";
 import {
   createTransformResultFailure,
@@ -18,7 +18,10 @@ export class BuiltInCleaner implements Cleaner {
 
   async clean(rawJobs: RawJob[]): Promise<TransformResult<CleanJob>[]> {
     const promises = rawJobs.map(async (rawJob) => {
-      const jobDetails = rawJob.details as unknown as BuiltInData;
+      const jobDetails = rawJob.details;
+      if (!isBuiltInData(jobDetails)) {
+        return createTransformResultFailure(rawJob);
+      }
 
       const jobDescription = [
         jobDetails.title,

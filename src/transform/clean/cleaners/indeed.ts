@@ -1,6 +1,6 @@
 import type { AIClient } from "../../../ai/types.ts";
 import type { CleanJob, RawJob } from "../../../types/definitions/job.ts";
-import type { IndeedData } from "../../../types/definitions/source.ts";
+import { isIndeedData } from "../../../types/validators/source.ts";
 import type { TransformResult } from "../../types.ts";
 import {
   createTransformResultFailure,
@@ -18,7 +18,10 @@ export class IndeedCleaner implements Cleaner {
 
   async clean(rawJobs: RawJob[]): Promise<TransformResult<CleanJob>[]> {
     const promises = rawJobs.map(async (rawJob) => {
-      const jobDetails = rawJob.details as unknown as IndeedData;
+      const jobDetails = rawJob.details;
+      if (!isIndeedData(jobDetails)) {
+        return createTransformResultFailure(rawJob);
+      }
 
       const jobDescription = [
         jobDetails.title,

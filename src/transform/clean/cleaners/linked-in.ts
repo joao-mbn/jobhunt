@@ -1,6 +1,6 @@
 import type { AIClient } from "../../../ai/types.ts";
 import type { CleanJob, RawJob } from "../../../types/definitions/job.ts";
-import type { LinkedInData } from "../../../types/definitions/source.ts";
+import { isLinkedInDataItem } from "../../../types/validators/source.ts";
 import { fromDateStringSafely } from "../../../utils/date.ts";
 import type { TransformResult } from "../../types.ts";
 import {
@@ -19,7 +19,11 @@ export class LinkedInCleaner implements Cleaner {
 
   async clean(rawJobs: RawJob[]): Promise<TransformResult<CleanJob>[]> {
     const promises = rawJobs.map(async (rawJob) => {
-      const jobDetails = rawJob.details as LinkedInData["items"][0];
+      const jobDetails = rawJob.details;
+      if (!isLinkedInDataItem(jobDetails)) {
+        return createTransformResultFailure(rawJob);
+      }
+
       const jobDescription = jobDetails.content_text;
       if (!jobDescription) {
         return createTransformResultFailure(rawJob);
@@ -35,7 +39,7 @@ export class LinkedInCleaner implements Cleaner {
         return createTransformResultSuccess({
           ...rawJob,
           ...extractedInfo,
-          publishedDate: publishedDate ?? extractedInfo.publishedDate,
+          publishedDate,
           jobDescription,
         });
       } catch (error) {

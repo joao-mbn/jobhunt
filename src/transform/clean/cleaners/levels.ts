@@ -1,6 +1,6 @@
 import type { AIClient } from "../../../ai/types.ts";
 import type { CleanJob, RawJob } from "../../../types/definitions/job.ts";
-import type { LevelsData } from "../../../types/definitions/source.ts";
+import { isLevelsData } from "../../../types/validators/source.ts";
 import type { TransformResult } from "../../types.ts";
 import {
   createTransformResultFailure,
@@ -18,7 +18,10 @@ export class LevelsCleaner implements Cleaner {
 
   async clean(rawJobs: RawJob[]): Promise<TransformResult<CleanJob>[]> {
     const promises = rawJobs.map(async (rawJob) => {
-      const jobDetails = rawJob.details as unknown as LevelsData;
+      const jobDetails = rawJob.details;
+      if (!isLevelsData(jobDetails)) {
+        return createTransformResultFailure(rawJob);
+      }
 
       const jobDescription = [
         jobDetails.title,

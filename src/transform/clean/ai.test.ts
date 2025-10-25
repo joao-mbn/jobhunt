@@ -60,7 +60,7 @@ describe("isAIExtractedInfo", () => {
     expect(isAIExtractedInfo(response)).toBe(false);
   });
 
-  it("returns true if the response is an object", () => {
+  it("returns true if the response is an empty object", () => {
     const response = {};
     expect(isAIExtractedInfo(response)).toBe(true);
   });

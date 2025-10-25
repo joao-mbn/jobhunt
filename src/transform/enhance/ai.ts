@@ -5,6 +5,12 @@ import type { CleanJob } from "../../types/definitions/job.ts";
 import { hasOptionalFields } from "../../types/validators/has-fields.ts";
 import type { AIGeneratedEnhancedJobInfo } from "./types.ts";
 
+export const DEFAULT_ENHANCED_INFO: AIGeneratedEnhancedJobInfo = {
+  relevanceScore: 0,
+  relevanceReason: "AI analysis failed",
+  recommendation: "Skip",
+};
+
 const JOB_ENHANCEMENT_PROMPT = `
 You are an expert job analyst and career advisor. Analyze the job posting below against the candidate's complete resume to provide insights on job fit and relevance.
 
@@ -100,16 +106,11 @@ export async function enhanceJobWithAI(
     return response;
   } catch (error) {
     console.error(`Failed to enhance job ${job.jobId} with AI:`, error);
-    // Return default values if AI enhancement fails
-    return {
-      relevanceScore: 0,
-      relevanceReason: "AI analysis failed",
-      recommendation: "Skip",
-    };
+    return DEFAULT_ENHANCED_INFO;
   }
 }
 
-function isAIEnhancedJobInfo(
+export function isAIEnhancedJobInfo(
   response: unknown,
 ): response is AIGeneratedEnhancedJobInfo {
   if (typeof response !== "object" || response === null) {

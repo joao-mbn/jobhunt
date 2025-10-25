@@ -8,7 +8,11 @@ import {
   createTransformResultFailure,
   createTransformResultSuccess,
 } from "../utils.ts";
-import { queryCleanJobs, updateFailedEnhancement } from "./db.ts";
+import {
+  deleteEnhancedCleanJobs,
+  queryCleanJobs,
+  updateFailedEnhancement,
+} from "./db.ts";
 
 let testDb: Database;
 let testDbPath: string;
@@ -171,7 +175,46 @@ describe("updateFailedEnhancement", () => {
 });
 
 describe("deleteEnhancedCleanJobs", () => {
-  // Test cases will be added here
+  it("should do nothing when empty array is provided", () => {
+    const rawJobs = generateRawJobs(2, "linkedin");
+    insertRawJobs(testDb, rawJobs);
+
+    const cleanJobs = generateCleanJobs(2, "linkedin");
+    insertNewCleanJobs(testDb, cleanJobs.map(createTransformResultSuccess));
+
+    const initialCount = testDb.query(
+      "SELECT COUNT(*) as count FROM clean_jobs",
+    )[0].count;
+
+    deleteEnhancedCleanJobs(testDb, []);
+
+    const finalCount = testDb.query(
+      "SELECT COUNT(*) as count FROM clean_jobs",
+    )[0].count;
+
+    expect(finalCount).toBe(initialCount);
+  });
+
+  it("should delete clean jobs and not delete jobs outside of the list", () => {
+    const rawJobs = generateRawJobs(3, "linkedin");
+    insertRawJobs(testDb, rawJobs);
+
+    const cleanJobs = generateCleanJobs(3, "linkedin");
+    insertNewCleanJobs(testDb, cleanJobs.map(createTransformResultSuccess));
+
+    const successfulResults = [
+      createTransformResultSuccess(cleanJobs[0]),
+      createTransformResultSuccess(cleanJobs[2]),
+    ];
+
+    deleteEnhancedCleanJobs(testDb, successfulResults);
+
+    const remainingJobs = testDb.query(
+      "SELECT job_id FROM clean_jobs ORDER BY job_id",
+    );
+    expect(remainingJobs).toHaveLength(1);
+    expect(remainingJobs[0].job_id).toBe("linkedin-2");
+  });
 });
 
 describe("insertNewEnhancedJobs", () => {

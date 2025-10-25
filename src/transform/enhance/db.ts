@@ -5,6 +5,7 @@ import { fromDBCleanJobToCleanJob } from "../../types/converters/schema-to-job.t
 import type { CleanJob, EnhancedJob } from "../../types/definitions/job.ts";
 import type { DBCleanJob } from "../../types/definitions/schema.ts";
 import { isDBCleanJob } from "../../types/validators/schema.ts";
+import { MAX_FAIL_COUNT } from "../../utils/constants.ts";
 import type {
   TransformResultFailure,
   TransformResultSuccess,
@@ -13,7 +14,7 @@ import type {
 export function queryCleanJobs(db: Database) {
   const cleanJobsResult = db.query(`
       SELECT * FROM clean_jobs
-      WHERE fail_count <= 3
+      WHERE fail_count <= ${MAX_FAIL_COUNT}
       ORDER BY created_at ASC
       LIMIT 5
     `);

@@ -115,7 +115,6 @@ export function generateCleanJobs(
 export function generateEnhancedJobs(
   count: number,
   source: "linkedin" | "levels" | "builtin" | "indeed" = "linkedin",
-  uploadedToSheet: boolean = false,
 ): EnhancedJob[] {
   const cleanJobs = generateCleanJobs(count, source);
 
@@ -154,7 +153,7 @@ export function generateEnhancedJobs(
       relevanceScore,
       relevanceReason,
       recommendation,
-      uploadedToSheet,
+      uploadedToSheet: false,
     };
   });
 }

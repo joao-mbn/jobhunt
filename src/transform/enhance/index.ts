@@ -69,7 +69,10 @@ export async function main(aiClients: AIClient[] = ais) {
         console.log(
           `Updating fail_count for ${failedResults.length} failed jobs...`,
         );
-        updateFailedEnhancement(db, failedResults);
+        updateFailedEnhancement(
+          db,
+          failedResults.map((result) => result.jobId),
+        );
       }
 
       // Step 4: Insert the successful results and delete the clean jobs
@@ -80,7 +83,10 @@ export async function main(aiClients: AIClient[] = ais) {
         insertNewEnhancedJobs(db, successfulResults);
 
         console.log(`Deleting ${successfulResults.length} clean jobs...`);
-        deleteEnhancedCleanJobs(db, successfulResults);
+        deleteEnhancedCleanJobs(
+          db,
+          successfulResults.map((result) => result.jobId),
+        );
       }
 
       console.log("Data enhancement process completed successfully");

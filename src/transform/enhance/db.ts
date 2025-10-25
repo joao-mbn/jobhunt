@@ -2,14 +2,11 @@ import type { Database } from "../../db/database.ts";
 import { buildPlaceholders, objectsToColumnsAndRows } from "../../db/utils.ts";
 import { fromEnhancedJobToDBEnhancedJob } from "../../types/converters/job-to-schema.ts";
 import { fromDBCleanJobToCleanJob } from "../../types/converters/schema-to-job.ts";
-import type { CleanJob, EnhancedJob } from "../../types/definitions/job.ts";
+import type { EnhancedJob } from "../../types/definitions/job.ts";
 import type { DBCleanJob } from "../../types/definitions/schema.ts";
 import { isDBCleanJob } from "../../types/validators/schema.ts";
 import { MAX_FAIL_COUNT } from "../../utils/constants.ts";
-import type {
-  TransformResultFailure,
-  TransformResultSuccess,
-} from "../types.ts";
+import type { TransformResultSuccess } from "../types.ts";
 
 export function queryCleanJobs(db: Database) {
   const cleanJobsResult = db.query(`
@@ -26,28 +23,23 @@ export function queryCleanJobs(db: Database) {
   return cleanJobs;
 }
 
-export function updateFailedEnhancement(
-  db: Database,
-  failedResults: TransformResultFailure[],
-) {
-  const jobIds = failedResults.map((result) => result.jobId);
-
+export function updateFailedEnhancement(db: Database, failedJobIds: string[]) {
   db.query(
     `UPDATE clean_jobs
          SET fail_count = fail_count + 1
-         WHERE job_id IN ${buildPlaceholders(jobIds)}`,
-    ...jobIds,
+         WHERE job_id IN ${buildPlaceholders(failedJobIds)}`,
+    ...failedJobIds,
   );
 }
 
 export function deleteEnhancedCleanJobs(
   db: Database,
-  successfulResults: TransformResultSuccess<CleanJob>[],
+  successfulJobIds: string[],
 ) {
   db.query(
     `DELETE FROM clean_jobs
-         WHERE job_id IN ${buildPlaceholders(successfulResults)}`,
-    ...successfulResults.map(({ jobId }) => jobId),
+         WHERE job_id IN ${buildPlaceholders(successfulJobIds)}`,
+    ...successfulJobIds,
   );
 }
 

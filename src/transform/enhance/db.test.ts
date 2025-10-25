@@ -3,13 +3,18 @@ import type { Database } from "../../db/database.ts";
 import { setupDb, teardownDb } from "../../db/test-utils.ts";
 import { insertRawJobs } from "../../extract/db.ts";
 import { insertNewCleanJobs } from "../../transform/clean/db.ts";
-import { generateCleanJobs, generateRawJobs } from "../../utils/test-utils.ts";
+import { fromDBEnhancedJobToEnhancedJob } from "../../types/converters/schema-to-job.ts";
+import type { DBEnhancedJob } from "../../types/definitions/schema.ts";
+import { isDBEnhancedJob } from "../../types/validators/schema.ts";
 import {
-  createTransformResultFailure,
-  createTransformResultSuccess,
-} from "../utils.ts";
+  generateCleanJobs,
+  generateEnhancedJobs,
+  generateRawJobs,
+} from "../../utils/test-utils.ts";
+import { createTransformResultSuccess } from "../utils.ts";
 import {
   deleteEnhancedCleanJobs,
+  insertNewEnhancedJobs,
   queryCleanJobs,
   updateFailedEnhancement,
 } from "./db.ts";
@@ -125,12 +130,9 @@ describe("updateFailedEnhancement", () => {
     const cleanJobs = generateCleanJobs(3, "linkedin");
     insertNewCleanJobs(testDb, cleanJobs.map(createTransformResultSuccess));
 
-    const failedResults = [
-      createTransformResultFailure(cleanJobs[0]),
-      createTransformResultFailure(cleanJobs[2]),
-    ];
+    const failedJobIds = ["linkedin-1", "linkedin-3"];
 
-    updateFailedEnhancement(testDb, failedResults);
+    updateFailedEnhancement(testDb, failedJobIds);
 
     const results = testDb.query(
       "SELECT job_id, fail_count FROM clean_jobs ORDER BY job_id",
@@ -157,13 +159,9 @@ describe("updateFailedEnhancement", () => {
       "UPDATE clean_jobs SET fail_count = 2 WHERE job_id = 'linkedin-3'",
     );
 
-    const failedResults = [
-      createTransformResultFailure(cleanJobs[0]),
-      createTransformResultFailure(cleanJobs[1]),
-      createTransformResultFailure(cleanJobs[2]),
-    ];
+    const failedJobIds = ["linkedin-1", "linkedin-2", "linkedin-3"];
 
-    updateFailedEnhancement(testDb, failedResults);
+    updateFailedEnhancement(testDb, failedJobIds);
 
     const results = testDb.query(
       "SELECT job_id, fail_count FROM clean_jobs ORDER BY job_id",
@@ -202,12 +200,9 @@ describe("deleteEnhancedCleanJobs", () => {
     const cleanJobs = generateCleanJobs(3, "linkedin");
     insertNewCleanJobs(testDb, cleanJobs.map(createTransformResultSuccess));
 
-    const successfulResults = [
-      createTransformResultSuccess(cleanJobs[0]),
-      createTransformResultSuccess(cleanJobs[2]),
-    ];
+    const successfulJobIds = ["linkedin-1", "linkedin-3"];
 
-    deleteEnhancedCleanJobs(testDb, successfulResults);
+    deleteEnhancedCleanJobs(testDb, successfulJobIds);
 
     const remainingJobs = testDb.query(
       "SELECT job_id FROM clean_jobs ORDER BY job_id",
@@ -218,5 +213,102 @@ describe("deleteEnhancedCleanJobs", () => {
 });
 
 describe("insertNewEnhancedJobs", () => {
-  // Test cases will be added here
+  it("should do nothing when empty array is provided", () => {
+    const initialCount = testDb.query(
+      "SELECT COUNT(*) as count FROM enhanced_jobs",
+    )[0].count;
+
+    insertNewEnhancedJobs(testDb, []);
+
+    const finalCount = testDb.query(
+      "SELECT COUNT(*) as count FROM enhanced_jobs",
+    )[0].count;
+
+    expect(finalCount).toBe(initialCount);
+  });
+
+  it("should insert all new enhanced jobs", () => {
+    const rawJobs = generateRawJobs(2, "linkedin");
+    insertRawJobs(testDb, rawJobs);
+
+    const cleanJobs = generateCleanJobs(2, "linkedin");
+    insertNewCleanJobs(testDb, cleanJobs.map(createTransformResultSuccess));
+
+    const enhancedJobs = generateEnhancedJobs(2, "linkedin");
+    const successfulResults = enhancedJobs.map(createTransformResultSuccess);
+
+    insertNewEnhancedJobs(testDb, successfulResults);
+
+    const insertedJobs = testDb.query(
+      "SELECT job_id FROM enhanced_jobs ORDER BY job_id",
+    );
+    expect(insertedJobs).toHaveLength(2);
+    expect(insertedJobs[0].job_id).toBe("linkedin-1");
+    expect(insertedJobs[1].job_id).toBe("linkedin-2");
+  });
+
+  it("should filter out existing enhanced jobs and only insert new ones", () => {
+    const rawJobs = generateRawJobs(2, "linkedin");
+    insertRawJobs(testDb, rawJobs);
+
+    const cleanJobs = generateCleanJobs(2, "linkedin");
+    insertNewCleanJobs(testDb, cleanJobs.map(createTransformResultSuccess));
+
+    const existingEnhancedJob = generateEnhancedJobs(1, "linkedin")[0];
+    const newEnhancedJob = generateEnhancedJobs(1, "linkedin")[0];
+    newEnhancedJob.jobId = "linkedin-2";
+
+    insertNewEnhancedJobs(testDb, [
+      createTransformResultSuccess(existingEnhancedJob),
+    ]);
+
+    const successfulResults = [
+      createTransformResultSuccess(existingEnhancedJob),
+      createTransformResultSuccess(newEnhancedJob),
+    ];
+
+    insertNewEnhancedJobs(testDb, successfulResults);
+
+    const allJobs = testDb.query(
+      "SELECT job_id FROM enhanced_jobs ORDER BY job_id",
+    );
+    expect(allJobs).toHaveLength(2);
+    expect(allJobs[0].job_id).toBe("linkedin-1");
+    expect(allJobs[1].job_id).toBe("linkedin-2");
+  });
+
+  it("should correctly insert all properties and add database-generated fields", () => {
+    const rawJobs = generateRawJobs(1, "linkedin");
+    insertRawJobs(testDb, rawJobs);
+
+    const cleanJobs = generateCleanJobs(1, "linkedin");
+    insertNewCleanJobs(testDb, cleanJobs.map(createTransformResultSuccess));
+
+    const enhancedJob = generateEnhancedJobs(1, "linkedin")[0];
+    const successfulResult = createTransformResultSuccess(enhancedJob);
+
+    expect(enhancedJob.id).toBeUndefined();
+    expect(enhancedJob.createdAt).toBeUndefined();
+    expect(enhancedJob.updatedAt).toBeUndefined();
+    expect(enhancedJob.failCount).toBeUndefined();
+
+    insertNewEnhancedJobs(testDb, [successfulResult]);
+
+    const insertedDBJobs = testDb.query(
+      "SELECT * FROM enhanced_jobs ORDER BY job_id",
+    );
+
+    const dbEnhancedJob = (
+      insertedDBJobs.filter(isDBEnhancedJob) as unknown as DBEnhancedJob[]
+    ).map(fromDBEnhancedJobToEnhancedJob)[0];
+
+    for (const key of Object.keys(enhancedJob)) {
+      expect(dbEnhancedJob[key]).toEqual(enhancedJob[key]);
+    }
+
+    expect(dbEnhancedJob.id).toBeDefined();
+    expect(dbEnhancedJob.createdAt).toBeDefined();
+    expect(dbEnhancedJob.updatedAt).toBeDefined();
+    expect(dbEnhancedJob.failCount).toBe(0);
+  });
 });

@@ -4,8 +4,11 @@ import { setupDb, teardownDb } from "../../db/test-utils.ts";
 import { insertRawJobs } from "../../extract/db.ts";
 import { insertNewCleanJobs } from "../../transform/clean/db.ts";
 import { generateCleanJobs, generateRawJobs } from "../../utils/test-utils.ts";
-import { createTransformResultSuccess } from "../utils.ts";
-import { queryCleanJobs } from "./db.ts";
+import {
+  createTransformResultFailure,
+  createTransformResultSuccess,
+} from "../utils.ts";
+import { queryCleanJobs, updateFailedEnhancement } from "./db.ts";
 
 let testDb: Database;
 let testDbPath: string;
@@ -91,7 +94,80 @@ describe("queryCleanJobs", () => {
 });
 
 describe("updateFailedEnhancement", () => {
-  // Test cases will be added here
+  it("should do nothing when empty array is provided", () => {
+    const rawJobs = generateRawJobs(2, "linkedin");
+    insertRawJobs(testDb, rawJobs);
+
+    const cleanJobs = generateCleanJobs(2, "linkedin");
+    insertNewCleanJobs(testDb, cleanJobs.map(createTransformResultSuccess));
+
+    const initialFailCounts = testDb.query(
+      "SELECT job_id, fail_count FROM clean_jobs ORDER BY job_id",
+    );
+
+    updateFailedEnhancement(testDb, []);
+
+    const finalFailCounts = testDb.query(
+      "SELECT job_id, fail_count FROM clean_jobs ORDER BY job_id",
+    );
+
+    expect(finalFailCounts).toEqual(initialFailCounts);
+  });
+
+  it("should increment fail_count for failed jobs and not affect others", () => {
+    const rawJobs = generateRawJobs(3, "linkedin");
+    insertRawJobs(testDb, rawJobs);
+
+    const cleanJobs = generateCleanJobs(3, "linkedin");
+    insertNewCleanJobs(testDb, cleanJobs.map(createTransformResultSuccess));
+
+    const failedResults = [
+      createTransformResultFailure(cleanJobs[0]),
+      createTransformResultFailure(cleanJobs[2]),
+    ];
+
+    updateFailedEnhancement(testDb, failedResults);
+
+    const results = testDb.query(
+      "SELECT job_id, fail_count FROM clean_jobs ORDER BY job_id",
+    );
+    expect(results[0].fail_count).toBe(1);
+    expect(results[1].fail_count).toBe(0);
+    expect(results[2].fail_count).toBe(1);
+  });
+
+  it("should correctly increment fail_count from various starting values", () => {
+    const rawJobs = generateRawJobs(3, "linkedin");
+    insertRawJobs(testDb, rawJobs);
+
+    const cleanJobs = generateCleanJobs(3, "linkedin");
+    insertNewCleanJobs(testDb, cleanJobs.map(createTransformResultSuccess));
+
+    testDb.query(
+      "UPDATE clean_jobs SET fail_count = 0 WHERE job_id = 'linkedin-1'",
+    );
+    testDb.query(
+      "UPDATE clean_jobs SET fail_count = 1 WHERE job_id = 'linkedin-2'",
+    );
+    testDb.query(
+      "UPDATE clean_jobs SET fail_count = 2 WHERE job_id = 'linkedin-3'",
+    );
+
+    const failedResults = [
+      createTransformResultFailure(cleanJobs[0]),
+      createTransformResultFailure(cleanJobs[1]),
+      createTransformResultFailure(cleanJobs[2]),
+    ];
+
+    updateFailedEnhancement(testDb, failedResults);
+
+    const results = testDb.query(
+      "SELECT job_id, fail_count FROM clean_jobs ORDER BY job_id",
+    );
+    expect(results[0].fail_count).toBe(1);
+    expect(results[1].fail_count).toBe(2);
+    expect(results[2].fail_count).toBe(3);
+  });
 });
 
 describe("deleteEnhancedCleanJobs", () => {

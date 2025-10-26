@@ -1,6 +1,6 @@
 import type { AIClient } from "../../ai/types.ts";
 import { ais } from "../../ai/utils.ts";
-import { db } from "../../db/database.ts";
+import { Database, db } from "../../db/database.ts";
 import type { EnhancedJob } from "../../types/definitions/job.ts";
 import type {
   TransformResult,
@@ -19,12 +19,12 @@ import {
   updateFailedEnhancement,
 } from "./db.ts";
 
-export async function main(aiClients: AIClient[] = ais) {
+export async function main(_db: Database = db, aiClients: AIClient[] = ais) {
   try {
     console.log("Starting data enhancement process...");
 
     // Step 1: Get the clean jobs
-    const cleanJobs = queryCleanJobs(db);
+    const cleanJobs = queryCleanJobs(_db);
     console.log(`Found ${cleanJobs.length} valid clean jobs to process`);
 
     // Step 2: Enhance the clean jobs
@@ -63,14 +63,14 @@ export async function main(aiClients: AIClient[] = ais) {
       `Enhancement completed: ${successfulResults.length} successful, ${failedResults.length} failed`,
     );
 
-    await db.withTransaction(async () => {
+    await _db.withTransaction(async () => {
       // Step 3: Update the fail_count for the failed jobs
       if (failedResults.length > 0) {
         console.log(
           `Updating fail_count for ${failedResults.length} failed jobs...`,
         );
         updateFailedEnhancement(
-          db,
+          _db,
           failedResults.map((result) => result.jobId),
         );
       }
@@ -80,11 +80,11 @@ export async function main(aiClients: AIClient[] = ais) {
         console.log(
           `Inserting ${successfulResults.length} new enhanced jobs...`,
         );
-        insertNewEnhancedJobs(db, successfulResults);
+        insertNewEnhancedJobs(_db, successfulResults);
 
         console.log(`Deleting ${successfulResults.length} clean jobs...`);
         deleteEnhancedCleanJobs(
-          db,
+          _db,
           successfulResults.map((result) => result.jobId),
         );
       }
@@ -95,7 +95,7 @@ export async function main(aiClients: AIClient[] = ais) {
     console.error("Failed to enhance data:", error);
     process.exitCode = 1;
   } finally {
-    db.disconnect();
+    _db.disconnect();
   }
 }
 

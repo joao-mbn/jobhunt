@@ -47,7 +47,6 @@ export function insertNewEnhancedJobs(
   db: Database,
   successfulResults: TransformResultSuccess<EnhancedJob>[],
 ) {
-  // make sure that the enhanced jobs are not already in the database
   const existingEnhancedJobs = db.query(
     `SELECT job_id FROM enhanced_jobs
          WHERE job_id IN ${buildPlaceholders(successfulResults)}`,

@@ -1,7 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { Database } from "../../db/database.ts";
 import { setupDb, teardownDb } from "../../db/test-utils.ts";
-import { insertRawJobs } from "../../extract/db.ts";
 import { insertNewCleanJobs } from "../../transform/clean/db.ts";
 import { fromDBEnhancedJobToEnhancedJob } from "../../types/converters/schema-to-job.ts";
 import type { DBEnhancedJob } from "../../types/definitions/schema.ts";
@@ -9,7 +8,6 @@ import { isDBEnhancedJob } from "../../types/validators/schema.ts";
 import {
   generateCleanJobs,
   generateEnhancedJobs,
-  generateRawJobs,
 } from "../../utils/test-utils.ts";
 import { createTransformResultSuccess } from "../utils.ts";
 import {
@@ -39,9 +37,6 @@ describe("queryCleanJobs", () => {
   });
 
   it("should return jobs with fail_count <= MAX_FAIL_COUNT and filter out jobs with fail_count > MAX_FAIL_COUNT", () => {
-    const rawJobs = generateRawJobs(4, "linkedin");
-    insertRawJobs(testDb, rawJobs);
-
     const cleanJobs = generateCleanJobs(4, "linkedin");
     insertNewCleanJobs(testDb, cleanJobs.map(createTransformResultSuccess));
 
@@ -66,9 +61,6 @@ describe("queryCleanJobs", () => {
   });
 
   it("should return maximum of 5 jobs when more exist", () => {
-    const rawJobs = generateRawJobs(8, "linkedin");
-    insertRawJobs(testDb, rawJobs);
-
     const cleanJobs = generateCleanJobs(8, "linkedin");
     insertNewCleanJobs(testDb, cleanJobs.map(createTransformResultSuccess));
 
@@ -77,9 +69,6 @@ describe("queryCleanJobs", () => {
   });
 
   it("should order results by created_at ASC (oldest first)", () => {
-    const rawJobs = generateRawJobs(3, "linkedin");
-    insertRawJobs(testDb, rawJobs);
-
     const cleanJobs = generateCleanJobs(3, "linkedin");
     insertNewCleanJobs(testDb, cleanJobs.map(createTransformResultSuccess));
 
@@ -104,9 +93,6 @@ describe("queryCleanJobs", () => {
 
 describe("updateFailedEnhancement", () => {
   it("should do nothing when empty array is provided", () => {
-    const rawJobs = generateRawJobs(2, "linkedin");
-    insertRawJobs(testDb, rawJobs);
-
     const cleanJobs = generateCleanJobs(2, "linkedin");
     insertNewCleanJobs(testDb, cleanJobs.map(createTransformResultSuccess));
 
@@ -124,9 +110,6 @@ describe("updateFailedEnhancement", () => {
   });
 
   it("should increment fail_count for failed jobs and not affect others", () => {
-    const rawJobs = generateRawJobs(3, "linkedin");
-    insertRawJobs(testDb, rawJobs);
-
     const cleanJobs = generateCleanJobs(3, "linkedin");
     insertNewCleanJobs(testDb, cleanJobs.map(createTransformResultSuccess));
 
@@ -143,9 +126,6 @@ describe("updateFailedEnhancement", () => {
   });
 
   it("should correctly increment fail_count from various starting values", () => {
-    const rawJobs = generateRawJobs(3, "linkedin");
-    insertRawJobs(testDb, rawJobs);
-
     const cleanJobs = generateCleanJobs(3, "linkedin");
     insertNewCleanJobs(testDb, cleanJobs.map(createTransformResultSuccess));
 
@@ -174,9 +154,6 @@ describe("updateFailedEnhancement", () => {
 
 describe("deleteEnhancedCleanJobs", () => {
   it("should do nothing when empty array is provided", () => {
-    const rawJobs = generateRawJobs(2, "linkedin");
-    insertRawJobs(testDb, rawJobs);
-
     const cleanJobs = generateCleanJobs(2, "linkedin");
     insertNewCleanJobs(testDb, cleanJobs.map(createTransformResultSuccess));
 
@@ -194,9 +171,6 @@ describe("deleteEnhancedCleanJobs", () => {
   });
 
   it("should delete clean jobs and not delete jobs outside of the list", () => {
-    const rawJobs = generateRawJobs(3, "linkedin");
-    insertRawJobs(testDb, rawJobs);
-
     const cleanJobs = generateCleanJobs(3, "linkedin");
     insertNewCleanJobs(testDb, cleanJobs.map(createTransformResultSuccess));
 
@@ -228,12 +202,6 @@ describe("insertNewEnhancedJobs", () => {
   });
 
   it("should insert all new enhanced jobs", () => {
-    const rawJobs = generateRawJobs(2, "linkedin");
-    insertRawJobs(testDb, rawJobs);
-
-    const cleanJobs = generateCleanJobs(2, "linkedin");
-    insertNewCleanJobs(testDb, cleanJobs.map(createTransformResultSuccess));
-
     const enhancedJobs = generateEnhancedJobs(2, "linkedin");
     const successfulResults = enhancedJobs.map(createTransformResultSuccess);
 
@@ -248,12 +216,6 @@ describe("insertNewEnhancedJobs", () => {
   });
 
   it("should filter out existing enhanced jobs and only insert new ones", () => {
-    const rawJobs = generateRawJobs(2, "linkedin");
-    insertRawJobs(testDb, rawJobs);
-
-    const cleanJobs = generateCleanJobs(2, "linkedin");
-    insertNewCleanJobs(testDb, cleanJobs.map(createTransformResultSuccess));
-
     const existingEnhancedJob = generateEnhancedJobs(1, "linkedin")[0];
     const newEnhancedJob = generateEnhancedJobs(1, "linkedin")[0];
     newEnhancedJob.jobId = "linkedin-2";
@@ -278,12 +240,6 @@ describe("insertNewEnhancedJobs", () => {
   });
 
   it("should correctly insert all properties and add database-generated fields", () => {
-    const rawJobs = generateRawJobs(1, "linkedin");
-    insertRawJobs(testDb, rawJobs);
-
-    const cleanJobs = generateCleanJobs(1, "linkedin");
-    insertNewCleanJobs(testDb, cleanJobs.map(createTransformResultSuccess));
-
     const enhancedJob = generateEnhancedJobs(1, "linkedin")[0];
     const successfulResult = createTransformResultSuccess(enhancedJob);
 

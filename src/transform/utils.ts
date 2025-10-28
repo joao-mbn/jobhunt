@@ -1,5 +1,7 @@
-import type { Job } from "../types/definitions/job.ts";
+import type { Job, Prefills } from "../types/definitions/job.ts";
 import type {
+  PrefillsResultFailure,
+  PrefillsResultSuccess,
   TransformResultFailure,
   TransformResultSuccess,
 } from "./types.ts";
@@ -46,5 +48,25 @@ export function createTransformResultFailure(job: Job): TransformResultFailure {
     success: false,
     jobId: job.jobId,
     job: null,
+  };
+}
+
+export function createPrefillsResultSuccess(
+  prefills: Prefills,
+): PrefillsResultSuccess {
+  return {
+    success: true,
+    enhancedJobId: prefills.enhancedJobId,
+    prefills,
+  };
+}
+
+export function createPrefillsResultFailure(
+  enhancedJobId: string,
+): PrefillsResultFailure {
+  return {
+    success: false,
+    enhancedJobId,
+    prefills: null,
   };
 }

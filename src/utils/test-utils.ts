@@ -1,6 +1,7 @@
 import type {
   CleanJob,
   EnhancedJob,
+  Prefills,
   RawJob,
 } from "../types/definitions/job.ts";
 import type {
@@ -118,42 +119,33 @@ export function generateEnhancedJobs(
 ): EnhancedJob[] {
   const cleanJobs = generateCleanJobs(count, source);
 
-  return cleanJobs.map((cleanJob, index) => {
-    // Generate realistic relevance scores (0-100)
-    const relevanceScore = Math.floor(Math.random() * 101);
-
-    // Generate recommendations based on relevance score
-    let recommendation: "Apply" | "Consider" | "Skip";
-    if (relevanceScore >= 80) {
-      recommendation = "Apply";
-    } else if (relevanceScore >= 50) {
-      recommendation = "Consider";
-    } else {
-      recommendation = "Skip";
-    }
-
-    // Generate relevance reasons based on score
-    const relevanceReasons = [
-      "Strong match with required skills and experience",
-      "Good company culture and growth opportunities",
-      "Remote work arrangement aligns with preferences",
-      "Compensation range meets expectations",
-      "Role responsibilities match career goals",
-      "Company is in a growing industry",
-      "Limited growth opportunities in this role",
-      "Skills mismatch with current experience",
-      "Compensation below market rate",
-      "Location requirements don't align",
-    ];
-
-    const relevanceReason = relevanceReasons[index % relevanceReasons.length];
-
+  return cleanJobs.map((cleanJob) => {
     return {
       ...cleanJob,
-      relevanceScore,
-      relevanceReason,
-      recommendation,
+      relevanceScore: 80,
+      recommendation: "Apply",
+      relevanceReason: "Strong match with required skills and experience",
       uploadedToSheet: false,
+    };
+  });
+}
+
+/**
+ * Generates Prefills objects for testing
+ * @param count - Number of prefills to generate
+ * @param source - Source for the enhanced jobs (default: "linkedin")
+ * @returns Array of Prefills objects
+ */
+export function generatePrefills(
+  count: number,
+  source: "linkedin" | "levels" | "builtin" | "indeed" = "linkedin",
+): Prefills[] {
+  const enhancedJobs = generateEnhancedJobs(count, source);
+
+  return enhancedJobs.map((enhancedJob) => {
+    return {
+      enhancedJobId: enhancedJob.jobId,
+      coverLetter: `Test cover letter ${enhancedJob.jobId.split("-")[1]}`,
     };
   });
 }

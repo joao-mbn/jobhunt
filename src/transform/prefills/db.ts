@@ -1,19 +1,19 @@
-import { db } from "../../db/database.ts";
+import type { Database } from "../../db/database.ts";
 import { buildPlaceholders, objectsToColumnsAndRows } from "../../db/utils.ts";
 import { fromPrefillsToDBPrefills } from "../../types/converters/job-to-schema.ts";
 import { fromDBEnhancedJobToEnhancedJob } from "../../types/converters/schema-to-job.ts";
 import type { DBEnhancedJob } from "../../types/definitions/schema.ts";
 import { isDBEnhancedJob } from "../../types/validators/schema.ts";
-import { MIN_RELEVANCE_SCORE } from "../../utils/constants.ts";
-import type { PrefillsResultFailure, PrefillsResultSuccess } from "./types.ts";
+import { MAX_FAIL_COUNT, MIN_RELEVANCE_SCORE } from "../../utils/constants.ts";
+import type { PrefillsResultSuccess } from "../types.ts";
 
-export function queryEnhancedJobsWithoutPrefills() {
+export function queryEnhancedJobsWithoutPrefills(db: Database) {
   const enhancedJobsResult = db.query(`
       SELECT ej.*
       FROM enhanced_jobs ej
       LEFT JOIN prefills p ON ej.job_id = p.enhanced_job_id
       WHERE p.enhanced_job_id IS NULL
-        AND ej.fail_count <= 3
+        AND ej.fail_count <= ${MAX_FAIL_COUNT}
         AND ej.relevance_score >= ${MIN_RELEVANCE_SCORE}
         AND ej.uploaded_to_sheet = 0
       ORDER BY ej.created_at ASC
@@ -27,18 +27,19 @@ export function queryEnhancedJobsWithoutPrefills() {
   return enhancedJobs;
 }
 
-export function updateFailedPrefills(failedResults: PrefillsResultFailure[]) {
-  const jobIds = failedResults.map((result) => result.enhancedJobId);
-
+export function updateFailedPrefills(db: Database, failedJobIds: string[]) {
   db.query(
     `UPDATE enhanced_jobs
          SET fail_count = fail_count + 1
-         WHERE job_id IN ${buildPlaceholders(jobIds)}`,
-    ...jobIds,
+         WHERE job_id IN ${buildPlaceholders(failedJobIds)}`,
+    ...failedJobIds,
   );
 }
 
-export function insertNewPrefills(successfulResults: PrefillsResultSuccess[]) {
+export function insertNewPrefills(
+  db: Database,
+  successfulResults: PrefillsResultSuccess[],
+) {
   const existingPrefills = db.query(
     `SELECT enhanced_job_id FROM prefills
          WHERE enhanced_job_id IN ${buildPlaceholders(successfulResults)}`,

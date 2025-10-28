@@ -39,7 +39,6 @@ export function updateFailedPrefills(failedResults: PrefillsResultFailure[]) {
 }
 
 export function insertNewPrefills(successfulResults: PrefillsResultSuccess[]) {
-  // Make sure that the prefills are not already in the database
   const existingPrefills = db.query(
     `SELECT enhanced_job_id FROM prefills
          WHERE enhanced_job_id IN ${buildPlaceholders(successfulResults)}`,

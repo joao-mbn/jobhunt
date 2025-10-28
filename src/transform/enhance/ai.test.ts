@@ -43,15 +43,7 @@ describe("enhanceJobWithAI", () => {
       new FixedJsonContentAIClient({ relevanceScore: "invalid" }),
     ]);
 
-    expect(enhancedInfo.relevanceScore).toBe(
-      DEFAULT_ENHANCED_INFO.relevanceScore,
-    );
-    expect(enhancedInfo.relevanceReason).toBe(
-      DEFAULT_ENHANCED_INFO.relevanceReason,
-    );
-    expect(enhancedInfo.recommendation).toBe(
-      DEFAULT_ENHANCED_INFO.recommendation,
-    );
+    expect(enhancedInfo).toBe(DEFAULT_ENHANCED_INFO);
   });
 
   it("it returns default values if all prompt attempts result in errors", async () => {
@@ -62,15 +54,7 @@ describe("enhanceJobWithAI", () => {
       new RateLimitExceededAIClient(),
     ]);
 
-    expect(enhancedInfo.relevanceScore).toBe(
-      DEFAULT_ENHANCED_INFO.relevanceScore,
-    );
-    expect(enhancedInfo.relevanceReason).toBe(
-      DEFAULT_ENHANCED_INFO.relevanceReason,
-    );
-    expect(enhancedInfo.recommendation).toBe(
-      DEFAULT_ENHANCED_INFO.recommendation,
-    );
+    expect(enhancedInfo).toBe(DEFAULT_ENHANCED_INFO);
   });
 });
 

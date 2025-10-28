@@ -5,6 +5,11 @@ import type { EnhancedJob } from "../../types/definitions/job.ts";
 import { hasOptionalFields } from "../../types/validators/has-fields.ts";
 import type { AIGeneratedPrefillsInfo } from "./types.ts";
 
+export const DEFAULT_PREFILLS_INFO: AIGeneratedPrefillsInfo = {
+  coverLetter:
+    "AI cover letter generation failed. Please write a custom cover letter for this position.",
+};
+
 const COVER_LETTER_PROMPT = `
 You are an expert cover letter writer. Generate a compelling, personalized cover letter for the candidate based on their resume and the specific job posting.
 
@@ -103,15 +108,11 @@ export async function generatePrefillsWithAI(
       `Failed to generate prefills for job ${enhancedJob.jobId} with AI:`,
       error,
     );
-    // Return default values if AI generation fails
-    return {
-      coverLetter:
-        "AI cover letter generation failed. Please write a custom cover letter for this position.",
-    };
+    return DEFAULT_PREFILLS_INFO;
   }
 }
 
-function isAIPrefillsInfo(
+export function isAIPrefillsInfo(
   response: unknown,
 ): response is AIGeneratedPrefillsInfo {
   if (typeof response !== "object" || response === null) {

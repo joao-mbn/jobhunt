@@ -1,25 +1,25 @@
 import type { AIClient } from "../../ai/types.ts";
 import { ais } from "../../ai/utils.ts";
+import type { Database } from "../../db/database.ts";
 import { db } from "../../db/database.ts";
-import { createTransformResultFailure } from "../utils.ts";
+import type { PrefillsResultFailure, PrefillsResultSuccess } from "../types.ts";
+import {
+  createPrefillsResultFailure,
+  createPrefillsResultSuccess,
+} from "../utils.ts";
 import { generatePrefillsWithAI } from "./ai.ts";
 import {
   insertNewPrefills,
   queryEnhancedJobsWithoutPrefills,
   updateFailedPrefills,
 } from "./db.ts";
-import type {
-  PrefillsResult,
-  PrefillsResultFailure,
-  PrefillsResultSuccess,
-} from "./types.ts";
 
-export async function main(aiClients: AIClient[] = ais) {
+export async function main(aiClients: AIClient[] = ais, _db: Database = db) {
   try {
     console.log("Starting prefills generation process...");
 
     // Step 1: Get enhanced jobs without prefills
-    const enhancedJobs = queryEnhancedJobsWithoutPrefills();
+    const enhancedJobs = queryEnhancedJobsWithoutPrefills(_db);
     console.log(
       `Found ${enhancedJobs.length} enhanced jobs without prefills to process`,
     );
@@ -40,7 +40,7 @@ export async function main(aiClients: AIClient[] = ais) {
           enhancedJob.yearsOfExperienceRequired
         )
       ) {
-        return createTransformResultFailure(enhancedJob);
+        return createPrefillsResultFailure(enhancedJob.jobId);
       }
 
       try {
@@ -49,16 +49,16 @@ export async function main(aiClients: AIClient[] = ais) {
           aiClients,
         );
         const prefills = { enhancedJobId: enhancedJob.jobId, ...prefillsInfo };
-        return { success: true, enhancedJobId: enhancedJob.jobId, prefills };
+        return createPrefillsResultSuccess(prefills);
       } catch (error) {
         console.error(
           `Failed to generate prefills for enhanced job ${enhancedJob.jobId}:`,
           error,
         );
-        return createTransformResultFailure(enhancedJob);
+        return createPrefillsResultFailure(enhancedJob.jobId);
       }
     });
-    const prefillsResults = (await Promise.all(promises)) as PrefillsResult[];
+    const prefillsResults = await Promise.all(promises);
 
     const successfulResults = prefillsResults.filter(
       (result): result is PrefillsResultSuccess => result.success,
@@ -70,19 +70,22 @@ export async function main(aiClients: AIClient[] = ais) {
       `Prefills generation completed: ${successfulResults.length} successful, ${failedResults.length} failed`,
     );
 
-    await db.withTransaction(async () => {
+    await _db.withTransaction(async () => {
       // Step 3: Update the fail_count for the failed jobs
       if (failedResults.length > 0) {
         console.log(
           `Updating fail_count for ${failedResults.length} failed enhanced jobs...`,
         );
-        updateFailedPrefills(failedResults);
+        updateFailedPrefills(
+          _db,
+          failedResults.map((result) => result.enhancedJobId),
+        );
       }
 
       // Step 4: Insert the successful prefills
       if (successfulResults.length > 0) {
         console.log(`Inserting ${successfulResults.length} new prefills...`);
-        insertNewPrefills(successfulResults);
+        insertNewPrefills(_db, successfulResults);
       }
 
       console.log("Prefills generation process completed successfully");
@@ -91,7 +94,7 @@ export async function main(aiClients: AIClient[] = ais) {
     console.error("Failed to generate prefills:", error);
     process.exitCode = 1;
   } finally {
-    db.disconnect();
+    _db.disconnect();
   }
 }
 

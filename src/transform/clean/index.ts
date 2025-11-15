@@ -33,10 +33,10 @@ export async function main(
 
     // Step 2: Clean the raw jobs
     const cleanResults = await transformBySource(rawJobs, {
-      linkedin: _cleaners.linkedin.clean,
-      levels: _cleaners.levels.clean,
-      builtin: _cleaners.builtin.clean,
-      indeed: _cleaners.indeed.clean,
+      linkedin: (jobs) => _cleaners.linkedin.clean(jobs),
+      levels: (jobs) => _cleaners.levels.clean(jobs),
+      builtin: (jobs) => _cleaners.builtin.clean(jobs),
+      indeed: (jobs) => _cleaners.indeed.clean(jobs),
     });
 
     const successfulResults = cleanResults.filter(
